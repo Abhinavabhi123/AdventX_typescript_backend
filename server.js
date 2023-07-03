@@ -29,17 +29,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const db_1 = __importDefault(require("./db"));
 dotenv.config();
 const app = (0, express_1.default)();
+const Port = process.env.PORT || 3000 || 5000;
 (0, db_1.default)();
 app.use((0, cors_1.default)({
     origin: process.env.CORS_ORIGIN,
     methods: process.env.CORS_METHODS,
     credentials: true
 }));
-const Port = process.env.PORT || 3000 || 5000;
-app.get("/", (req, res) => {
-    res.send(`Express + Typescript Server`);
-});
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use("/", userRoutes_1.default);
+app.use("/admin", adminRoutes_1.default);
 app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
