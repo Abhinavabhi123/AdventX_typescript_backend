@@ -87,7 +87,7 @@ export const blockUser=async(req:Request,res:Response)=>{
     const id = req.body;
     console.log(id);
     const userData:UserData = await userModel.findOne({ _id: id });
-    console.log(userData);
+    
     if(userData){
 
       if (userData?.status == false) {

@@ -80,7 +80,6 @@ const blockUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.body;
         console.log(id);
         const userData = yield userModel_1.default.findOne({ _id: id });
-        console.log(userData);
         if (userData) {
             if ((userData === null || userData === void 0 ? void 0 : userData.status) == false) {
                 userData.status = true;
