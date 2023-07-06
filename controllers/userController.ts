@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import nodemailer from "nodemailer";
+import * as dotenv from 'dotenv';
+dotenv.config();
+import jwt,{Secret, JwtPayload} from "jsonwebtoken"
 
 import bcrypt from "bcrypt";
+
+const secretKey:string= process.env.USER_JWT_SECRET||""
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -131,7 +136,7 @@ export const postUserSignup = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllUser = async (req: Request, res: Response) => {
+export const userLogin = async (req: Request, res: Response) => {
   try {
     type objResponse = {
       message: string;
@@ -143,6 +148,7 @@ export const getAllUser = async (req: Request, res: Response) => {
         lastName?: string;
         email?: string;
       };
+      jwtToken?:string
     };
     let object: objResponse = {
       message: "",
@@ -153,23 +159,31 @@ export const getAllUser = async (req: Request, res: Response) => {
     };
 
     const { email, password } = req.body;
-    const users = await userModel.find();
-    for (let user of users) {
-      if (user.email === email) {
-        const grantAccess: boolean = await compareHash(password, user.password);
-        if (grantAccess) {
+    const userData = await userModel.find({email:email});
+    
+    if (userData) {
+      const grantAccess: boolean = await compareHash(password, userData[0].password); 
+      if (grantAccess) {
+        const jwtToken = jwt.sign({_id:userData[0]?._id,name:userData[0]?.firstName},secretKey,{expiresIn:"30d"})
+        
+        console.log("Access granted and token created");
+          
           object = {
             message: "Access granted",
             status: 200,
             error: "",
             loggedIn: true,
             userData: {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              email: user.email,
+              firstName: userData[0]?.firstName,
+              lastName: userData[0]?.lastName,
+              email: userData[0]?.email,
             },
+            jwtToken
           };
-          res.send(object);
+          res.cookie('jwtToken', jwtToken, {
+            httpOnly: true, 
+            maxAge: 3600000, 
+          }).send(object);
         } else {
           {
             object = {
@@ -200,7 +214,7 @@ export const getAllUser = async (req: Request, res: Response) => {
         };
         res.send(object);
       }
-    }
+    
   } catch (error) {
     console.error(error);
   }

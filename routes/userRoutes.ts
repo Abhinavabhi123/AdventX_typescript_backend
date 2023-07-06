@@ -1,11 +1,11 @@
 import {Router} from "express"
 
 const router =Router()
-import {postUserSignup,getAllUser,sendOpt} from  "../controllers/userController"
+import {postUserSignup,userLogin,sendOpt} from  "../controllers/userController"
 
 
 router.post("/postSignup",postUserSignup)
-router.post("/getUsers",getAllUser)
+router.post("/userLogin",userLogin)
 router.post("/sendOpt",sendOpt)
 
 export default router

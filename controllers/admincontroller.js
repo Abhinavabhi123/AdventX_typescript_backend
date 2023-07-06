@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postAdminLogin = void 0;
+exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
 const adminModel_1 = __importDefault(require("../models/adminModel"));
+const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -61,3 +62,40 @@ const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.postAdminLogin = postAdminLogin;
+const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("ivide nd");
+        const allUsers = yield userModel_1.default.find();
+        console.log(allUsers);
+        res.status(200).send(allUsers);
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getAllUser = getAllUser;
+const blockUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("ethi");
+    try {
+        const id = req.body;
+        console.log(id);
+        const userData = yield userModel_1.default.findOne({ _id: id });
+        console.log(userData);
+        if (userData) {
+            if ((userData === null || userData === void 0 ? void 0 : userData.status) == false) {
+                userData.status = true;
+            }
+            else {
+                userData.status = false;
+            }
+            yield userData.save();
+        }
+        else {
+            console.log("User not Found");
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.blockUser = blockUser;

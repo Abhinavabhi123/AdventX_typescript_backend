@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import adminModel from "../models/adminModel";
+import userModel from "../models/userModel";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 
@@ -59,3 +60,47 @@ export const postAdminLogin = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const getAllUser=async(req:Request,res:Response)=>{
+  try {
+    console.log("ivide nd");
+    
+    const allUsers = await userModel.find();
+    console.log(allUsers);
+    res.status(200).send(allUsers)
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const blockUser=async(req:Request,res:Response)=>{
+  
+  interface UserDocument{
+    _id:string;
+    status:boolean;
+    save():void
+  }
+  type UserData = UserDocument|null
+  console.log("ethi");
+
+  
+  try {
+    const id = req.body;
+    console.log(id);
+    const userData:UserData = await userModel.findOne({ _id: id });
+    console.log(userData);
+    if(userData){
+
+      if (userData?.status == false) {
+        userData.status = true;
+    } else {
+      userData.status = false;
+    }
+    await userData.save();
+  }else{
+    console.log("User not Found");
+    
+  }
+  } catch (error) {
+    console.error(error);
+  }
+}
