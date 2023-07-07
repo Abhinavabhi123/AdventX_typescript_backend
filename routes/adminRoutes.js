@@ -6,4 +6,5 @@ const admincontroller_1 = require("../controllers/admincontroller");
 router.post("/AdminLogin", admincontroller_1.postAdminLogin);
 router.get("/getAllUser", admincontroller_1.getAllUser);
 router.post("/blockUser", admincontroller_1.blockUser);
+router.get("/singleUser", admincontroller_1.singleUser);
 exports.default = router;
