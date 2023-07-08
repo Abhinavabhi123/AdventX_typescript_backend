@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import Jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import { getMaxAge } from "next/dist/server/image-optimizer";
 dotenv.config();
 
 const adminSecret: string = process.env.ADMIN_JWT_SECRET || "";
@@ -138,3 +137,4 @@ export const singleUser = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
