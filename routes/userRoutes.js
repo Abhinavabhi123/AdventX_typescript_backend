@@ -6,4 +6,7 @@ const userController_1 = require("../controllers/userController");
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);
+router.post("/postForget", userController_1.postForget);
+router.post("/postOtp", userController_1.postOtp);
+router.post("/changePass", userController_1.changePass);
 exports.default = router;

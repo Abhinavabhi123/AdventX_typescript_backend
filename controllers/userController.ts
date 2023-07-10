@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import nodemailer from "nodemailer";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
-import jwt,{Secret, JwtPayload} from "jsonwebtoken"
+import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
 
-const secretKey:string= process.env.USER_JWT_SECRET||""
+const secretKey: string = process.env.USER_JWT_SECRET || "";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -75,8 +75,8 @@ export const sendOpt = async (req: Request, res: Response) => {
           res.status(200).send({ message: "success" });
         });
       }
-    }else{
-      res.status(500).send({message:"No email found"})
+    } else {
+      res.status(500).send({ message: "No email found" });
     }
   } catch (error) {
     console.error(error);
@@ -148,7 +148,7 @@ export const userLogin = async (req: Request, res: Response) => {
         lastName?: string;
         email?: string;
       };
-      jwtToken?:string
+      jwtToken?: string;
     };
     let object: objResponse = {
       message: "",
@@ -159,63 +159,199 @@ export const userLogin = async (req: Request, res: Response) => {
     };
 
     const { email, password } = req.body;
-    const userData = await userModel.find({email:email});
-    
+    const userData = await userModel.find({ email: email });
+
     if (userData) {
-      const grantAccess: boolean = await compareHash(password, userData[0].password); 
+      const grantAccess: boolean = await compareHash(
+        password,
+        userData[0].password
+      );
       if (grantAccess) {
-        const jwtToken = jwt.sign({_id:userData[0]?._id,name:userData[0]?.firstName},secretKey,{expiresIn:"30d"})
-        
+        const jwtToken = jwt.sign(
+          { _id: userData[0]?._id, name: userData[0]?.firstName },
+          secretKey,
+          { expiresIn: "30d" }
+        );
+
         console.log("Access granted and token created");
-          
-          object = {
-            message: "Access granted",
-            status: 200,
-            error: "",
-            loggedIn: true,
-            userData: {
-              firstName: userData[0]?.firstName,
-              lastName: userData[0]?.lastName,
-              email: userData[0]?.email,
-            },
-            jwtToken
-          };
-          res.cookie('jwtToken', jwtToken, {
-            httpOnly: true, 
-            maxAge: 3600000, 
-          }).send(object);
-        } else {
-          {
-            object = {
-              message: "",
-              status: 500,
-              error: "password not matching",
-              loggedIn: false,
-              userData: {
-                firstName: undefined,
-                lastName: undefined,
-                email: undefined,
-              },
-            };
-            res.send(object);
-          }
-        }
-      } else {
+
         object = {
-          message: "",
-          status: 500,
-          error: "email not matching",
-          loggedIn: false,
+          message: "Access granted",
+          status: 200,
+          error: "",
+          loggedIn: true,
           userData: {
-            firstName: undefined,
-            lastName: undefined,
-            email: undefined,
+            firstName: userData[0]?.firstName,
+            lastName: userData[0]?.lastName,
+            email: userData[0]?.email,
           },
+          jwtToken,
         };
-        res.send(object);
+        res
+          .cookie("jwtToken", jwtToken, {
+            httpOnly: true,
+            maxAge: 3600000,
+          })
+          .send(object);
+      } else {
+        {
+          object = {
+            message: "",
+            status: 500,
+            error: "password not matching",
+            loggedIn: false,
+            userData: {
+              firstName: undefined,
+              lastName: undefined,
+              email: undefined,
+            },
+          };
+          res.send(object);
+        }
       }
-    
+    } else {
+      object = {
+        message: "",
+        status: 500,
+        error: "email not matching",
+        loggedIn: false,
+        userData: {
+          firstName: undefined,
+          lastName: undefined,
+          email: undefined,
+        },
+      };
+      res.send(object);
+    }
   } catch (error) {
     console.error(error);
   }
 };
+
+export const postForget = async (req: Request, res: Response) => {
+  try {
+    type Obj = {
+      message: string;
+      status: number;
+      error: string;
+      email?:string
+    };
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+      email:""
+    };
+    console.log(req.body);
+    
+    const { email } = req.body;
+    
+    const userData = await userModel.findOne({ email: email });
+    if (userData) {
+    
+      var mailOptions = {
+        from: "adventx.dev@gmail.com",
+        to: email,
+        subject: "OTP for Signup is: ",
+        html:
+          "<h3>OTP for Reset password is </h3>" +
+          "<h1 style='font-weight:bold;'>" +
+          OTP +
+          "</h1>", // html body
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+       console.log(OTP,"Sended Otp is");
+       
+        obj = {
+          message: "Success",
+          status: 200,
+          error:"",
+          email:userData.email
+        };
+        res.status(obj.status).send(obj);
+      
+      });
+    
+    } else {
+      obj = {
+        message: "",
+        status: 401,
+        error: "Email Not match",
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const postOtp=(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    console.log(req.body);
+    
+    const {enteredOtp}=req.body
+    console.log(enteredOtp);
+    if(enteredOtp === OTP){
+      console.log("Otp Success");
+      
+      obj={
+        message:"Otp matching",
+        status:200,
+        error:""
+      }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:401,
+        error:"Invalid otp"
+      }
+      res.status(obj.status).send(obj)
+    }
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const changePass=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const {checkEmail,password}:{checkEmail:string,password:string} = req.body;
+    const hashedPass = await hashPassword(password);
+    console.log(hashedPass);
+    
+    await userModel.updateOne({email:checkEmail},{$set:{password:hashedPass}}).then((data)=>{
+      obj={
+        message:"Password Changed",
+        status:200,
+        error:""
+      }
+      res.status(obj.status).send(obj)
+    })
+  } catch (error) {
+    console.error(error);
+  }
+}

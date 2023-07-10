@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongodb";
 import userModel from "../models/userModel";
 import communityModel  from "../models/communityModel";
-import mongoose from "mongoose"
+
 
 export const getCommunityUsers = async (req: Request, res: Response) => {
   try {

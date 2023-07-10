@@ -14,6 +14,7 @@ router.get("/communities",communities)
 router.get("/getCommunityUsers",getCommunityUsers)
 router.get("/getComUser",getComUser)
 
+
 // upload.single("formData")
 router.post("/createCommunity",createCommunity)
 

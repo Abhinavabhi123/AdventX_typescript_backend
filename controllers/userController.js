@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -189,12 +189,14 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                         lastName: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.lastName,
                         email: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.email,
                     },
-                    jwtToken
+                    jwtToken,
                 };
-                res.cookie('jwtToken', jwtToken, {
+                res
+                    .cookie("jwtToken", jwtToken, {
                     httpOnly: true,
                     maxAge: 3600000,
-                }).send(object);
+                })
+                    .send(object);
             }
             else {
                 {
@@ -233,3 +235,109 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.userLogin = userLogin;
+const postForget = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+            email: ""
+        };
+        console.log(req.body);
+        const { email } = req.body;
+        const userData = yield userModel_1.default.findOne({ email: email });
+        if (userData) {
+            var mailOptions = {
+                from: "adventx.dev@gmail.com",
+                to: email,
+                subject: "OTP for Signup is: ",
+                html: "<h3>OTP for Reset password is </h3>" +
+                    "<h1 style='font-weight:bold;'>" +
+                    OTP +
+                    "</h1>", // html body
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log(OTP, "Sended Otp is");
+                obj = {
+                    message: "Success",
+                    status: 200,
+                    error: "",
+                    email: userData.email
+                };
+                res.status(obj.status).send(obj);
+            });
+        }
+        else {
+            obj = {
+                message: "",
+                status: 401,
+                error: "Email Not match",
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.postForget = postForget;
+const postOtp = (req, res) => {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        const { enteredOtp } = req.body;
+        console.log(enteredOtp);
+        if (enteredOtp === OTP) {
+            console.log("Otp Success");
+            obj = {
+                message: "Otp matching",
+                status: 200,
+                error: ""
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 401,
+                error: "Invalid otp"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+};
+exports.postOtp = postOtp;
+const changePass = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { checkEmail, password } = req.body;
+        const hashedPass = yield hashPassword(password);
+        console.log(hashedPass);
+        yield userModel_1.default.updateOne({ email: checkEmail }, { $set: { password: hashedPass } }).then((data) => {
+            obj = {
+                message: "Password Changed",
+                status: 200,
+                error: ""
+            };
+            res.status(obj.status).send(obj);
+        });
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.changePass = changePass;
