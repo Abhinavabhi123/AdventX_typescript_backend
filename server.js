@@ -26,9 +26,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.upload = exports.fileFilter = exports.storage = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const multer_1 = __importDefault(require("multer"));
+const path_1 = __importDefault(require("path"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const db_1 = __importDefault(require("./db"));
@@ -41,8 +44,34 @@ app.use((0, cors_1.default)({
     methods: process.env.CORS_METHODS,
     credentials: true
 }));
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.json({ limit: '50mb' }));
+app.use(express_1.default.urlencoded({ limit: '50mb', extended: false }));
+app.use('/uploads', express_1.default.static('uploads'));
+app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
+exports.storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./uploads/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    }
+});
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === 'image/jpg') {
+        cb(null, true);
+    }
+    else {
+        cb(null, false);
+    }
+};
+exports.fileFilter = fileFilter;
+exports.upload = (0, multer_1.default)({
+    storage: exports.storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5,
+    },
+    fileFilter: exports.fileFilter,
+});
 app.use("/", userRoutes_1.default);
 app.use("/admin", adminRoutes_1.default);
 app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));

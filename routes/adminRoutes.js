@@ -8,6 +8,9 @@ router.post("/AdminLogin", admincontroller_1.postAdminLogin);
 router.get("/getAllUser", admincontroller_1.getAllUser);
 router.post("/blockUser", admincontroller_1.blockUser);
 router.get("/singleUser", admincontroller_1.singleUser);
+router.get("/communities", communityController_1.communities);
 router.get("/getCommunityUsers", communityController_1.getCommunityUsers);
 router.get("/getComUser", communityController_1.getComUser);
+// upload.single("formData")
+router.post("/createCommunity", communityController_1.createCommunity);
 exports.default = router;
