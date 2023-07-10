@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongodb_1 = require("mongodb");
 const mongoose_1 = require("mongoose");
 const userSchema = new mongoose_1.Schema({
     firstName: {
@@ -13,6 +14,7 @@ const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: true,
+        unique: true
     },
     mobile: {
         type: Number,
@@ -30,6 +32,12 @@ const userSchema = new mongoose_1.Schema({
         type: Date,
         required: false,
     },
+    community: [
+        {
+            communityId: mongodb_1.ObjectId,
+            _id: false
+        }
+    ],
     about: {
         type: String,
         required: false,

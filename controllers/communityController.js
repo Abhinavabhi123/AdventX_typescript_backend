@@ -82,7 +82,11 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
                 communityName: cName,
                 status: status,
                 members: members
-            }).save().then(() => {
+            }).save().then((data) => {
+                console.log(data);
+                mData.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+                    yield userModel_1.default.updateOne({ _id: item._id }, { $push: { community: { communityId: data._id } } });
+                }));
                 obj = {
                     message: "Community Created Successfully",
                     status: 200,

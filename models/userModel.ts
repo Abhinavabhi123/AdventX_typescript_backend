@@ -10,6 +10,10 @@ interface User extends Document {
   status: boolean;
   date_of_birth?: Date;
   about: string;
+  community:[{
+    communityId:ObjectId;
+     _id:boolean;
+  }]
   address: { [key: string]: number | string };
   primeMember: boolean;
   height?: number;
@@ -32,6 +36,7 @@ const userSchema = new Schema<User>({
   email: {
     type: String,
     required: true,
+    unique:true
   },
   mobile: {
     type: Number,
@@ -49,6 +54,12 @@ const userSchema = new Schema<User>({
     type: Date,
     required: false,
   },
+  community:[
+    {
+      communityId:ObjectId,
+       _id: false 
+    }
+  ],
   about: {
     type: String,
     required: false,

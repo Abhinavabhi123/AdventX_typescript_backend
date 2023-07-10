@@ -68,12 +68,7 @@ export const createCommunity=async(req:Request,res:Response)=>{
     }else{
       console.log(cMembers);
       const mData =cMembers;
-      // type Member=[
-      //   {
-      //     userId:string;
-      //     status:boolean
-      //   }
-      // ]
+      
       interface Value{
         userId: ObjectId;
         status: boolean;
@@ -100,7 +95,13 @@ export const createCommunity=async(req:Request,res:Response)=>{
         status:status,
         members:members
         
-      }).save().then(()=>{
+      }).save().then((data)=>{
+        console.log(data);
+
+        mData.map(async(item:Item)=>{
+          await userModel.updateOne({_id:item._id},{$push:{community:{communityId:data._id}}})
+        })
+        
         obj={
           message:"Community Created Successfully",
           status:200,
