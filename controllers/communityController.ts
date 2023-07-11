@@ -55,10 +55,9 @@ export const createCommunity=async(req:Request,res:Response)=>{
       status:0,
       error:""
     }
-    console.log("ethi");
-    
-    console.log(req.body);
+    console.log(req.body,"Datrtttt");
     const {cName,status,cMembers} = req.body
+
     const CommData = await communityModel.findOne({communityName:cName})
    console.log(CommData,"Dataaa");
    

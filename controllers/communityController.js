@@ -57,8 +57,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             status: 0,
             error: ""
         };
-        console.log("ethi");
-        console.log(req.body);
+        console.log(req.body, "Datrtttt");
         const { cName, status, cMembers } = req.body;
         const CommData = yield communityModel_1.default.findOne({ communityName: cName });
         console.log(CommData, "Dataaa");
