@@ -191,12 +191,13 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                     jwtToken,
                 };
-                res
-                    .cookie("jwtToken", jwtToken, {
-                    httpOnly: true,
-                    maxAge: 3600000,
-                })
+                res.status(object.status)
                     .send(object);
+                // .cookie("jwttoken", jwtToken, {
+                //   expires: new Date(Date.now() + 3600 * 1000),
+                //   httpOnly: true,
+                //   sameSite: "strict",
+                // })
             }
             else {
                 {
@@ -241,7 +242,7 @@ const postForget = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             message: "",
             status: 0,
             error: "",
-            email: ""
+            email: "",
         };
         console.log(req.body);
         const { email } = req.body;
@@ -265,7 +266,7 @@ const postForget = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     message: "Success",
                     status: 200,
                     error: "",
-                    email: userData.email
+                    email: userData.email,
                 };
                 res.status(obj.status).send(obj);
             });
@@ -289,7 +290,7 @@ const postOtp = (req, res) => {
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         console.log(req.body);
         const { enteredOtp } = req.body;
@@ -299,7 +300,7 @@ const postOtp = (req, res) => {
             obj = {
                 message: "Otp matching",
                 status: 200,
-                error: ""
+                error: "",
             };
             res.status(obj.status).send(obj);
         }
@@ -307,7 +308,7 @@ const postOtp = (req, res) => {
             obj = {
                 message: "",
                 status: 401,
-                error: "Invalid otp"
+                error: "Invalid otp",
             };
             res.status(obj.status).send(obj);
         }
@@ -322,16 +323,18 @@ const changePass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         const { checkEmail, password } = req.body;
         const hashedPass = yield hashPassword(password);
         console.log(hashedPass);
-        yield userModel_1.default.updateOne({ email: checkEmail }, { $set: { password: hashedPass } }).then((data) => {
+        yield userModel_1.default
+            .updateOne({ email: checkEmail }, { $set: { password: hashedPass } })
+            .then((data) => {
             obj = {
                 message: "Password Changed",
                 status: 200,
-                error: ""
+                error: "",
             };
             res.status(obj.status).send(obj);
         });

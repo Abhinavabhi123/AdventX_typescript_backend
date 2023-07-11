@@ -31,6 +31,7 @@ const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const path_1 = __importDefault(require("path"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const db_1 = __importDefault(require("./db"));
@@ -43,10 +44,11 @@ app.use((0, cors_1.default)({
     methods: process.env.CORS_METHODS,
     credentials: true
 }));
-app.use(express_1.default.json({ limit: '50mb' }));
-app.use(express_1.default.urlencoded({ limit: '50mb', extended: false }));
+app.use(express_1.default.json({ limit: '100mb' }));
+app.use(express_1.default.urlencoded({ limit: '100mb', extended: false }));
 app.use('/uploads', express_1.default.static('uploads'));
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
+app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use("/", userRoutes_1.default);
 app.use("/admin", adminRoutes_1.default);

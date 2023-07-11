@@ -65,14 +65,14 @@ export const postAdminLogin = async (req: Request, res: Response) => {
         status: 200,
         token: token,
       };
-      console.log(process.env.cookieDomain);
-
+      
       // .cookie("AdminJwt", token, {
       //   httpOnly: true,
       //   domain: process.env.cookieDomain,
       //   path: "/",
       //   maxAge: 3600000,
       // })
+
       res
         .status(object.status)
         .cookie(
@@ -80,9 +80,11 @@ export const postAdminLogin = async (req: Request, res: Response) => {
           token,{
             expires: new Date(Date.now() + 3600 * 1000),
             httpOnly: true,
-            sameSite: "strict",}
+            sameSite: "strict",
+            path:'/'
+        }
         )
-        .send(object);
+        .send(object)
     }
   } catch (error) {
     console.error(error);
@@ -120,6 +122,7 @@ export const blockUser = async (req: Request, res: Response) => {
       }
       await userData.save();
       res.send(userData);
+
     } else {
       console.log("User not Found");
     }

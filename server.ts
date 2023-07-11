@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import cors from "cors"
 import morgan from "morgan"
 import path from "path";
+import cookieParser from "cookie-parser"
 
 import userRoute from "./routes/userRoutes"
 import adminRoute from "./routes/adminRoutes"
@@ -21,11 +22,11 @@ app.use(cors({
     credentials:true
 }))
 
-app.use(express.json({limit:'50mb'}));
-app.use(express.urlencoded({limit:'50mb', extended: false }));
+app.use(express.json({limit:'100mb'}));
+app.use(express.urlencoded({limit:'100mb', extended: false }));
 app.use('/uploads',express.static('uploads'))
 app.use(express.static(path.join(__dirname,'public')))
-
+app.use(cookieParser())
 
 app.use(morgan("dev"))
 

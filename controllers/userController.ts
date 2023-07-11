@@ -187,12 +187,15 @@ export const userLogin = async (req: Request, res: Response) => {
           },
           jwtToken,
         };
-        res
-          .cookie("jwtToken", jwtToken, {
-            httpOnly: true,
-            maxAge: 3600000,
-          })
-          .send(object);
+        res.status(object.status)
+        .send(object);
+
+        // .cookie("jwttoken", jwtToken, {
+        //   expires: new Date(Date.now() + 3600 * 1000),
+        //   httpOnly: true,
+        //   sameSite: "strict",
+        // })
+        
       } else {
         {
           object = {
@@ -234,21 +237,20 @@ export const postForget = async (req: Request, res: Response) => {
       message: string;
       status: number;
       error: string;
-      email?:string
+      email?: string;
     };
     let obj: Obj = {
       message: "",
       status: 0,
       error: "",
-      email:""
+      email: "",
     };
     console.log(req.body);
-    
+
     const { email } = req.body;
-    
+
     const userData = await userModel.findOne({ email: email });
     if (userData) {
-    
       var mailOptions = {
         from: "adventx.dev@gmail.com",
         to: email,
@@ -263,18 +265,16 @@ export const postForget = async (req: Request, res: Response) => {
         if (error) {
           return console.log(error);
         }
-       console.log(OTP,"Sended Otp is");
-       
+        console.log(OTP, "Sended Otp is");
+
         obj = {
           message: "Success",
           status: 200,
-          error:"",
-          email:userData.email
+          error: "",
+          email: userData.email,
         };
         res.status(obj.status).send(obj);
-      
       });
-    
     } else {
       obj = {
         message: "",
@@ -288,70 +288,72 @@ export const postForget = async (req: Request, res: Response) => {
   }
 };
 
-export const postOtp=(req:Request,res:Response)=>{
+export const postOtp = (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
     console.log(req.body);
-    
-    const {enteredOtp}=req.body
+
+    const { enteredOtp } = req.body;
     console.log(enteredOtp);
-    if(enteredOtp === OTP){
+    if (enteredOtp === OTP) {
       console.log("Otp Success");
-      
-      obj={
-        message:"Otp matching",
-        status:200,
-        error:""
-      }
-      res.status(obj.status).send(obj)
-    }else{
-      obj={
-        message:"",
-        status:401,
-        error:"Invalid otp"
-      }
-      res.status(obj.status).send(obj)
+
+      obj = {
+        message: "Otp matching",
+        status: 200,
+        error: "",
+      };
+      res.status(obj.status).send(obj);
+    } else {
+      obj = {
+        message: "",
+        status: 401,
+        error: "Invalid otp",
+      };
+      res.status(obj.status).send(obj);
     }
-    
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export const changePass=async(req:Request,res:Response)=>{
+export const changePass = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-    const {checkEmail,password}:{checkEmail:string,password:string} = req.body;
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { checkEmail, password }: { checkEmail: string; password: string } =
+      req.body;
     const hashedPass = await hashPassword(password);
     console.log(hashedPass);
-    
-    await userModel.updateOne({email:checkEmail},{$set:{password:hashedPass}}).then((data)=>{
-      obj={
-        message:"Password Changed",
-        status:200,
-        error:""
-      }
-      res.status(obj.status).send(obj)
-    })
+
+    await userModel
+      .updateOne({ email: checkEmail }, { $set: { password: hashedPass } })
+      .then((data) => {
+        obj = {
+          message: "Password Changed",
+          status: 200,
+          error: "",
+        };
+        res.status(obj.status).send(obj);
+      });
   } catch (error) {
     console.error(error);
   }
-}
+};

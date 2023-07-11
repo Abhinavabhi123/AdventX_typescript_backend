@@ -86,7 +86,6 @@ const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 status: 200,
                 token: token,
             };
-            console.log(process.env.cookieDomain);
             // .cookie("AdminJwt", token, {
             //   httpOnly: true,
             //   domain: process.env.cookieDomain,
@@ -99,6 +98,7 @@ const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 expires: new Date(Date.now() + 3600 * 1000),
                 httpOnly: true,
                 sameSite: "strict",
+                path: '/'
             })
                 .send(object);
         }
