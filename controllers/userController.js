@@ -163,7 +163,7 @@ const postUserSignup = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.postUserSignup = postUserSignup;
 const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g;
     try {
         let object = {
             message: "",
@@ -177,7 +177,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (userData) {
             const grantAccess = yield compareHash(password, userData[0].password);
             if (grantAccess) {
-                const jwtToken = jsonwebtoken_1.default.sign({ _id: (_a = userData[0]) === null || _a === void 0 ? void 0 : _a._id, name: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b.firstName }, secretKey, { expiresIn: "30d" });
+                const jwtToken = jsonwebtoken_1.default.sign({ _id: (_a = userData[0]) === null || _a === void 0 ? void 0 : _a._id, name: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b.firstName, is_prime: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.primeMember, status: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.status, email: userData[0].email }, secretKey, { expiresIn: "30d" });
                 console.log("Access granted and token created");
                 object = {
                     message: "Access granted",
@@ -185,19 +185,19 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     error: "",
                     loggedIn: true,
                     userData: {
-                        firstName: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.firstName,
-                        lastName: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.lastName,
-                        email: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.email,
+                        firstName: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.firstName,
+                        lastName: (_f = userData[0]) === null || _f === void 0 ? void 0 : _f.lastName,
+                        email: (_g = userData[0]) === null || _g === void 0 ? void 0 : _g.email,
                     },
                     jwtToken,
                 };
                 res.status(object.status)
+                    .cookie("user", jwtToken, {
+                    expires: new Date(Date.now() + 3600 * 1000),
+                    httpOnly: true,
+                    sameSite: "strict",
+                })
                     .send(object);
-                // .cookie("jwttoken", jwtToken, {
-                //   expires: new Date(Date.now() + 3600 * 1000),
-                //   httpOnly: true,
-                //   sameSite: "strict",
-                // })
             }
             else {
                 {

@@ -6,6 +6,8 @@ const communitySchema = new mongoose_1.Schema({
     communityName: {
         type: String,
         required: true,
+        unique: true,
+        lowercase: true
     },
     members: [
         {

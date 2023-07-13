@@ -27,6 +27,8 @@ const communitySchema = new Schema<Community>(
     communityName: {
       type: String,
       required: true,
+      unique:true,
+      lowercase: true
     },
     members: [
       {

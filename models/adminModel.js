@@ -4,7 +4,9 @@ const mongoose_1 = require("mongoose");
 const adminSchema = new mongoose_1.Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true
     },
     password: {
         type: String,

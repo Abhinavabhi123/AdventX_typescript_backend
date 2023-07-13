@@ -168,7 +168,7 @@ export const userLogin = async (req: Request, res: Response) => {
       );
       if (grantAccess) {
         const jwtToken = jwt.sign(
-          { _id: userData[0]?._id, name: userData[0]?.firstName },
+          { _id: userData[0]?._id, name: userData[0]?.firstName,is_prime:userData[0]?.primeMember,status:userData[0]?.status,email:userData[0].email},
           secretKey,
           { expiresIn: "30d" }
         );
@@ -188,13 +188,13 @@ export const userLogin = async (req: Request, res: Response) => {
           jwtToken,
         };
         res.status(object.status)
+        .cookie("user", jwtToken, {
+          expires: new Date(Date.now() + 3600 * 1000),
+          httpOnly: true,
+          sameSite: "strict",
+        })
         .send(object);
 
-        // .cookie("jwttoken", jwtToken, {
-        //   expires: new Date(Date.now() + 3600 * 1000),
-        //   httpOnly: true,
-        //   sameSite: "strict",
-        // })
         
       } else {
         {
