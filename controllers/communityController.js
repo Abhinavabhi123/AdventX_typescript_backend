@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
-const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
 const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,6 +58,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         };
         console.log(req.body, "Datrtttt");
         const { cName, status, cMembers } = req.body;
+        console.log(req.file, "file");
         const CommData = yield communityModel_1.default.findOne({ communityName: cName });
         console.log(CommData, "Dataaa");
         if (CommData) {
@@ -68,7 +68,20 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             console.log(cMembers);
             const mData = cMembers;
             let members = [];
-            console.log(mongodb_1.ObjectId);
+            if (!req.body.cName || !req.body.status || !req.body.cMembers || !req.file || !req.file.path) {
+                console.error("error");
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `Resource not found,Please try again later`
+                };
+                res.status(obj.status).send(obj);
+                return;
+            }
+            let fileName = "";
+            if (req.file) {
+                fileName = req.file.filename;
+            }
             mData.map((item) => {
                 const value = {
                     userId: item._id,
@@ -80,7 +93,8 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             const data = new communityModel_1.default({
                 communityName: cName,
                 status: status,
-                members: members
+                members: members,
+                logo: fileName
             }).save().then((data) => {
                 console.log(data);
                 mData.map((item) => __awaiter(void 0, void 0, void 0, function* () {

@@ -57,6 +57,8 @@ export const createCommunity=async(req:Request,res:Response)=>{
     }
     console.log(req.body,"Datrtttt");
     const {cName,status,cMembers} = req.body
+    console.log(req.file,"file");
+    
 
     const CommData = await communityModel.findOne({communityName:cName})
    console.log(CommData,"Dataaa");
@@ -77,7 +79,22 @@ export const createCommunity=async(req:Request,res:Response)=>{
       interface Item{
         _id:ObjectId;
       }
-      console.log(ObjectId);
+    
+      if(!req.body.cName ||!req.body.status ||!req.body.cMembers || !req.file || !req.file.path){
+        console.error("error");
+        obj={
+          message:"",
+          status:404,
+          error:`Resource not found,Please try again later`
+        }
+        res.status(obj.status).send(obj)
+      return
+      }
+      let fileName=""
+
+      if(req.file){
+        fileName =req.file.filename 
+      }
       
       mData.map((item:Item)=>{
         const value={
@@ -88,12 +105,12 @@ export const createCommunity=async(req:Request,res:Response)=>{
       })
       console.log(members,"userData");
       
-      
+     
       const data =new communityModel({
         communityName:cName,
         status:status,
-        members:members
-        
+        members:members,
+        logo:fileName
       }).save().then((data)=>{
         console.log(data);
 

@@ -16,7 +16,7 @@ exports.storage = multer_1.default.diskStorage({
     }
 });
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === 'image/jpg') {
+    if (file.mimetype === "image/jpeg" || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, true);
     }
     else {
@@ -40,7 +40,5 @@ router.get("/singleUser", admincontroller_1.singleUser);
 router.get("/communities", communityController_1.communities);
 router.get("/getCommunityUsers", communityController_1.getCommunityUsers);
 router.get("/getComUser", communityController_1.getComUser);
-console.log("ivide nd");
-// ,upload.single("images")
-router.post("/createCommunity", communityController_1.createCommunity);
+router.post("/createCommunity", exports.upload.single("image"), communityController_1.createCommunity);
 exports.default = router;

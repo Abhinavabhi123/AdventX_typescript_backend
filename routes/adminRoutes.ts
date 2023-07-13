@@ -13,7 +13,7 @@ export const storage =multer.diskStorage({
 
 
 export const fileFilter = (req: Request, file:Express.Multer.File, cb: FileFilterCallback)=>{
-    if(file.mimetype ==="image/jpeg" || file.mimetype === 'image/jpg'){
+    if(file.mimetype ==="image/jpeg" || file.mimetype === 'image/jpg'|| file.mimetype === 'image/png'){
         cb(null,true)
     }else{
         cb(null,false)
@@ -39,8 +39,6 @@ router.get("/getCommunityUsers",getCommunityUsers)
 router.get("/getComUser",getComUser)
 
 
-console.log("ivide nd");
-// ,upload.single("images")
-router.post("/createCommunity",createCommunity)
+router.post("/createCommunity",upload.single("image"),createCommunity)
 
 export default router
