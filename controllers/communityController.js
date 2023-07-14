@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
 const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -148,3 +148,92 @@ const communities = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.communities = communities;
+const getCommunityDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        const id = req.params.id;
+        const commData = yield communityModel_1.default.findOne({ _id: id })
+            .populate({
+            path: 'members.userId',
+            model: 'User'
+        });
+        if (commData) {
+            // const data = commData?.members
+            // console.log(data)
+            // // let hello = data.populate({path:userId,model:"User"})
+            // const array:string[]=[]
+            // data.map((item)=>{
+            //   console.log(item?.userId);
+            //   const hello = item.populate('User')
+            //   // array.push(item?.userId)
+            // })
+            obj = {
+                message: "Data fetched Successfully",
+                status: 200,
+                error: "",
+                commData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            console.log("Data not fetched");
+            obj = {
+                message: "",
+                status: 404,
+                error: "Data Not fetched"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getCommunityDetails = getCommunityDetails;
+const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        const { id, userId } = req.body;
+        const community = yield communityModel_1.default.findOne({ _id: id });
+        if (community) {
+            const members = community.members;
+            const user = members.map((member) => {
+                if (member.userId === userId) {
+                    member.access = !member.access;
+                }
+                return member;
+            });
+            community.members = user;
+            ;
+            yield community.save().then(() => {
+                obj = {
+                    message: "Status changed",
+                    status: 201,
+                    error: ""
+                };
+                res.status(obj.status).send(obj);
+            });
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Data not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.changeComStatus = changeComStatus;

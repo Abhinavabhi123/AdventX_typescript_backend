@@ -28,7 +28,6 @@ const communitySchema = new Schema<Community>(
       type: String,
       required: true,
       unique:true,
-      lowercase: true
     },
     members: [
       {
@@ -41,6 +40,7 @@ const communitySchema = new Schema<Community>(
           type: Boolean,
           default: true,
         },
+        _id:false
       },
     ],
     chat: [

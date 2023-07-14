@@ -35,13 +35,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
+const stripe_1 = __importDefault(require("stripe"));
 dotenv.config();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const secret_strip = process.env.STRIPE_SECRET_KEY;
+const stripes = new stripe_1.default(secret_strip, { apiVersion: '2022-11-15' });
 const secretKey = process.env.USER_JWT_SECRET || "";
 const transporter = nodemailer_1.default.createTransport({
     host: "smtp.gmail.com",
@@ -344,3 +347,23 @@ const changePass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.changePass = changePass;
+const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id, amount } = req.body;
+        const paymentIntent = yield stripes.paymentIntents.create({
+            amount,
+            currency: "inr",
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        });
+        console.log("success payment");
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addPayment = addPayment;

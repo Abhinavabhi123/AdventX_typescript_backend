@@ -9,4 +9,5 @@ router.post("/sendOpt", userController_1.sendOpt);
 router.post("/postForget", userController_1.postForget);
 router.post("/postOtp", userController_1.postOtp);
 router.post("/changePass", userController_1.changePass);
+router.post("/addPayment", userController_1.addPayment);
 exports.default = router;

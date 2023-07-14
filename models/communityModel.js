@@ -7,7 +7,6 @@ const communitySchema = new mongoose_1.Schema({
         type: String,
         required: true,
         unique: true,
-        lowercase: true
     },
     members: [
         {
@@ -20,6 +19,7 @@ const communitySchema = new mongoose_1.Schema({
                 type: Boolean,
                 default: true,
             },
+            _id: false
         },
     ],
     chat: [

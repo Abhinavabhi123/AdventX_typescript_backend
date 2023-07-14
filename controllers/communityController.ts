@@ -168,3 +168,104 @@ export const communities=async(req:Request,res:Response)=>{
       console.error(error);
     }
 }
+
+export const getCommunityDetails=async(req:Request,res:Response)=>{
+  try {
+      interface Obj{
+        message:string;
+        status:number;
+        error:string;
+        commData?:object;
+      }
+      let obj:Obj={
+        message:"",
+        status:0,
+        error:"",
+      }
+      const id:string = req.params.id
+      const commData = await communityModel.findOne({_id:id})
+      .populate({
+        path: 'members.userId',
+        model: 'User'
+      });
+      if(commData){
+        // const data = commData?.members
+        // console.log(data)
+        // // let hello = data.populate({path:userId,model:"User"})
+        // const array:string[]=[]
+        
+        // data.map((item)=>{
+        //   console.log(item?.userId);
+        //   const hello = item.populate('User')
+        //   // array.push(item?.userId)
+        // })
+        
+        obj={
+          message:"Data fetched Successfully",
+          status:200,
+          error:"",
+          commData
+        }
+        res.status(obj.status).send(obj)
+        
+      }else{
+        console.log("Data not fetched");
+        obj={
+          message:"",
+          status:404,
+          error:"Data Not fetched"
+        }
+        res.status(obj.status).send(obj)
+      }
+      
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const changeComStatus=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    console.log(req.body);
+    const {id,userId}:{id:string;userId:string}=req.body;
+    const community = await communityModel.findOne({_id:id})
+    if(community){
+      const members = community.members
+     const user = members.map((member)=>{
+      if(member.userId === userId){
+        member.access  =!member.access
+      }
+      return member
+     })
+     community.members=user as [{ userId: string; access: boolean; }];;
+     await community.save().then(()=>{
+      obj={
+        message:"Status changed",
+        status:201,
+        error:""
+      }
+      res.status(obj.status).send(obj)
+     })
+      
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:"Data not found"
+      }
+      res.status(obj.status).send(obj)
+    }
+    
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

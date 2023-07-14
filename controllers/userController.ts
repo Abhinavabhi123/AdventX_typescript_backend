@@ -2,11 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import nodemailer from "nodemailer";
 import * as dotenv from "dotenv";
+import stripe  from "stripe"
 dotenv.config();
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
 
+const secret_strip =<string> process.env.STRIPE_SECRET_KEY;
+
+
+const stripes = new stripe(secret_strip,{apiVersion: '2022-11-15'});
 const secretKey: string = process.env.USER_JWT_SECRET || "";
 
 const transporter = nodemailer.createTransport({
@@ -357,3 +362,24 @@ export const changePass = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const addPayment=async(req:Request,res:Response)=>{
+  try {
+    const { id,amount } = req.body;
+
+  const paymentIntent = await stripes.paymentIntents.create({
+    amount,
+    currency: "inr",
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+  console.log("success payment");
+  
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+  } catch (error) {
+    console.error(error);
+  }
+}
