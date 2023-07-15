@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
 const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,7 +54,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         console.log(req.body, "Datrtttt");
         const { cName, status, cMembers } = req.body;
@@ -68,12 +68,16 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             console.log(cMembers);
             const mData = cMembers;
             let members = [];
-            if (!req.body.cName || !req.body.status || !req.body.cMembers || !req.file || !req.file.path) {
+            if (!req.body.cName ||
+                !req.body.status ||
+                !req.body.cMembers ||
+                !req.file ||
+                !req.file.path) {
                 console.error("error");
                 obj = {
                     message: "",
                     status: 404,
-                    error: `Resource not found,Please try again later`
+                    error: `Resource not found,Please try again later`,
                 };
                 res.status(obj.status).send(obj);
                 return;
@@ -85,7 +89,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             mData.map((item) => {
                 const value = {
                     userId: item._id,
-                    status: true
+                    status: true,
                 };
                 members.push(value);
             });
@@ -94,8 +98,10 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
                 communityName: cName,
                 status: status,
                 members: members,
-                logo: fileName
-            }).save().then((data) => {
+                logo: fileName,
+            })
+                .save()
+                .then((data) => {
                 console.log(data);
                 mData.map((item) => __awaiter(void 0, void 0, void 0, function* () {
                     yield userModel_1.default.updateOne({ _id: item._id }, { $push: { community: { communityId: data._id } } });
@@ -103,7 +109,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
                 obj = {
                     message: "Community Created Successfully",
                     status: 200,
-                    error: ''
+                    error: "",
                 };
                 res.status(obj.status).send(obj);
             });
@@ -121,24 +127,24 @@ const communities = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             message: "",
             status: 0,
             error: "",
-            community: {}
+            community: {},
         };
         const commData = yield communityModel_1.default.find();
         if (commData) {
             obj = {
-                message: 'Communities Fetched',
+                message: "Communities Fetched",
                 status: 200,
-                error: '',
-                community: commData
+                error: "",
+                community: commData,
             };
             res.status(obj.status).send(obj);
         }
         else {
             obj = {
-                message: 'No Community founded',
+                message: "No Community founded",
                 status: 200,
-                error: '',
-                community: commData
+                error: "",
+                community: commData,
             };
             res.status(obj.status).send(obj);
         }
@@ -156,10 +162,9 @@ const getCommunityDetails = (req, res) => __awaiter(void 0, void 0, void 0, func
             error: "",
         };
         const id = req.params.id;
-        const commData = yield communityModel_1.default.findOne({ _id: id })
-            .populate({
-            path: 'members.userId',
-            model: 'User'
+        const commData = yield communityModel_1.default.findOne({ _id: id }).populate({
+            path: "members.userId",
+            model: "User",
         });
         if (commData) {
             // const data = commData?.members
@@ -175,7 +180,7 @@ const getCommunityDetails = (req, res) => __awaiter(void 0, void 0, void 0, func
                 message: "Data fetched Successfully",
                 status: 200,
                 error: "",
-                commData
+                commData,
             };
             res.status(obj.status).send(obj);
         }
@@ -184,7 +189,7 @@ const getCommunityDetails = (req, res) => __awaiter(void 0, void 0, void 0, func
             obj = {
                 message: "",
                 status: 404,
-                error: "Data Not fetched"
+                error: "Data Not fetched",
             };
             res.status(obj.status).send(obj);
         }
@@ -199,7 +204,7 @@ const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         console.log(req.body);
         const { id, userId } = req.body;
@@ -213,12 +218,11 @@ const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function
                 return member;
             });
             community.members = user;
-            ;
             yield community.save().then(() => {
                 obj = {
                     message: "Status changed",
                     status: 201,
-                    error: ""
+                    error: "",
                 };
                 res.status(obj.status).send(obj);
             });
@@ -227,7 +231,7 @@ const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function
             obj = {
                 message: "",
                 status: 404,
-                error: "Data not found"
+                error: "Data not found",
             };
             res.status(obj.status).send(obj);
         }
@@ -237,3 +241,44 @@ const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.changeComStatus = changeComStatus;
+const addUserECommunity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const commId = req.query.id;
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const userData = yield userModel_1.default.find({ $and: [{ status: true }, { primeMember: true }, { community: { $nin: { communityId: commId } } }] }, { _id: 1, firstName: 1, lastName: 1, community: 1 });
+        if (userData) {
+            obj = {
+                message: "Data fetched Successfully",
+                status: 200,
+                error: '',
+                userData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: 'Data not found',
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addUserECommunity = addUserECommunity;
+const changeCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.body);
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.changeCommunity = changeCommunity;

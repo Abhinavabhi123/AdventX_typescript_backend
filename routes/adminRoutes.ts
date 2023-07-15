@@ -28,7 +28,7 @@ export const upload = multer({
   fileFilter: fileFilter,
 });
 import {postAdminLogin,getAllUser,blockUser,singleUser} from "../controllers/admincontroller"
-import {getCommunityUsers,getComUser,createCommunity,communities,getCommunityDetails,changeComStatus} from "../controllers/communityController"
+import {getCommunityUsers,getComUser,createCommunity,communities,getCommunityDetails,changeComStatus,addUserECommunity,changeCommunity} from "../controllers/communityController"
 
 router.post("/AdminLogin",postAdminLogin)
 router.get("/getAllUser",getAllUser)
@@ -39,6 +39,8 @@ router.get("/getCommunityUsers",getCommunityUsers)
 router.get("/getComUser",getComUser)
 router.get("/getCommunityDetails/:id",getCommunityDetails)
 router.post("/changeComStatus",changeComStatus)
+router.get("/addUserECommunity",addUserECommunity)
+router.post("/changeCommunity",changeCommunity)
 
 router.post("/createCommunity",upload.single("image"),createCommunity)
 

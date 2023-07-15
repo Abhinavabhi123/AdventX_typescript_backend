@@ -42,5 +42,7 @@ router.get("/getCommunityUsers", communityController_1.getCommunityUsers);
 router.get("/getComUser", communityController_1.getComUser);
 router.get("/getCommunityDetails/:id", communityController_1.getCommunityDetails);
 router.post("/changeComStatus", communityController_1.changeComStatus);
+router.get("/addUserECommunity", communityController_1.addUserECommunity);
+router.post("/changeCommunity", communityController_1.changeCommunity);
 router.post("/createCommunity", exports.upload.single("image"), communityController_1.createCommunity);
 exports.default = router;
