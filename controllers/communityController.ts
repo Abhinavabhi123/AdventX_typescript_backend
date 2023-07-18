@@ -278,49 +278,164 @@ export const addUserECommunity = async (req: Request, res: Response) => {
       lastName: string;
       community: string[];
     }
-    interface Obj{
-      message:string;
-      status:number;
-      error:string;
-      userData?:UserData | any
-      
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      userData?: UserData | any;
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+
+    const userData = await userModel.find(
+      {
+        $and: [
+          { status: true },
+          { primeMember: true },
+          { community: { $nin: { communityId: commId } } },
+        ],
+      },
+      { _id: 1, firstName: 1, lastName: 1, community: 1 }
+    );
+    if (userData) {
+      obj = {
+        message: "Data fetched Successfully",
+        status: 200,
+        error: "",
+        userData,
+      };
+      res.status(obj.status).send(obj);
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "Data not found",
+      };
+      res.status(obj.status).send(obj);
     }
-
-      const userData = await userModel.find(
-        { $and: [{ status: true }, { primeMember: true } ,{ community: { $nin:{communityId:commId} }}] },
-        { _id: 1, firstName: 1, lastName: 1, community: 1 }
-      )
-      if(userData){
-        obj={
-          message:"Data fetched Successfully",
-          status:200,
-          error:'',
-          userData
-        }
-        res.status(obj.status).send(obj)
-      }else{
-        obj={
-          message:"",
-          status:404,
-          error:'Data not found',
-        }
-        res.status(obj.status).send(obj)
-      }
-
-   
   } catch (error) {
     console.error(error);
   }
 };
 
-export const changeCommunity=async(req:Request,res:Response)=>{
+export const changeCommunity = async (req: Request, res: Response) => {
   try {
+    interface Obj {
+      message: String;
+      status: Number;
+      error: String;
+    }
+    const id = req.params.id;
+    console.log(id);
+
+    const { selectedOption, cMembers, inputValue } = req.body;
     console.log(req.body);
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    if (
+      selectedOption === "" ||
+      selectedOption === "select" ||
+      inputValue <= 0
+    ) {
+      obj = {
+        message: "",
+        status: 204  ,
+        error: "something went wrong, try again",
+      };
+      res.status(204).send(obj);
+    } else {
+      if (cMembers.length > 0) {
+        interface Item {
+          _id: string;
+        }
+        cMembers.map(async (item: Item) => {
+          console.log(item);
+
+          const obj = {
+            userId: item._id,
+            access: true,
+          };
+          await communityModel.updateOne(
+            { _id: id },
+            {
+              $set: { communityName: inputValue, status: selectedOption },
+              $push: { members: obj },
+            }
+          );
+          const CommId = new ObjectId(id);
+          await userModel.updateOne(
+            { _id: item._id },
+            { $push: { community: { communityId: CommId } } }
+          );
+        });
+      } else {
+        const data = await communityModel.updateOne(
+          { _id: id },
+          { $set: { communityName: inputValue, status: selectedOption } }
+        );
+      }
+      obj = {
+        message: "Community Updated successfully ",
+        status: 200,
+        error: "something went wrong, try again",
+      };
+      res.status(200).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const deleteCommunity=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    const id:string = req.params.id;
+    console.log(id);
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const data = await communityModel.findOne({_id:id})
+    if(data){
+      console.log(data?.members);
+      const members = data?.members;
+      members.map(async(item)=>{
+        console.log(item?.userId);
+        const userId = item?.userId
+        await userModel.updateOne({_id:userId},{$pull:{community:{communityId:id}}})
+      });
+      (async()=>{
+        await communityModel.deleteOne({_id:id});
+      })().then(()=>{
+        obj={
+          message:"Deleted successfully",
+          status:200,
+          error:""
+        }
+        res.status(obj.status).send(obj)
+      })
+
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:"content not found"
+      }
+      res.status(obj.status).send(obj)
+    }
+      
+    
+    console.log("ethi");
     
   } catch (error) {
     console.error(error);

@@ -355,9 +355,11 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             currency: "inr",
             automatic_payment_methods: {
                 enabled: true,
-            },
+            }, metadata: {
+                userId: id
+            }
         });
-        console.log("success payment");
+        console.log(paymentIntent, "success payment");
         res.send({
             clientSecret: paymentIntent.client_secret,
         });

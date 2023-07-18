@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
 const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -247,15 +248,21 @@ const addUserECommunity = (req, res) => __awaiter(void 0, void 0, void 0, functi
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
-        const userData = yield userModel_1.default.find({ $and: [{ status: true }, { primeMember: true }, { community: { $nin: { communityId: commId } } }] }, { _id: 1, firstName: 1, lastName: 1, community: 1 });
+        const userData = yield userModel_1.default.find({
+            $and: [
+                { status: true },
+                { primeMember: true },
+                { community: { $nin: { communityId: commId } } },
+            ],
+        }, { _id: 1, firstName: 1, lastName: 1, community: 1 });
         if (userData) {
             obj = {
                 message: "Data fetched Successfully",
                 status: 200,
-                error: '',
-                userData
+                error: "",
+                userData,
             };
             res.status(obj.status).send(obj);
         }
@@ -263,7 +270,7 @@ const addUserECommunity = (req, res) => __awaiter(void 0, void 0, void 0, functi
             obj = {
                 message: "",
                 status: 404,
-                error: 'Data not found',
+                error: "Data not found",
             };
             res.status(obj.status).send(obj);
         }
@@ -275,10 +282,98 @@ const addUserECommunity = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.addUserECommunity = addUserECommunity;
 const changeCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const id = req.params.id;
+        console.log(id);
+        const { selectedOption, cMembers, inputValue } = req.body;
         console.log(req.body);
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        if (selectedOption === "" ||
+            selectedOption === "select" ||
+            inputValue <= 0) {
+            obj = {
+                message: "",
+                status: 204,
+                error: "something went wrong, try again",
+            };
+            res.status(204).send(obj);
+        }
+        else {
+            if (cMembers.length > 0) {
+                cMembers.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+                    console.log(item);
+                    const obj = {
+                        userId: item._id,
+                        access: true,
+                    };
+                    yield communityModel_1.default.updateOne({ _id: id }, {
+                        $set: { communityName: inputValue, status: selectedOption },
+                        $push: { members: obj },
+                    });
+                    const CommId = new mongodb_1.ObjectId(id);
+                    yield userModel_1.default.updateOne({ _id: item._id }, { $push: { community: { communityId: CommId } } });
+                }));
+            }
+            else {
+                const data = yield communityModel_1.default.updateOne({ _id: id }, { $set: { communityName: inputValue, status: selectedOption } });
+            }
+            obj = {
+                message: "Community Updated successfully ",
+                status: 200,
+                error: "something went wrong, try again",
+            };
+            res.status(200).send(obj);
+        }
     }
     catch (error) {
         console.error(error);
     }
 });
 exports.changeCommunity = changeCommunity;
+const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        console.log(id);
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const data = yield communityModel_1.default.findOne({ _id: id });
+        if (data) {
+            console.log(data === null || data === void 0 ? void 0 : data.members);
+            const members = data === null || data === void 0 ? void 0 : data.members;
+            members.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+                console.log(item === null || item === void 0 ? void 0 : item.userId);
+                const userId = item === null || item === void 0 ? void 0 : item.userId;
+                yield userModel_1.default.updateOne({ _id: userId }, { $pull: { community: { communityId: id } } });
+            }));
+            (() => __awaiter(void 0, void 0, void 0, function* () {
+                yield communityModel_1.default.deleteOne({ _id: id });
+            }))().then(() => {
+                obj = {
+                    message: "Deleted successfully",
+                    status: 200,
+                    error: ""
+                };
+                res.status(obj.status).send(obj);
+            });
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "content not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+        console.log("ethi");
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.deleteCommunity = deleteCommunity;

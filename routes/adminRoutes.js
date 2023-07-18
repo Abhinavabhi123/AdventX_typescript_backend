@@ -13,10 +13,12 @@ exports.storage = multer_1.default.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + file.originalname);
-    }
+    },
 });
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+    if (file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/png") {
         cb(null, true);
     }
     else {
@@ -43,6 +45,7 @@ router.get("/getComUser", communityController_1.getComUser);
 router.get("/getCommunityDetails/:id", communityController_1.getCommunityDetails);
 router.post("/changeComStatus", communityController_1.changeComStatus);
 router.get("/addUserECommunity", communityController_1.addUserECommunity);
-router.post("/changeCommunity", communityController_1.changeCommunity);
+router.post("/changeCommunity/:id", communityController_1.changeCommunity);
+router.delete("/deleteCommunity/:id", communityController_1.deleteCommunity);
 router.post("/createCommunity", exports.upload.single("image"), communityController_1.createCommunity);
 exports.default = router;

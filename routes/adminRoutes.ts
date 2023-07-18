@@ -1,24 +1,31 @@
-import { Router,Request } from "express";
-const router = Router()
-import multer,{FileFilterCallback} from "multer"
+import { Router, Request } from "express";
+const router = Router();
+import multer, { FileFilterCallback } from "multer";
 
-export const storage =multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,"./public/uploads/");
-    },
-    filename:function(req,file,cb){
-        cb(null,Date.now()+file.originalname)
-    }
+export const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
 });
 
-
-export const fileFilter = (req: Request, file:Express.Multer.File, cb: FileFilterCallback)=>{
-    if(file.mimetype ==="image/jpeg" || file.mimetype === 'image/jpg'|| file.mimetype === 'image/png'){
-        cb(null,true)
-    }else{
-        cb(null,false)
-    }
-}
+export const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/png"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 export const upload = multer({
   storage: storage,
@@ -27,21 +34,37 @@ export const upload = multer({
   },
   fileFilter: fileFilter,
 });
-import {postAdminLogin,getAllUser,blockUser,singleUser} from "../controllers/admincontroller"
-import {getCommunityUsers,getComUser,createCommunity,communities,getCommunityDetails,changeComStatus,addUserECommunity,changeCommunity} from "../controllers/communityController"
+import {
+  postAdminLogin,
+  getAllUser,
+  blockUser,
+  singleUser,
+} from "../controllers/admincontroller";
+import {
+  getCommunityUsers,
+  getComUser,
+  createCommunity,
+  communities,
+  getCommunityDetails,
+  changeComStatus,
+  addUserECommunity,
+  changeCommunity,
+  deleteCommunity,
+} from "../controllers/communityController";
 
-router.post("/AdminLogin",postAdminLogin)
-router.get("/getAllUser",getAllUser)
-router.post("/blockUser",blockUser)
-router.get("/singleUser",singleUser)
-router.get("/communities",communities)
-router.get("/getCommunityUsers",getCommunityUsers)
-router.get("/getComUser",getComUser)
-router.get("/getCommunityDetails/:id",getCommunityDetails)
-router.post("/changeComStatus",changeComStatus)
-router.get("/addUserECommunity",addUserECommunity)
-router.post("/changeCommunity",changeCommunity)
+router.post("/AdminLogin", postAdminLogin);
+router.get("/getAllUser", getAllUser);
+router.post("/blockUser", blockUser);
+router.get("/singleUser", singleUser);
+router.get("/communities", communities);
+router.get("/getCommunityUsers", getCommunityUsers);
+router.get("/getComUser", getComUser);
+router.get("/getCommunityDetails/:id", getCommunityDetails);
+router.post("/changeComStatus", changeComStatus);
+router.get("/addUserECommunity", addUserECommunity);
+router.post("/changeCommunity/:id", changeCommunity);
+router.delete("/deleteCommunity/:id", deleteCommunity);
 
-router.post("/createCommunity",upload.single("image"),createCommunity)
+router.post("/createCommunity", upload.single("image"), createCommunity);
 
-export default router
+export default router;
