@@ -16,6 +16,10 @@ const eventSchema = new mongoose_1.Schema({
         type: String,
         required: true
     },
+    date: {
+        type: Date,
+        required: true
+    },
     eventType: {
         type: String,
         required: true
@@ -41,6 +45,10 @@ const eventSchema = new mongoose_1.Schema({
         required: true
     },
     about: {
+        type: String,
+        required: true
+    },
+    primaryImage: {
         type: String,
         required: true
     },

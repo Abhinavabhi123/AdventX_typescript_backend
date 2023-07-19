@@ -35,6 +35,7 @@ exports.upload = (0, multer_1.default)({
 });
 const admincontroller_1 = require("../controllers/admincontroller");
 const communityController_1 = require("../controllers/communityController");
+const eventController_1 = require("../controllers/eventController");
 router.post("/AdminLogin", admincontroller_1.postAdminLogin);
 router.get("/getAllUser", admincontroller_1.getAllUser);
 router.post("/blockUser", admincontroller_1.blockUser);
@@ -48,4 +49,5 @@ router.get("/addUserECommunity", communityController_1.addUserECommunity);
 router.post("/changeCommunity/:id", communityController_1.changeCommunity);
 router.delete("/deleteCommunity/:id", communityController_1.deleteCommunity);
 router.post("/createCommunity", exports.upload.single("image"), communityController_1.createCommunity);
+router.post("/addEvent", eventController_1.addEvent);
 exports.default = router;

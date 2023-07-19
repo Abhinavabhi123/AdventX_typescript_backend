@@ -38,6 +38,10 @@ const eventSchema = new Schema<Event>({
         type:String,
         required:true
     },
+    date:{
+        type:Date,
+        required:true
+    },
     eventType:{
         type:String,
         required:true
@@ -64,6 +68,10 @@ const eventSchema = new Schema<Event>({
     },
     about:{
         type: String,
+        required:true
+    },
+    primaryImage:{
+        type:String,
         required:true
     },
     earnings:{

@@ -28,6 +28,7 @@ const communitySchema = new Schema<Community>(
       type: String,
       required: true,
       unique:true,
+      uppercase: true
     },
     members: [
       {

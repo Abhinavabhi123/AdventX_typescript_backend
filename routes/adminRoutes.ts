@@ -51,6 +51,7 @@ import {
   changeCommunity,
   deleteCommunity,
 } from "../controllers/communityController";
+import {addEvent} from "../controllers/eventController"
 
 router.post("/AdminLogin", postAdminLogin);
 router.get("/getAllUser", getAllUser);
@@ -66,5 +67,5 @@ router.post("/changeCommunity/:id", changeCommunity);
 router.delete("/deleteCommunity/:id", deleteCommunity);
 
 router.post("/createCommunity", upload.single("image"), createCommunity);
-
+router.post("/addEvent",addEvent)
 export default router;
