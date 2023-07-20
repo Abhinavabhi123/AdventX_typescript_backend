@@ -17,10 +17,14 @@ const eventSchema = new mongoose_1.Schema({
         required: true
     },
     date: {
-        type: Date,
+        type: String,
         required: true
     },
     eventType: {
+        type: String,
+        required: true
+    },
+    status: {
         type: String,
         required: true
     },

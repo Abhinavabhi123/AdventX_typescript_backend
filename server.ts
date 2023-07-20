@@ -1,5 +1,5 @@
 declare module 'express';
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import * as dotenv from 'dotenv';
 import cors from "cors"
 import morgan from "morgan"

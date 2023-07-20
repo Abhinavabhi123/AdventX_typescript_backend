@@ -5,7 +5,7 @@ interface Event extends Document {
   eventName: string;
   subName: string;
   location: string;
-  date: Date;
+  date: string;
   eventType: string;
   fee: number;
   firstPrice: number;
@@ -39,10 +39,14 @@ const eventSchema = new Schema<Event>({
         required:true
     },
     date:{
-        type:Date,
+        type:String,
         required:true
     },
     eventType:{
+        type:String,
+        required:true
+    },
+    status:{
         type:String,
         required:true
     },

@@ -51,21 +51,29 @@ import {
   changeCommunity,
   deleteCommunity,
 } from "../controllers/communityController";
-import {addEvent} from "../controllers/eventController"
+import {addEvent,getAllEvent,getEventDetails,getEventData} from "../controllers/eventController"
+import isAuth from "../Middleware/checkAdminAuth";
+
+router.get("/getAllUser",isAuth, getAllUser);
+router.get("/singleUser",isAuth, singleUser);
+router.get("/communities",isAuth, communities);
+router.get("/getCommunityUsers",isAuth,getCommunityUsers);
+router.get("/getComUser",isAuth,getComUser);
+router.get("/getCommunityDetails/:id",isAuth,getCommunityDetails);
+router.get("/addUserECommunity",isAuth,addUserECommunity);
+router.get("/getAllEvent",isAuth,getAllEvent)
+router.get("/getEventDetails",isAuth,getEventDetails)
+router.get("/getEventData",isAuth,getEventData)
 
 router.post("/AdminLogin", postAdminLogin);
-router.get("/getAllUser", getAllUser);
-router.post("/blockUser", blockUser);
-router.get("/singleUser", singleUser);
-router.get("/communities", communities);
-router.get("/getCommunityUsers", getCommunityUsers);
-router.get("/getComUser", getComUser);
-router.get("/getCommunityDetails/:id", getCommunityDetails);
-router.post("/changeComStatus", changeComStatus);
-router.get("/addUserECommunity", addUserECommunity);
-router.post("/changeCommunity/:id", changeCommunity);
-router.delete("/deleteCommunity/:id", deleteCommunity);
+router.post("/blockUser",isAuth,blockUser);
+router.post("/changeComStatus",isAuth,changeComStatus);
+router.post("/changeCommunity/:id",isAuth,changeCommunity);
+router.post("/addEvent",isAuth,addEvent);
 
-router.post("/createCommunity", upload.single("image"), createCommunity);
-router.post("/addEvent",addEvent)
+router.delete("/deleteCommunity/:id",isAuth,deleteCommunity);
+
+
+router.post("/createCommunity",isAuth,upload.single("image"), createCommunity);
+
 export default router;
