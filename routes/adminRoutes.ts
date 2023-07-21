@@ -71,6 +71,7 @@ router.get("/getAllEvent", isAuth, getAllEvent);
 router.get("/getEventDetails", isAuth, getEventDetails);
 router.get("/getEventData", isAuth, getEventData);
 
+
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);
 router.post("/changeComStatus", isAuth, changeComStatus);

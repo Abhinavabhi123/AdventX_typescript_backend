@@ -17,6 +17,7 @@ interface Event extends Document {
   primaryImage: string;
   earnings: number;
   subTotal: number;
+  is_completed:boolean;
   participants: {
     userId: ObjectId;
     vehicleId: ObjectId;
@@ -85,6 +86,10 @@ const eventSchema = new Schema<Event>({
     subTotal:{
         type: Number,
         required:false
+    },
+    is_completed:{
+        type:Boolean,
+        default:false
     },
     participants:[
         {

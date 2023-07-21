@@ -64,6 +64,10 @@ const eventSchema = new mongoose_1.Schema({
         type: Number,
         required: false
     },
+    is_completed: {
+        type: Boolean,
+        default: false
+    },
     participants: [
         {
             userId: {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import eventModel from "../models/eventModel";
 import { ObjectId } from "mongodb";
 
+
 export const addEvent = async (req: Request, res: Response) => {
   try {
     interface Obj {
@@ -237,3 +238,110 @@ export const deleteEvent = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+export const getAllUpEvents=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      eventData?:{_id:ObjectId}[]
+    }
+    let obj:Obj={
+      message:'',
+      status:0,
+      error:""
+    }
+    const eventData= await eventModel.find({$and:[{status:"Active"},{is_completed:false}]},{_id:1})
+    if(eventData){
+      obj={
+        message:"Data fetched successfully",
+        status:200,
+        error:"",
+        eventData
+      }
+      res.status(obj.status).send(obj)
+    } else{
+      obj={
+        message:"",
+        status:500,
+        error:"Can't fetch the data"
+      }
+      res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const getEvent=async(req:Request,res:Response)=>{
+  try {
+    const {id} = req.query
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      data?:{}
+    }
+    if(id){
+      let obj:Obj={
+        message:"",
+        status:0,
+        error:""
+      }
+      const data = await eventModel.findOne({_id:id})
+      if(data){
+        obj={
+          message:"Data fetched successfully",
+          status:200,
+          error:"",
+          data
+        }
+        res.status(obj.status).send(obj)
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"Data not found"
+        }
+        res.status(obj.status).send(obj)
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const getAllEvents =async(req:Request,res:Response)=>{
+  try {
+      interface Obj{
+        message: string;
+        status:number;
+        error:string;
+        data?:{}
+      }
+      let obj:Obj={
+        message:"",
+        status:0,
+        error:""
+      }
+
+      const data = await eventModel.find()
+      if(data){
+        obj={
+          message:"Data fetched successfully",
+          status:200,
+          error:'',
+          data
+        }
+        res.status(obj.status).send(obj)
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"Data not found"
+        }
+        res.status(obj.status).send(obj)
+      }
+  } catch (error) {
+    console.error(error);
+  }
+}
