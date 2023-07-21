@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -22,7 +22,7 @@ const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             error: "",
         };
         console.log(req.body);
-        const { eventName, subTitle, location, date, type, fee, firstPrice, secondPrice, thirdPrice, description, about, imageUrl, status } = req.body;
+        const { eventName, subTitle, location, date, type, fee, firstPrice, secondPrice, thirdPrice, description, about, imageUrl, status, } = req.body;
         const eventData = yield eventModel_1.default.findOne({ eventName: eventName });
         if (!eventData) {
             new eventModel_1.default({
@@ -118,7 +118,7 @@ const getEventDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
                     message: "Data fetched successfully",
                     status: 200,
                     error: "",
-                    data
+                    data,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -126,7 +126,7 @@ const getEventDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
                 obj = {
                     message: "",
                     status: 404,
-                    error: "Document not found"
+                    error: "Document not found",
                 };
                 res.status(obj.status).send(obj);
             }
@@ -135,7 +135,7 @@ const getEventDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
             obj = {
                 message: "",
                 status: 404,
-                error: 'Please provide an Event ID'
+                error: "Please provide an Event ID",
             };
             res.status(obj.status).send(obj);
         }
@@ -150,7 +150,7 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         const { id } = req.query;
         if (id) {
@@ -160,7 +160,7 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     message: `Event data fetched successfully`,
                     status: 200,
                     error: "",
-                    eventData
+                    eventData,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -168,7 +168,7 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 obj = {
                     message: "",
                     status: 404,
-                    error: 'No such record found',
+                    error: "No such record found",
                 };
                 res.status(obj.status).send(obj);
             }
@@ -177,7 +177,7 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             obj = {
                 message: "",
                 status: 404,
-                error: 'Please provide a valid id for fetching the events.',
+                error: "Please provide a valid id for fetching the events.",
             };
             res.status(obj.status).send(obj);
         }
@@ -187,3 +187,38 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getEventData = getEventData;
+const deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        const { id } = req.query;
+        if (id) {
+            const data = yield eventModel_1.default.findOne({ _id: id });
+            if (data) {
+                yield eventModel_1.default.deleteOne({ _id: id });
+                obj = {
+                    message: "Event deleted successfully",
+                    status: 200,
+                    error: "",
+                    image: data === null || data === void 0 ? void 0 : data.primaryImage
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Please provide the event Id",
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.deleteEvent = deleteEvent;

@@ -53,5 +53,6 @@ router.post("/changeComStatus", checkAdminAuth_1.default, communityController_1.
 router.post("/changeCommunity/:id", checkAdminAuth_1.default, communityController_1.changeCommunity);
 router.post("/addEvent", checkAdminAuth_1.default, eventController_1.addEvent);
 router.delete("/deleteCommunity/:id", checkAdminAuth_1.default, communityController_1.deleteCommunity);
+router.delete("/deleteEvent", checkAdminAuth_1.default, eventController_1.deleteEvent);
 router.post("/createCommunity", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.createCommunity);
 exports.default = router;

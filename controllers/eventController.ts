@@ -29,7 +29,7 @@ export const addEvent = async (req: Request, res: Response) => {
       description,
       about,
       imageUrl,
-      status
+      status,
     } = req.body;
     const eventData = await eventModel.findOne({ eventName: eventName });
     if (!eventData) {
@@ -117,7 +117,7 @@ export const getEventDetails = async (req: Request, res: Response) => {
       message: string;
       status: number;
       error: string;
-      data?:{[key:string]:string|number|ObjectId|any};
+      data?: { [key: string]: string | number | ObjectId | any };
     }
     let obj: Obj = {
       message: "",
@@ -128,75 +128,112 @@ export const getEventDetails = async (req: Request, res: Response) => {
     if (id) {
       const data = await eventModel.findOne({ _id: id });
       if (data) {
-        obj={
-            message:"Data fetched successfully",
-            status:200,
-            error:"",
-            data
-        }
-        res.status(obj.status).send(obj)
+        obj = {
+          message: "Data fetched successfully",
+          status: 200,
+          error: "",
+          data,
+        };
+        res.status(obj.status).send(obj);
       } else {
-        obj={
-            message:"",
-            status:404,
-            error:"Document not found"
-        }
-        res.status(obj.status).send(obj)
+        obj = {
+          message: "",
+          status: 404,
+          error: "Document not found",
+        };
+        res.status(obj.status).send(obj);
       }
     } else {
-        obj={
-            message:"",
-            status:404,
-            error:'Please provide an Event ID'
-        }
-        res.status(obj.status).send(obj)
+      obj = {
+        message: "",
+        status: 404,
+        error: "Please provide an Event ID",
+      };
+      res.status(obj.status).send(obj);
     }
   } catch (error) {
     console.error(error);
   }
 };
-export const getEventData=async(req:Request,res:Response)=>{
+export const getEventData = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
+    interface Obj {
+      message: string;
       status: number;
-      error:string;
-      eventData?:{[key:string]:string|number|ObjectId|any}
+      error: string;
+      eventData?: { [key: string]: string | number | ObjectId | any };
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-    const {id} = req.query
-    if(id){
-      const eventData = await eventModel.findOne({_id:id})
-      if(eventData){
-        obj={
-          message:`Event data fetched successfully`,
-          status:200,
-          error:"",
-          eventData
-        }
-        res.status(obj.status).send(obj)
-      }else{
-        obj={
-          message:"",
-          status:404,
-          error:'No such record found',
-        }
-        res.status(obj.status).send(obj)
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.query;
+    if (id) {
+      const eventData = await eventModel.findOne({ _id: id });
+      if (eventData) {
+        obj = {
+          message: `Event data fetched successfully`,
+          status: 200,
+          error: "",
+          eventData,
+        };
+        res.status(obj.status).send(obj);
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "No such record found",
+        };
+        res.status(obj.status).send(obj);
       }
-    }else{
-      obj={
-        message:"",
-        status:404,
-        error:'Please provide a valid id for fetching the events.',
-      }
-      res.status(obj.status).send(obj)
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "Please provide a valid id for fetching the events.",
+      };
+      res.status(obj.status).send(obj);
     }
-    
   } catch (error) {
     console.error(error);
   }
-}
+};
+export const deleteEvent = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      image?: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.query;
+    if (id) {
+      const data = await eventModel.findOne({ _id: id });
+      if (data) {
+        await eventModel.deleteOne({ _id: id });
+        obj={
+          message:"Event deleted successfully",
+          status:200,
+          error:"",
+          image:data?.primaryImage
+        }
+        res.status(obj.status).send(obj)
+      }
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "Please provide the event Id",
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
