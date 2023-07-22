@@ -46,5 +46,6 @@ router.post("/postForget", userController_1.postForget);
 router.post("/postOtp", userController_1.postOtp);
 router.post("/changePass", userController_1.changePass);
 router.post("/addPayment", userController_1.addPayment);
+router.post("/postUserDetails", userController_1.postUserDetails);
 router.post('/userImage', exports.upload.single("images"), userController_1.userImage);
 exports.default = router;

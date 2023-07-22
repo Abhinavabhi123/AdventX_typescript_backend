@@ -490,3 +490,12 @@ export const userImage = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+export const postUserDetails =(req:Request,res:Response)=>{
+  try {
+    console.log(req.body);
+
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

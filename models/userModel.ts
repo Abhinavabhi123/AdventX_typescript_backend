@@ -53,8 +53,8 @@ const userSchema = new Schema<User>({
     default: true,
   },
   date_of_birth: {
-    type: Date,
-    required: false,
+    type: String,
+    required: false,  
   },
   image:{
     type:String,
