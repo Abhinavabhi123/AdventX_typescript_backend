@@ -33,6 +33,10 @@ const userSchema = new mongoose_1.Schema({
         type: Date,
         required: false,
     },
+    image: {
+        type: String,
+        required: false
+    },
     community: [
         {
             communityId: mongodb_1.ObjectId,

@@ -1,12 +1,44 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.upload = exports.fileFilter = exports.storage = void 0;
 const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
 const router = (0, express_1.Router)();
+exports.storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/UserImage/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    },
+});
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/png") {
+        cb(null, true);
+    }
+    else {
+        cb(null, false);
+    }
+};
+exports.fileFilter = fileFilter;
+exports.upload = (0, multer_1.default)({
+    storage: exports.storage,
+    limits: {
+        fileSize: 1024 * 1024 * 100,
+    },
+    fileFilter: exports.fileFilter,
+});
 const userController_1 = require("../controllers/userController");
 const eventController_1 = require("../controllers/eventController");
 router.get("/getAllUpEvents", eventController_1.getAllUpEvents);
 router.get("/getEvent", eventController_1.getEvent);
 router.get("/getAllEvents", eventController_1.getAllEvents);
+router.get("/getUserProfile/:id", userController_1.getUserProfile);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);
@@ -14,4 +46,5 @@ router.post("/postForget", userController_1.postForget);
 router.post("/postOtp", userController_1.postOtp);
 router.post("/changePass", userController_1.changePass);
 router.post("/addPayment", userController_1.addPayment);
+router.post('/userImage', exports.upload.single("images"), userController_1.userImage);
 exports.default = router;

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -44,7 +44,7 @@ dotenv.config();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const secret_strip = process.env.STRIPE_SECRET_KEY;
-const stripes = new stripe_1.default(secret_strip, { apiVersion: '2022-11-15' });
+const stripes = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
 const secretKey = process.env.USER_JWT_SECRET || "";
 const transporter = nodemailer_1.default.createTransport({
     host: "smtp.gmail.com",
@@ -180,7 +180,13 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (userData) {
             const grantAccess = yield compareHash(password, userData[0].password);
             if (grantAccess) {
-                const jwtToken = jsonwebtoken_1.default.sign({ _id: (_a = userData[0]) === null || _a === void 0 ? void 0 : _a._id, name: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b.firstName, is_prime: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.primeMember, status: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.status, email: userData[0].email }, secretKey, { expiresIn: "30d" });
+                const jwtToken = jsonwebtoken_1.default.sign({
+                    _id: (_a = userData[0]) === null || _a === void 0 ? void 0 : _a._id,
+                    name: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b.firstName,
+                    is_prime: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.primeMember,
+                    status: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.status,
+                    email: userData[0].email,
+                }, secretKey, { expiresIn: "30d" });
                 console.log("Access granted and token created");
                 object = {
                     message: "Access granted",
@@ -194,7 +200,8 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                     jwtToken,
                 };
-                res.status(object.status)
+                res
+                    .status(object.status)
                     .cookie("user", jwtToken, {
                     expires: new Date(Date.now() + 3600 * 1000),
                     httpOnly: true,
@@ -355,9 +362,10 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             currency: "inr",
             automatic_payment_methods: {
                 enabled: true,
-            }, metadata: {
-                userId: id
-            }
+            },
+            metadata: {
+                userId: id,
+            },
         });
         console.log(paymentIntent, "success payment");
         res.send({
@@ -369,3 +377,101 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.addPayment = addPayment;
+const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id });
+            if (userData) {
+                obj = {
+                    message: "Data fetched successfully",
+                    status: 200,
+                    error: "",
+                    userData,
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "User document not found",
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Id not found",
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getUserProfile = getUserProfile;
+const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        const { id } = req.body;
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id });
+            if (userData) {
+                if (req.file) {
+                    const fileName = req.file.filename;
+                    yield userModel_1.default
+                        .updateOne({ _id: id }, { $set: { image: fileName } })
+                        .then(() => {
+                        obj = {
+                            message: "Image Updated successfully",
+                            status: 200,
+                            error: "",
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+                else {
+                    obj = {
+                        message: "",
+                        status: 404,
+                        error: "Image file not found"
+                    };
+                    res.status(obj.status).send(obj);
+                }
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "User data not found",
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "User Id not found",
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.userImage = userImage;

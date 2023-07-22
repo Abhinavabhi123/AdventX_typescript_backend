@@ -9,6 +9,7 @@ interface User extends Document {
   mobile: number;
   status: boolean;
   date_of_birth?: Date;
+  image:string;
   about: string;
   community:[{
     communityId:ObjectId;
@@ -54,6 +55,10 @@ const userSchema = new Schema<User>({
   date_of_birth: {
     type: Date,
     required: false,
+  },
+  image:{
+    type:String,
+    required:false
   },
   community:[
     {

@@ -2,16 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import nodemailer from "nodemailer";
 import * as dotenv from "dotenv";
-import stripe  from "stripe"
+import stripe from "stripe";
 dotenv.config();
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
 
-const secret_strip =<string> process.env.STRIPE_SECRET_KEY;
+const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
 
-
-const stripes = new stripe(secret_strip,{apiVersion: '2022-11-15'});
+const stripes = new stripe(secret_strip, { apiVersion: "2022-11-15" });
 const secretKey: string = process.env.USER_JWT_SECRET || "";
 
 const transporter = nodemailer.createTransport({
@@ -173,7 +172,13 @@ export const userLogin = async (req: Request, res: Response) => {
       );
       if (grantAccess) {
         const jwtToken = jwt.sign(
-          { _id: userData[0]?._id, name: userData[0]?.firstName,is_prime:userData[0]?.primeMember,status:userData[0]?.status,email:userData[0].email},
+          {
+            _id: userData[0]?._id,
+            name: userData[0]?.firstName,
+            is_prime: userData[0]?.primeMember,
+            status: userData[0]?.status,
+            email: userData[0].email,
+          },
           secretKey,
           { expiresIn: "30d" }
         );
@@ -192,15 +197,14 @@ export const userLogin = async (req: Request, res: Response) => {
           },
           jwtToken,
         };
-        res.status(object.status)
-        .cookie("user", jwtToken, {
-          expires: new Date(Date.now() + 3600 * 1000),
-          httpOnly: true,
-          sameSite: "strict",
-        })
-        .send(object);
-
-        
+        res
+          .status(object.status)
+          .cookie("user", jwtToken, {
+            expires: new Date(Date.now() + 3600 * 1000),
+            httpOnly: true,
+            sameSite: "strict",
+          })
+          .send(object);
       } else {
         {
           object = {
@@ -363,25 +367,126 @@ export const changePass = async (req: Request, res: Response) => {
   }
 };
 
-export const addPayment=async(req:Request,res:Response)=>{
+export const addPayment = async (req: Request, res: Response) => {
   try {
-    const { id,amount } = req.body;
+    const { id, amount } = req.body;
 
-  const paymentIntent = await stripes.paymentIntents.create({
-    amount,
-    currency: "inr",
-    automatic_payment_methods: {
-      enabled: true,
-    },metadata:{
-      userId :id
-    }
-  });
-  console.log(paymentIntent,"success payment");
-  
-  res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
+    const paymentIntent = await stripes.paymentIntents.create({
+      amount,
+      currency: "inr",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      metadata: {
+        userId: id,
+      },
+    });
+    console.log(paymentIntent, "success payment");
+
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
     console.error(error);
   }
-}
+};
+export const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      userData?: {};
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    if (id) {
+      const userData = await userModel.findOne({ _id: id });
+      if (userData) {
+        obj = {
+          message: "Data fetched successfully",
+          status: 200,
+          error: "",
+          userData,
+        };
+        res.status(obj.status).send(obj);
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "User document not found",
+        };
+        res.status(obj.status).send(obj);
+      }
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "Id not found",
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const userImage = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.body;
+    if (id) {
+      const userData = await userModel.findOne({ _id: id });
+      if (userData) {
+        if (req.file) {
+          const fileName = req.file.filename;
+          await userModel
+            .updateOne({ _id: id }, { $set: { image: fileName } })
+            .then(() => {
+              obj = {
+                message: "Image Updated successfully",
+                status: 200,
+                error: "",
+              };
+              res.status(obj.status).send(obj);
+          })
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:"Image file not found"
+           }
+            res.status(obj.status).send(obj)
+        }
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "User data not found",
+        };
+        res.status(obj.status).send(obj);
+      }
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "User Id not found",
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
