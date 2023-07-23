@@ -45,7 +45,8 @@ import {
   addPayment,
   getUserProfile,
   userImage,
-  postUserDetails
+  postUserDetails,
+  postAddress
 } from "../controllers/userController";
 import {
   getAllUpEvents,
@@ -66,6 +67,7 @@ router.post("/postOtp", postOtp);
 router.post("/changePass", changePass);
 router.post("/addPayment", addPayment);
 router.post("/postUserDetails",postUserDetails)
+router.post("/postAddress",postAddress)
 
 router.post('/userImage',upload.single("images"),userImage)
 

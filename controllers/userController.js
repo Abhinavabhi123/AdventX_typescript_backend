@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -447,7 +447,7 @@ const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     obj = {
                         message: "",
                         status: 404,
-                        error: "Image file not found"
+                        error: "Image file not found",
                     };
                     res.status(obj.status).send(obj);
                 }
@@ -475,12 +475,119 @@ const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.userImage = userImage;
-const postUserDetails = (req, res) => {
+const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _h;
     try {
         console.log(req.body);
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        if (req.body) {
+            const { id } = (_h = req.body) === null || _h === void 0 ? void 0 : _h.userId;
+            const { firstName, lastName, number, about, height, weight, date } = req.body;
+            const mobile = Number(number);
+            const uHeight = Number(height);
+            const uWeight = Number(weight);
+            if (id) {
+                const userData = yield userModel_1.default.findOne({ _id: id });
+                if (userData) {
+                    yield userModel_1.default
+                        .updateOne({ _id: id }, {
+                        $set: {
+                            firstName,
+                            lastName,
+                            mobile,
+                            about,
+                            height: uHeight,
+                            weight: uWeight,
+                            date_of_birth: date,
+                        },
+                    })
+                        .then(() => {
+                        obj = {
+                            message: "success",
+                            status: 200,
+                            error: "",
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+                else {
+                    obj = {
+                        message: "",
+                        status: 404,
+                        error: "User Data not found",
+                    };
+                    res.status(obj.status).send(obj);
+                }
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "Please Provide the userId",
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
     }
     catch (error) {
         console.error(error);
     }
-};
+});
 exports.postUserDetails = postUserDetails;
+const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        const { id } = req.body.userId;
+        const { houseName, locality, area, district, state, zip } = req.body;
+        const zipCode = Number(zip);
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id });
+            if (userData) {
+                yield userModel_1.default.updateOne({ _id: id }, { $set: { address: {
+                            houseName,
+                            locality,
+                            area,
+                            district,
+                            state,
+                            zipCode
+                        } } }).then(() => {
+                    obj = {
+                        message: "Address added Successfully",
+                        status: 200,
+                        error: ""
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "User not found!"
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "User not found!"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.postAddress = postAddress;

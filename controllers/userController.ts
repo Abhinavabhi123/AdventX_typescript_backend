@@ -7,6 +7,7 @@ dotenv.config();
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
+import { log } from "console";
 
 const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
 
@@ -461,14 +462,14 @@ export const userImage = async (req: Request, res: Response) => {
                 error: "",
               };
               res.status(obj.status).send(obj);
-          })
-        }else{
-          obj={
-            message:"",
-            status:404,
-            error:"Image file not found"
-           }
-            res.status(obj.status).send(obj)
+            });
+        } else {
+          obj = {
+            message: "",
+            status: 404,
+            error: "Image file not found",
+          };
+          res.status(obj.status).send(obj);
         }
       } else {
         obj = {
@@ -490,11 +491,127 @@ export const userImage = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
-export const postUserDetails =(req:Request,res:Response)=>{
+export const postUserDetails = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
 
-    
+    if (req.body) {
+      const { id } = req.body?.userId;
+      const { firstName, lastName, number, about, height, weight, date } =
+        req.body;
+      const mobile = Number(number);
+      const uHeight = Number(height);
+      const uWeight = Number(weight);
+      if (id) {
+        const userData = await userModel.findOne({ _id: id });
+        if (userData) {
+          await userModel
+            .updateOne(
+              { _id: id },
+              {
+                $set: {
+                  firstName,
+                  lastName,
+                  mobile,
+                  about,
+                  height: uHeight,
+                  weight: uWeight,
+                  date_of_birth: date,
+                },
+              }
+            )
+            .then(() => {
+              obj = {
+                message: "success",
+                status: 200,
+                error: "",
+              };
+              res.status(obj.status).send(obj);
+            });
+        } else {
+          obj = {
+            message: "",
+            status: 404,
+            error: "User Data not found",
+          };
+          res.status(obj.status).send(obj);
+        }
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "Please Provide the userId",
+        };
+        res.status(obj.status).send(obj);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const postAddress=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+      console.log(req.body);
+      const{id}=req.body.userId
+      const {houseName,locality,area,district,state,zip} =req.body
+      const zipCode = Number(zip)
+      if(id){
+        const userData = await userModel.findOne({_id:id})
+        if(userData){
+            await userModel.updateOne({_id:id},{$set:{address:{
+              houseName,
+              locality,
+              area,
+              district,
+              state,
+              zipCode
+            }}}).then(()=>{
+              obj={
+                message:"Address added Successfully",
+                status:200,
+                error:""
+              }
+              res.status(obj.status).send(obj)
+            })
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:"User not found!"
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"User not found!"
+        }
+        res.status(obj.status).send(obj)
+      }
+      
+      
+      
   } catch (error) {
     console.error(error);
   }
