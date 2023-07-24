@@ -13,15 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const secret = process.env.ADMIN_JWT_SECRET;
-const adminModel_1 = __importDefault(require("../models/adminModel"));
-const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const userModel_1 = __importDefault(require("../models/userModel"));
+const secret = process.env.USER_JWT_SECRET;
+const userAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.headers.authorization;
         if (token) {
             const decoded = jsonwebtoken_1.default.verify(token, secret);
             if (decoded) {
-                const data = yield adminModel_1.default.findOne({ email: decoded === null || decoded === void 0 ? void 0 : decoded.email });
+                const data = yield userModel_1.default.findOne({ email: decoded === null || decoded === void 0 ? void 0 : decoded.email });
                 if (data) {
                     next();
                 }
@@ -38,4 +38,4 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         console.error(error);
     }
 });
-exports.default = isAuth;
+exports.default = userAuth;

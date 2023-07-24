@@ -173,9 +173,10 @@ export const userLogin = async (req: Request, res: Response) => {
       );
       if (grantAccess) {
         console.log(userData[0]?.status,"userddd");
-        if(userData?.status===true){
+        if(userData[0]?.status===true){
 
         
+        console.log("ivide");
         
         const jwtToken = jwt.sign(
           {
@@ -212,14 +213,25 @@ export const userLogin = async (req: Request, res: Response) => {
           })
           .send(object);
         }else{
-
+          object = {
+            message: "",
+            status: 404 ,
+            error: "You Are Blocked by Admin",
+            loggedIn: false,
+            userData: {
+              firstName: undefined,
+              lastName: undefined,
+              email: undefined,
+            },
+          };
+          res.status(object.status).send(object);
         }
       } else {
         {
           object = {
-            message: "You Are Blocked",
-            status: 403 ,
-            error: "",
+            message: "",
+            status: 500 ,
+            error: "Password not matching",
             loggedIn: false,
             userData: {
               firstName: undefined,

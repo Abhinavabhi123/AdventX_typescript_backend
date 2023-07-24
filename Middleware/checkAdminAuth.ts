@@ -26,7 +26,9 @@ const isAuth = async (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).send("Unauthorized access");
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export default isAuth;

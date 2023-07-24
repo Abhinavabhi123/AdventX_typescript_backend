@@ -166,7 +166,7 @@ const postUserSignup = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.postUserSignup = postUserSignup;
 const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         let object = {
             message: "",
@@ -181,12 +181,13 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const grantAccess = yield compareHash(password, userData[0].password);
             if (grantAccess) {
                 console.log((_a = userData[0]) === null || _a === void 0 ? void 0 : _a.status, "userddd");
-                if ((userData === null || userData === void 0 ? void 0 : userData.status) === true) {
+                if (((_b = userData[0]) === null || _b === void 0 ? void 0 : _b.status) === true) {
+                    console.log("ivide");
                     const jwtToken = jsonwebtoken_1.default.sign({
-                        _id: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b._id,
-                        name: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.firstName,
-                        is_prime: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.primeMember,
-                        status: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.status,
+                        _id: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c._id,
+                        name: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.firstName,
+                        is_prime: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.primeMember,
+                        status: (_f = userData[0]) === null || _f === void 0 ? void 0 : _f.status,
                         email: userData[0].email,
                     }, secretKey, { expiresIn: "30d" });
                     console.log("Access granted and token created");
@@ -196,9 +197,9 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                         error: "",
                         loggedIn: true,
                         userData: {
-                            firstName: (_f = userData[0]) === null || _f === void 0 ? void 0 : _f.firstName,
-                            lastName: (_g = userData[0]) === null || _g === void 0 ? void 0 : _g.lastName,
-                            email: (_h = userData[0]) === null || _h === void 0 ? void 0 : _h.email,
+                            firstName: (_g = userData[0]) === null || _g === void 0 ? void 0 : _g.firstName,
+                            lastName: (_h = userData[0]) === null || _h === void 0 ? void 0 : _h.lastName,
+                            email: (_j = userData[0]) === null || _j === void 0 ? void 0 : _j.email,
                         },
                         jwtToken,
                     };
@@ -212,14 +213,26 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                         .send(object);
                 }
                 else {
+                    object = {
+                        message: "",
+                        status: 404,
+                        error: "You Are Blocked by Admin",
+                        loggedIn: false,
+                        userData: {
+                            firstName: undefined,
+                            lastName: undefined,
+                            email: undefined,
+                        },
+                    };
+                    res.status(object.status).send(object);
                 }
             }
             else {
                 {
                     object = {
-                        message: "You Are Blocked",
-                        status: 403,
-                        error: "",
+                        message: "",
+                        status: 500,
+                        error: "Password not matching",
                         loggedIn: false,
                         userData: {
                             firstName: undefined,
@@ -482,7 +495,7 @@ const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.userImage = userImage;
 const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _j;
+    var _k;
     try {
         console.log(req.body);
         let obj = {
@@ -491,7 +504,7 @@ const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
             error: "",
         };
         if (req.body) {
-            const { id } = (_j = req.body) === null || _j === void 0 ? void 0 : _j.userId;
+            const { id } = (_k = req.body) === null || _k === void 0 ? void 0 : _k.userId;
             const { firstName, lastName, number, about, height, weight, date } = req.body;
             const mobile = Number(number);
             const uHeight = Number(height);

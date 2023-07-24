@@ -10,6 +10,14 @@ export const storage = multer.diskStorage({
     cb(null, Date.now() + file.originalname);
   },
 });
+export const bannerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/banners/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
 
 export const fileFilter = (
   req: Request,
@@ -29,6 +37,13 @@ export const fileFilter = (
 
 export const upload = multer({
   storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 100,
+  },
+  fileFilter: fileFilter,
+});
+export const bannerUploads = multer({
+  storage: bannerStorage,
   limits: {
     fileSize: 1024 * 1024 * 100,
   },
@@ -58,6 +73,7 @@ import {
   getEventData,
   deleteEvent,
 } from "../controllers/eventController";
+import { AddBanner,banners } from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
 
 router.get("/getAllUser", isAuth, getAllUser);
@@ -70,7 +86,7 @@ router.get("/addUserECommunity", isAuth, addUserECommunity);
 router.get("/getAllEvent", isAuth, getAllEvent);
 router.get("/getEventDetails", isAuth, getEventDetails);
 router.get("/getEventData", isAuth, getEventData);
-
+router.get("/banners",isAuth,banners)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);
@@ -81,11 +97,7 @@ router.post("/addEvent", isAuth, addEvent);
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
 router.delete("/deleteEvent", isAuth, deleteEvent);
 
-router.post(
-  "/createCommunity",
-  isAuth,
-  upload.single("image"),
-  createCommunity
-);
+router.post("/createCommunity",isAuth,upload.single("image"),createCommunity);
+router.post("/addBanner", isAuth, bannerUploads.single("image"), AddBanner);
 
 export default router;
