@@ -53,11 +53,12 @@ import {
   getEvent,
   getAllEvents,
 } from "../controllers/eventController";
+import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
 router.get("/getEvent", getEvent);
 router.get("/getAllEvents", getAllEvents);
-router.get("/getUserProfile/:id", getUserProfile);
+router.get("/getUserProfile/:id",userAuth, getUserProfile);
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);
@@ -66,9 +67,9 @@ router.post("/postForget", postForget);
 router.post("/postOtp", postOtp);
 router.post("/changePass", changePass);
 router.post("/addPayment", addPayment);
-router.post("/postUserDetails",postUserDetails)
-router.post("/postAddress",postAddress)
+router.post("/postUserDetails",userAuth,postUserDetails)
+router.post("/postAddress",userAuth,postAddress)
 
-router.post('/userImage',upload.single("images"),userImage)
+router.post('/userImage',userAuth,upload.single("images"),userImage)
 
 export default router;
