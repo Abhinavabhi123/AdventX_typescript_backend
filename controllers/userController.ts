@@ -164,7 +164,7 @@ export const userLogin = async (req: Request, res: Response) => {
     };
 
     const { email, password } = req.body;
-    const userData = await userModel.find({ email: email });
+    const userData:any = await userModel.find({ email: email });
 
     if (userData) {
       const grantAccess: boolean = await compareHash(
@@ -172,6 +172,11 @@ export const userLogin = async (req: Request, res: Response) => {
         userData[0].password
       );
       if (grantAccess) {
+        console.log(userData[0]?.status,"userddd");
+        if(userData?.status===true){
+
+        
+        
         const jwtToken = jwt.sign(
           {
             _id: userData[0]?._id,
@@ -206,12 +211,15 @@ export const userLogin = async (req: Request, res: Response) => {
             sameSite: "strict",
           })
           .send(object);
+        }else{
+
+        }
       } else {
         {
           object = {
-            message: "",
-            status: 500,
-            error: "password not matching",
+            message: "You Are Blocked",
+            status: 403 ,
+            error: "",
             loggedIn: false,
             userData: {
               firstName: undefined,
@@ -219,7 +227,7 @@ export const userLogin = async (req: Request, res: Response) => {
               email: undefined,
             },
           };
-          res.send(object);
+          res.status(object.status).send(object);
         }
       }
     } else {
@@ -234,7 +242,7 @@ export const userLogin = async (req: Request, res: Response) => {
           email: undefined,
         },
       };
-      res.send(object);
+      res.status(object.status).send(object);
     }
   } catch (error) {
     console.error(error);
@@ -383,7 +391,7 @@ export const addPayment = async (req: Request, res: Response) => {
       },
     });
     console.log(paymentIntent, "success payment");
-
+    if(paymentIntent)
     res.send({
       clientSecret: paymentIntent.client_secret,
     });

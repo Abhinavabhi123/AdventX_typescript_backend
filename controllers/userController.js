@@ -166,7 +166,7 @@ const postUserSignup = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.postUserSignup = postUserSignup;
 const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
         let object = {
             message: "",
@@ -180,41 +180,46 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (userData) {
             const grantAccess = yield compareHash(password, userData[0].password);
             if (grantAccess) {
-                const jwtToken = jsonwebtoken_1.default.sign({
-                    _id: (_a = userData[0]) === null || _a === void 0 ? void 0 : _a._id,
-                    name: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b.firstName,
-                    is_prime: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.primeMember,
-                    status: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.status,
-                    email: userData[0].email,
-                }, secretKey, { expiresIn: "30d" });
-                console.log("Access granted and token created");
-                object = {
-                    message: "Access granted",
-                    status: 200,
-                    error: "",
-                    loggedIn: true,
-                    userData: {
-                        firstName: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.firstName,
-                        lastName: (_f = userData[0]) === null || _f === void 0 ? void 0 : _f.lastName,
-                        email: (_g = userData[0]) === null || _g === void 0 ? void 0 : _g.email,
-                    },
-                    jwtToken,
-                };
-                res
-                    .status(object.status)
-                    .cookie("user", jwtToken, {
-                    expires: new Date(Date.now() + 3600 * 1000),
-                    httpOnly: true,
-                    sameSite: "strict",
-                })
-                    .send(object);
+                console.log((_a = userData[0]) === null || _a === void 0 ? void 0 : _a.status, "userddd");
+                if ((userData === null || userData === void 0 ? void 0 : userData.status) === true) {
+                    const jwtToken = jsonwebtoken_1.default.sign({
+                        _id: (_b = userData[0]) === null || _b === void 0 ? void 0 : _b._id,
+                        name: (_c = userData[0]) === null || _c === void 0 ? void 0 : _c.firstName,
+                        is_prime: (_d = userData[0]) === null || _d === void 0 ? void 0 : _d.primeMember,
+                        status: (_e = userData[0]) === null || _e === void 0 ? void 0 : _e.status,
+                        email: userData[0].email,
+                    }, secretKey, { expiresIn: "30d" });
+                    console.log("Access granted and token created");
+                    object = {
+                        message: "Access granted",
+                        status: 200,
+                        error: "",
+                        loggedIn: true,
+                        userData: {
+                            firstName: (_f = userData[0]) === null || _f === void 0 ? void 0 : _f.firstName,
+                            lastName: (_g = userData[0]) === null || _g === void 0 ? void 0 : _g.lastName,
+                            email: (_h = userData[0]) === null || _h === void 0 ? void 0 : _h.email,
+                        },
+                        jwtToken,
+                    };
+                    res
+                        .status(object.status)
+                        .cookie("user", jwtToken, {
+                        expires: new Date(Date.now() + 3600 * 1000),
+                        httpOnly: true,
+                        sameSite: "strict",
+                    })
+                        .send(object);
+                }
+                else {
+                }
             }
             else {
                 {
                     object = {
-                        message: "",
-                        status: 500,
-                        error: "password not matching",
+                        message: "You Are Blocked",
+                        status: 403,
+                        error: "",
                         loggedIn: false,
                         userData: {
                             firstName: undefined,
@@ -222,7 +227,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                             email: undefined,
                         },
                     };
-                    res.send(object);
+                    res.status(object.status).send(object);
                 }
             }
         }
@@ -238,7 +243,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     email: undefined,
                 },
             };
-            res.send(object);
+            res.status(object.status).send(object);
         }
     }
     catch (error) {
@@ -368,9 +373,10 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
         console.log(paymentIntent, "success payment");
-        res.send({
-            clientSecret: paymentIntent.client_secret,
-        });
+        if (paymentIntent)
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
     }
     catch (error) {
         console.error(error);
@@ -476,7 +482,7 @@ const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.userImage = userImage;
 const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _h;
+    var _j;
     try {
         console.log(req.body);
         let obj = {
@@ -485,7 +491,7 @@ const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
             error: "",
         };
         if (req.body) {
-            const { id } = (_h = req.body) === null || _h === void 0 ? void 0 : _h.userId;
+            const { id } = (_j = req.body) === null || _j === void 0 ? void 0 : _j.userId;
             const { firstName, lastName, number, about, height, weight, date } = req.body;
             const mobile = Number(number);
             const uHeight = Number(height);
