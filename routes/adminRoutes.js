@@ -64,6 +64,7 @@ router.get("/getAllEvent", checkAdminAuth_1.default, eventController_1.getAllEve
 router.get("/getEventDetails", checkAdminAuth_1.default, eventController_1.getEventDetails);
 router.get("/getEventData", checkAdminAuth_1.default, eventController_1.getEventData);
 router.get("/banners", checkAdminAuth_1.default, bannerController_1.banners);
+router.get("/getBanner", bannerController_1.getBanner);
 router.post("/AdminLogin", admincontroller_1.postAdminLogin);
 router.post("/blockUser", checkAdminAuth_1.default, admincontroller_1.blockUser);
 router.post("/changeComStatus", checkAdminAuth_1.default, communityController_1.changeComStatus);
@@ -71,6 +72,8 @@ router.post("/changeCommunity/:id", checkAdminAuth_1.default, communityControlle
 router.post("/addEvent", checkAdminAuth_1.default, eventController_1.addEvent);
 router.delete("/deleteCommunity/:id", checkAdminAuth_1.default, communityController_1.deleteCommunity);
 router.delete("/deleteEvent", checkAdminAuth_1.default, eventController_1.deleteEvent);
+router.delete("/deleteBanner", checkAdminAuth_1.default, bannerController_1.deleteBanner);
 router.post("/createCommunity", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.createCommunity);
 router.post("/addBanner", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.AddBanner);
+router.post("/postBannerEdit", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.postBannerEdit);
 exports.default = router;

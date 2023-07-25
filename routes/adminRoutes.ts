@@ -73,7 +73,7 @@ import {
   getEventData,
   deleteEvent,
 } from "../controllers/eventController";
-import { AddBanner,banners } from "../controllers/bannerController";
+import { AddBanner,banners,deleteBanner,getBanner,postBannerEdit} from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
 
 router.get("/getAllUser", isAuth, getAllUser);
@@ -87,6 +87,7 @@ router.get("/getAllEvent", isAuth, getAllEvent);
 router.get("/getEventDetails", isAuth, getEventDetails);
 router.get("/getEventData", isAuth, getEventData);
 router.get("/banners",isAuth,banners)
+router.get("/getBanner",getBanner)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);
@@ -96,8 +97,10 @@ router.post("/addEvent", isAuth, addEvent);
 
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
 router.delete("/deleteEvent", isAuth, deleteEvent);
+router.delete("/deleteBanner",isAuth,deleteBanner)
 
 router.post("/createCommunity",isAuth,upload.single("image"),createCommunity);
 router.post("/addBanner", isAuth, bannerUploads.single("image"), AddBanner);
+router.post("/postBannerEdit",isAuth,bannerUploads.single("image"),postBannerEdit)
 
 export default router;
