@@ -35,11 +35,14 @@ exports.upload = (0, multer_1.default)({
 });
 const userController_1 = require("../controllers/userController");
 const eventController_1 = require("../controllers/eventController");
+const communityController_1 = require("../controllers/communityController");
 const checkUserAuth_1 = __importDefault(require("../Middleware/checkUserAuth"));
 router.get("/getAllUpEvents", eventController_1.getAllUpEvents);
 router.get("/getEvent", eventController_1.getEvent);
 router.get("/getAllEvents", eventController_1.getAllEvents);
 router.get("/getUserProfile/:id", checkUserAuth_1.default, userController_1.getUserProfile);
+router.get("/userDetails/:id", checkUserAuth_1.default, userController_1.userDetails);
+router.get("/userCommunities/:id", checkUserAuth_1.default, communityController_1.userCommunities);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);

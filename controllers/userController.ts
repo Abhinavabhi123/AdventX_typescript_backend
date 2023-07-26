@@ -636,3 +636,50 @@ export const postAddress=async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+
+export const userDetails=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      userData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+      console.log(req.params,'params');
+      const {id} = req.params
+      if(id){
+        const userData = await userModel.findOne({_id:id})
+        console.log(userData,"hhhh");
+        if(userData){
+          obj={
+            message:"data fetched successfully",
+            status:200,
+            error:"",
+            userData
+          }
+          res.status(obj.status).send(obj)
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`user not found with this id ${id}`
+          }
+          res.status(obj.status).send(obj)
+        }
+        
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"The id is not present"
+        }
+      }
+  } catch (error) {
+    console.error(error);
+  }
+}

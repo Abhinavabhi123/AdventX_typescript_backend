@@ -345,7 +345,7 @@ export const changeCommunity = async (req: Request, res: Response) => {
     ) {
       obj = {
         message: "",
-        status: 204  ,
+        status: 204,
         error: "something went wrong, try again",
       };
       res.status(204).send(obj);
@@ -385,59 +385,121 @@ export const changeCommunity = async (req: Request, res: Response) => {
         status: 200,
         error: "something went wrong, try again",
       };
-      res.status(200).send(obj)
+      res.status(200).send(obj);
     }
   } catch (error) {
     console.error(error);
   }
 };
-export const deleteCommunity=async(req:Request,res:Response)=>{
+export const deleteCommunity = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string;
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
     }
-    const id:string = req.params.id;
+    const id: string = req.params.id;
     console.log(id);
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-    const data = await communityModel.findOne({_id:id})
-    if(data){
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const data = await communityModel.findOne({ _id: id });
+    if (data) {
       console.log(data?.members);
       const members = data?.members;
-      members.map(async(item)=>{
+      members.map(async (item) => {
         console.log(item?.userId);
-        const userId = item?.userId
-        await userModel.updateOne({_id:userId},{$pull:{community:{communityId:id}}})
+        const userId = item?.userId;
+        await userModel.updateOne(
+          { _id: userId },
+          { $pull: { community: { communityId: id } } }
+        );
       });
-      (async()=>{
-        await communityModel.deleteOne({_id:id});
-      })().then(()=>{
-        obj={
-          message:"Deleted successfully",
-          status:200,
-          error:""
-        }
-        res.status(obj.status).send(obj)
-      })
-
-    }else{
-      obj={
-        message:"",
-        status:404,
-        error:"content not found"
-      }
-      res.status(obj.status).send(obj)
+      (async () => {
+        await communityModel.deleteOne({ _id: id });
+      })().then(() => {
+        obj = {
+          message: "Deleted successfully",
+          status: 200,
+          error: "",
+        };
+        res.status(obj.status).send(obj);
+      });
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "content not found",
+      };
+      res.status(obj.status).send(obj);
     }
-      
-    
+
     console.log("ethi");
-    
   } catch (error) {
     console.error(error);
   }
-}
+};
+
+export const userCommunities = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      array?:any[]
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.params;
+    if (id) {
+      const userData = await userModel.findOne(
+        { _id: id },
+        { community: 1, _id: 0 }
+      );
+      if (userData) {
+        console.log(userData);
+        const community = userData?.community;
+        let array: any[] = [];
+        await Promise.all(
+          community.map(async (item, i) => {
+            console.log(item?.communityId, "opppopopo");
+            const communityData = await communityModel.findOne({$and:[
+              {_id: String(item?.communityId)},{status:"Active"}]
+            });
+            console.log(communityData, "kliklik", i);
+            array.push(communityData);
+          })
+        );
+        console.log(array, "community data");
+        obj={
+          message:'Data fetched successfully',
+          status:200,
+          error:'',
+          array
+        }
+        res.status(obj.status).send(obj)
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "User data not found",
+        };
+        res.status(obj.status).send(obj);
+      }
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: `User is not there`,
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

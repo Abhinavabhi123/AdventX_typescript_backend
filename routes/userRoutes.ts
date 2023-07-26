@@ -46,19 +46,23 @@ import {
   getUserProfile,
   userImage,
   postUserDetails,
-  postAddress
+  postAddress,
+  userDetails
 } from "../controllers/userController";
 import {
   getAllUpEvents,
   getEvent,
   getAllEvents,
 } from "../controllers/eventController";
+import {userCommunities} from "../controllers/communityController"
 import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
 router.get("/getEvent", getEvent);
 router.get("/getAllEvents", getAllEvents);
 router.get("/getUserProfile/:id",userAuth, getUserProfile);
+router.get("/userDetails/:id",userAuth,userDetails)
+router.get("/userCommunities/:id",userAuth,userCommunities)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);

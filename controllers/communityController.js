@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
@@ -340,7 +340,7 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         const data = yield communityModel_1.default.findOne({ _id: id });
         if (data) {
@@ -357,7 +357,7 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
                 obj = {
                     message: "Deleted successfully",
                     status: 200,
-                    error: ""
+                    error: "",
                 };
                 res.status(obj.status).send(obj);
             });
@@ -366,7 +366,7 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             obj = {
                 message: "",
                 status: 404,
-                error: "content not found"
+                error: "content not found",
             };
             res.status(obj.status).send(obj);
         }
@@ -377,3 +377,58 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.deleteCommunity = deleteCommunity;
+const userCommunities = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        const { id } = req.params;
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id }, { community: 1, _id: 0 });
+            if (userData) {
+                console.log(userData);
+                const community = userData === null || userData === void 0 ? void 0 : userData.community;
+                let array = [];
+                yield Promise.all(community.map((item, i) => __awaiter(void 0, void 0, void 0, function* () {
+                    console.log(item === null || item === void 0 ? void 0 : item.communityId, "opppopopo");
+                    const communityData = yield communityModel_1.default.findOne({ $and: [
+                            { _id: String(item === null || item === void 0 ? void 0 : item.communityId) }, { status: "Active" }
+                        ]
+                    });
+                    console.log(communityData, "kliklik", i);
+                    array.push(communityData);
+                })));
+                console.log(array, "community data");
+                obj = {
+                    message: 'Data fetched successfully',
+                    status: 200,
+                    error: '',
+                    array
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "User data not found",
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `User is not there`,
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.userCommunities = userCommunities;

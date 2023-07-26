@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -610,3 +610,46 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.postAddress = postAddress;
+const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.params, 'params');
+        const { id } = req.params;
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id });
+            console.log(userData, "hhhh");
+            if (userData) {
+                obj = {
+                    message: "data fetched successfully",
+                    status: 200,
+                    error: "",
+                    userData
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `user not found with this id ${id}`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "The id is not present"
+            };
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.userDetails = userDetails;
