@@ -11,7 +11,14 @@ export const storage = multer.diskStorage({
       cb(null, Date.now() + file.originalname);
     },
   });
-  
+  export const vStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./public/Vehicles/");
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + file.originalname);
+    },
+  });
   export const fileFilter = (
     req: Request,
     file: Express.Multer.File,
@@ -35,6 +42,12 @@ export const storage = multer.diskStorage({
     },
     fileFilter: fileFilter,
   });
+  const vUploads = multer({
+    storage:vStorage,
+    limits:{
+      fieldSize:1024*1024*100
+    },
+  })
 import {
   postUserSignup,
   userLogin,
@@ -47,7 +60,8 @@ import {
   userImage,
   postUserDetails,
   postAddress,
-  userDetails
+  userDetails,
+  addVehicle
 } from "../controllers/userController";
 import {
   getAllUpEvents,
@@ -74,6 +88,7 @@ router.post("/addPayment", addPayment);
 router.post("/postUserDetails",userAuth,postUserDetails)
 router.post("/postAddress",userAuth,postAddress)
 
+router.post("/addVehicle",userAuth,vUploads.array("image"),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 
 export default router;

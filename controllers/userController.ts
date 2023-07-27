@@ -683,3 +683,14 @@ export const userDetails=async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+export const addVehicle=async(req:Request,res:Response)=>{
+  try {
+    console.log(req.body);
+    const array  = req.files
+    console.log(array,'ooi');
+    
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

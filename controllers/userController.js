@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -653,3 +653,14 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.userDetails = userDetails;
+const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.body);
+        const array = req.files;
+        console.log(array, 'ooi');
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addVehicle = addVehicle;
