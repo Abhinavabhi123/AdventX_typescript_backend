@@ -35,13 +35,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
 const stripe_1 = __importDefault(require("stripe"));
 dotenv.config();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const secret_strip = process.env.STRIPE_SECRET_KEY;
 const stripes = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
@@ -562,7 +564,7 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         console.log(req.body);
         const { id } = req.body.userId;
@@ -571,18 +573,24 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (id) {
             const userData = yield userModel_1.default.findOne({ _id: id });
             if (userData) {
-                yield userModel_1.default.updateOne({ _id: id }, { $set: { address: {
+                yield userModel_1.default
+                    .updateOne({ _id: id }, {
+                    $set: {
+                        address: {
                             houseName,
                             locality,
                             area,
                             district,
                             state,
-                            zipCode
-                        } } }).then(() => {
+                            zipCode,
+                        },
+                    },
+                })
+                    .then(() => {
                     obj = {
                         message: "Address added Successfully",
                         status: 200,
-                        error: ""
+                        error: "",
                     };
                     res.status(obj.status).send(obj);
                 });
@@ -591,7 +599,7 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 obj = {
                     message: "",
                     status: 404,
-                    error: "User not found!"
+                    error: "User not found!",
                 };
                 res.status(obj.status).send(obj);
             }
@@ -600,7 +608,7 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             obj = {
                 message: "",
                 status: 404,
-                error: "User not found!"
+                error: "User not found!",
             };
             res.status(obj.status).send(obj);
         }
@@ -615,9 +623,9 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
-        console.log(req.params, 'params');
+        console.log(req.params, "params");
         const { id } = req.params;
         if (id) {
             const userData = yield userModel_1.default.findOne({ _id: id });
@@ -627,7 +635,7 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     message: "data fetched successfully",
                     status: 200,
                     error: "",
-                    userData
+                    userData,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -635,7 +643,7 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 obj = {
                     message: "",
                     status: 404,
-                    error: `user not found with this id ${id}`
+                    error: `user not found with this id ${id}`,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -644,7 +652,7 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             obj = {
                 message: "",
                 status: 404,
-                error: "The id is not present"
+                error: "The id is not present",
             };
         }
     }
@@ -657,10 +665,194 @@ const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         console.log(req.body);
         const array = req.files;
-        console.log(array, 'ooi');
+        console.log(array, "ooi");
     }
     catch (error) {
         console.error(error);
     }
 });
 exports.addVehicle = addVehicle;
+const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const sig = req.headers["stripe-signature"];
+    let event;
+    try {
+        if (typeof sig !== "string") {
+            return;
+        }
+        // if (typeof req.body !== "string" && !Buffer.isBuffer(req.body)) {
+        //   res.sendStatus(400);
+        //   return;
+        // }
+        const secret = process.env.END_POINT_SECRET;
+        if (secret === undefined) {
+            return;
+        }
+        const Stripe = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
+        console.log(req.body, "bodyyy");
+        event = Stripe.webhooks.constructEvent(req.body, sig, secret);
+        console.log("evide nd");
+        console.log(event, "eventos");
+    }
+    catch (error) {
+        console.error(error);
+        console.log("potti");
+    }
+    if (event) {
+        switch (event.type) {
+            case "payment_intent.succeeded":
+                const paymentIntentSucceeded = event.data.object;
+                console.log("kitti", paymentIntentSucceeded);
+                res.status(200);
+                break;
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+        }
+    }
+});
+exports.webhook = webhook;
+const userLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { id } = req.query;
+        console.log(id, "idddd");
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id }, { license: 1, _id: 0 });
+            if (userData) {
+                console.log(userData);
+                obj = {
+                    message: "User data fetched successfully",
+                    status: 200,
+                    error: "",
+                    userData
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "User Records not found"
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "User not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.userLicense = userLicense;
+const addLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        console.log("Ethi");
+        const { Number, lExpiry, userId } = req.body;
+        const userData = yield userModel_1.default.findOne({ _id: userId });
+        if (!userData) {
+            obj = {
+                message: "",
+                status: 404,
+                error: "user records not found",
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            if (req.body && req.file) {
+                yield userModel_1.default
+                    .updateOne({ _id: userId }, {
+                    $set: { license: {
+                            licenseNumber: Number,
+                            ExpiryDate: lExpiry,
+                            image: req.file.filename,
+                        } },
+                })
+                    .then(() => {
+                    obj = {
+                        message: "License added successfully",
+                        status: 200,
+                        error: "",
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addLicense = addLicense;
+const editLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        console.log("Edit Ethi");
+        const { Number, lExpiry, userId } = req.body;
+        const userData = yield userModel_1.default.findOne({ _id: userId });
+        if (!userData) {
+            obj = {
+                message: "",
+                status: 404,
+                error: "user records not found",
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            if (req.body && req.file) {
+                yield userModel_1.default
+                    .updateOne({ _id: userId }, {
+                    $set: { license: {
+                            licenseNumber: Number,
+                            ExpiryDate: lExpiry,
+                            image: req.file.filename,
+                        } },
+                })
+                    .then(() => {
+                    var _a, _b;
+                    if ((_a = userData === null || userData === void 0 ? void 0 : userData.license) === null || _a === void 0 ? void 0 : _a.image) {
+                        const imageUrl = (_b = userData === null || userData === void 0 ? void 0 : userData.license) === null || _b === void 0 ? void 0 : _b.image;
+                        const imagePath = path_1.default.join(__dirname, "../public/License");
+                        const delImagePath = path_1.default.join(imagePath, imageUrl);
+                        fs_1.default.unlink(delImagePath, (err) => {
+                            if (err) {
+                                console.error(err);
+                            }
+                            else {
+                                console.log(`LIcense image data removed successfully`);
+                            }
+                        });
+                    }
+                    obj = {
+                        message: "License added successfully",
+                        status: 200,
+                        error: "",
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.editLicense = editLicense;

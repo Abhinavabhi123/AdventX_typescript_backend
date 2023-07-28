@@ -107,8 +107,9 @@ const userSchema = new Schema<User>({
     }
   ],
   license:{
-    licenseNumber:Number,
-    ExpiryDate:Date
+    licenseNumber:String,
+    ExpiryDate:String,
+    image:String
   },
   createdAt:{
     type:Date,

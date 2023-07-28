@@ -104,7 +104,6 @@ const deleteBanner = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     fs_1.default.unlink(imagePath, (err) => {
                         if (err) {
                             console.error(err);
-                            return;
                         }
                         else {
                             console.log("banner image deleted successfully");

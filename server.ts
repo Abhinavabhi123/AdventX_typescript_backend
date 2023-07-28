@@ -27,6 +27,7 @@ app.use(express.urlencoded({limit:'100mb', extended:false }));
 app.use('/uploads',express.static('uploads'))
 app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser())
+// app.use(express.raw({ type: 'application/json' }))
 
 app.use(morgan("dev"))
 

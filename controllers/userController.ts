@@ -5,9 +5,9 @@ import * as dotenv from "dotenv";
 import stripe from "stripe";
 dotenv.config();
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
-
+import fs from "fs";
+import path from "path";
 import bcrypt from "bcrypt";
-import { log } from "console";
 
 const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
 
@@ -164,7 +164,7 @@ export const userLogin = async (req: Request, res: Response) => {
     };
 
     const { email, password } = req.body;
-    const userData:any = await userModel.find({ email: email });
+    const userData: any = await userModel.find({ email: email });
 
     if (userData) {
       const grantAccess: boolean = await compareHash(
@@ -172,50 +172,48 @@ export const userLogin = async (req: Request, res: Response) => {
         userData[0].password
       );
       if (grantAccess) {
-        console.log(userData[0]?.status,"userddd");
-        if(userData[0]?.status===true){
+        console.log(userData[0]?.status, "userddd");
+        if (userData[0]?.status === true) {
+          console.log("ivide");
 
-        
-        console.log("ivide");
-        
-        const jwtToken = jwt.sign(
-          {
-            _id: userData[0]?._id,
-            name: userData[0]?.firstName,
-            is_prime: userData[0]?.primeMember,
-            status: userData[0]?.status,
-            email: userData[0].email,
-          },
-          secretKey,
-          { expiresIn: "30d" }
-        );
+          const jwtToken = jwt.sign(
+            {
+              _id: userData[0]?._id,
+              name: userData[0]?.firstName,
+              is_prime: userData[0]?.primeMember,
+              status: userData[0]?.status,
+              email: userData[0].email,
+            },
+            secretKey,
+            { expiresIn: "30d" }
+          );
 
-        console.log("Access granted and token created");
+          console.log("Access granted and token created");
 
-        object = {
-          message: "Access granted",
-          status: 200,
-          error: "",
-          loggedIn: true,
-          userData: {
-            firstName: userData[0]?.firstName,
-            lastName: userData[0]?.lastName,
-            email: userData[0]?.email,
-          },
-          jwtToken,
-        };
-        res
-          .status(object.status)
-          .cookie("user", jwtToken, {
-            expires: new Date(Date.now() + 3600 * 1000),
-            httpOnly: true,
-            sameSite: "strict",
-          })
-          .send(object);
-        }else{
+          object = {
+            message: "Access granted",
+            status: 200,
+            error: "",
+            loggedIn: true,
+            userData: {
+              firstName: userData[0]?.firstName,
+              lastName: userData[0]?.lastName,
+              email: userData[0]?.email,
+            },
+            jwtToken,
+          };
+          res
+            .status(object.status)
+            .cookie("user", jwtToken, {
+              expires: new Date(Date.now() + 3600 * 1000),
+              httpOnly: true,
+              sameSite: "strict",
+            })
+            .send(object);
+        } else {
           object = {
             message: "",
-            status: 404 ,
+            status: 404,
             error: "You Are Blocked by Admin",
             loggedIn: false,
             userData: {
@@ -230,7 +228,7 @@ export const userLogin = async (req: Request, res: Response) => {
         {
           object = {
             message: "",
-            status: 500 ,
+            status: 500,
             error: "Password not matching",
             loggedIn: false,
             userData: {
@@ -403,10 +401,10 @@ export const addPayment = async (req: Request, res: Response) => {
       },
     });
     console.log(paymentIntent, "success payment");
-    if(paymentIntent)
-    res.send({
-      clientSecret: paymentIntent.client_secret,
-    });
+    if (paymentIntent)
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
   } catch (error) {
     console.error(error);
   }
@@ -579,65 +577,171 @@ export const postUserDetails = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
-export const postAddress=async(req:Request,res:Response)=>{
+export const postAddress = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-      console.log(req.body);
-      const{id}=req.body.userId
-      const {houseName,locality,area,district,state,zip} =req.body
-      const zipCode = Number(zip)
-      if(id){
-        const userData = await userModel.findOne({_id:id})
-        if(userData){
-            await userModel.updateOne({_id:id},{$set:{address:{
-              houseName,
-              locality,
-              area,
-              district,
-              state,
-              zipCode
-            }}}).then(()=>{
-              obj={
-                message:"Address added Successfully",
-                status:200,
-                error:""
-              }
-              res.status(obj.status).send(obj)
-            })
-        }else{
-          obj={
-            message:"",
-            status:404,
-            error:"User not found!"
-          }
-          res.status(obj.status).send(obj)
-        }
-      }else{
-        obj={
-          message:"",
-          status:404,
-          error:"User not found!"
-        }
-        res.status(obj.status).send(obj)
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    console.log(req.body);
+    const { id } = req.body.userId;
+    const { houseName, locality, area, district, state, zip } = req.body;
+    const zipCode = Number(zip);
+    if (id) {
+      const userData = await userModel.findOne({ _id: id });
+      if (userData) {
+        await userModel
+          .updateOne(
+            { _id: id },
+            {
+              $set: {
+                address: {
+                  houseName,
+                  locality,
+                  area,
+                  district,
+                  state,
+                  zipCode,
+                },
+              },
+            }
+          )
+          .then(() => {
+            obj = {
+              message: "Address added Successfully",
+              status: 200,
+              error: "",
+            };
+            res.status(obj.status).send(obj);
+          });
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "User not found!",
+        };
+        res.status(obj.status).send(obj);
       }
-      
-      
-      
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "User not found!",
+      };
+      res.status(obj.status).send(obj);
+    }
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export const userDetails=async(req:Request,res:Response)=>{
+export const userDetails = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      userData?: {};
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    console.log(req.params, "params");
+    const { id } = req.params;
+    if (id) {
+      const userData = await userModel.findOne({ _id: id });
+      console.log(userData, "hhhh");
+      if (userData) {
+        obj = {
+          message: "data fetched successfully",
+          status: 200,
+          error: "",
+          userData,
+        };
+        res.status(obj.status).send(obj);
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: `user not found with this id ${id}`,
+        };
+        res.status(obj.status).send(obj);
+      }
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "The id is not present",
+      };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const addVehicle = async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+    const array = req.files;
+    console.log(array, "ooi");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const webhook = async (req: Request, res: Response) => {
+  const sig = req.headers["stripe-signature"];
+  let event;
+  try {
+    if (typeof sig !== "string") {
+      return;
+    }
+
+    // if (typeof req.body !== "string" && !Buffer.isBuffer(req.body)) {
+    //   res.sendStatus(400);
+    //   return;
+    // }
+
+    const secret: string | undefined = process.env.END_POINT_SECRET;
+    if (secret === undefined) {
+      return;
+    }
+
+    const Stripe = new stripe(secret_strip, { apiVersion: "2022-11-15" });
+
+    console.log(req.body, "bodyyy");
+
+    event = Stripe.webhooks.constructEvent(req.body, sig, secret);
+    console.log("evide nd");
+
+    console.log(event, "eventos");
+  } catch (error) {
+    console.error(error);
+    console.log("potti");
+  }
+  if (event) {
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntentSucceeded = event.data.object;
+        console.log("kitti", paymentIntentSucceeded);
+
+        res.status(200);
+
+        break;
+
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+  }
+};
+export const userLicense = async(req:Request,res:Response)=>{
   try {
     interface Obj{
       message:string;
@@ -650,46 +754,151 @@ export const userDetails=async(req:Request,res:Response)=>{
       status:0,
       error:""
     }
-      console.log(req.params,'params');
-      const {id} = req.params
-      if(id){
-        const userData = await userModel.findOne({_id:id})
-        console.log(userData,"hhhh");
-        if(userData){
-          obj={
-            message:"data fetched successfully",
-            status:200,
-            error:"",
-            userData
-          }
-          res.status(obj.status).send(obj)
-        }else{
-          obj={
-            message:"",
-            status:404,
-            error:`user not found with this id ${id}`
-          }
-          res.status(obj.status).send(obj)
-        }
-        
-      }else{
-        obj={
-          message:"",
-          status:404,
-          error:"The id is not present"
-        }
+  const {id}=req.query
+  console.log(id,"idddd");
+  if(id){
+    const userData = await userModel.findOne({_id:id},{license:1,_id:0})
+    if(userData){
+      console.log(userData);
+      obj={
+        message:"User data fetched successfully",
+        status:200,
+        error:"",
+        userData
       }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:"User Records not found"
+      }
+      res.status(obj.status).send(obj)
+    }
+  }else{
+    obj={
+      message:"",
+      status:404,
+      error:"User not found"
+    }
+    res.status(obj.status).send(obj)
+  }
+  
   } catch (error) {
     console.error(error);
   }
 }
-export const addVehicle=async(req:Request,res:Response)=>{
+export const addLicense = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
-    const array  = req.files
-    console.log(array,'ooi');
-    
-    
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    console.log("Ethi");
+
+    const { Number, lExpiry, userId } = req.body;
+    const userData = await userModel.findOne({ _id: userId });
+    if (!userData) {
+      obj = {
+        message: "",
+        status: 404,
+        error: "user records not found",
+      };
+      res.status(obj.status).send(obj);
+    } else {
+      if (req.body && req.file) {
+        await userModel
+          .updateOne(
+            { _id: userId },
+            {
+              $set:{license:{
+                licenseNumber: Number,
+                ExpiryDate: lExpiry,
+                image: req.file.filename,
+              }},
+            }
+          )
+          .then(() => {
+
+            
+            obj = {
+              message: "License added successfully",
+              status: 200,
+              error: "",
+            };
+            res.status(obj.status).send(obj);
+          });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const editLicense = async(req:Request,res:Response)=>{
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    console.log("Edit Ethi");
+
+    const { Number, lExpiry, userId } = req.body;
+    const userData = await userModel.findOne({ _id: userId });
+    if (!userData) {
+      obj = {
+        message: "",
+        status: 404,
+        error: "user records not found",
+      };
+      res.status(obj.status).send(obj);
+    } else {
+      if (req.body && req.file) {
+        await userModel
+          .updateOne(
+            { _id: userId },
+            {
+              $set:{license:{
+                licenseNumber: Number,
+                ExpiryDate: lExpiry,
+                image: req.file.filename,
+              }},
+            }
+          )
+          .then(() => {
+            if(userData?.license?.image){
+              const imageUrl:string = userData?.license?.image  as string
+              const imagePath = path.join(__dirname,"../public/License")
+              const delImagePath = path.join(imagePath,imageUrl)
+              fs.unlink(delImagePath,(err)=>{
+                if(err){
+                  console.error(err);
+                }else{
+                  console.log(`LIcense image data removed successfully`);
+                  
+                }
+              })
+            }
+            obj = {
+              message: "License added successfully",
+              status: 200,
+              error: "",
+            };
+            res.status(obj.status).send(obj);
+          });
+      }
+    }
   } catch (error) {
     console.error(error);
   }

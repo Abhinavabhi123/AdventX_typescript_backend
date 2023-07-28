@@ -95,6 +95,7 @@ router.post("/changeComStatus", isAuth, changeComStatus);
 router.post("/changeCommunity/:id", isAuth, changeCommunity);
 router.post("/addEvent", isAuth, addEvent);
 
+
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
 router.delete("/deleteEvent", isAuth, deleteEvent);
 router.delete("/deleteBanner",isAuth,deleteBanner)

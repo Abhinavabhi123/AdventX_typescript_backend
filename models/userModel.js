@@ -84,8 +84,9 @@ const userSchema = new mongoose_1.Schema({
         }
     ],
     license: {
-        licenseNumber: Number,
-        ExpiryDate: Date
+        licenseNumber: String,
+        ExpiryDate: String,
+        image: String
     },
     createdAt: {
         type: Date,

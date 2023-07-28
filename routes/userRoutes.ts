@@ -1,4 +1,4 @@
-import { Router,Request } from "express";
+import express, { Router,Request } from "express";
 import multer, { FileFilterCallback } from "multer";
 
 const router = Router();
@@ -14,6 +14,14 @@ export const storage = multer.diskStorage({
   export const vStorage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, "./public/Vehicles/");
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + file.originalname);
+    },
+  });
+  export const LStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./public/License/");
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + file.originalname);
@@ -48,6 +56,12 @@ export const storage = multer.diskStorage({
       fieldSize:1024*1024*100
     },
   })
+  const LUploads = multer({
+    storage:LStorage,
+    limits:{
+      fieldSize:1024*1024*100
+    },
+  })
 import {
   postUserSignup,
   userLogin,
@@ -61,7 +75,11 @@ import {
   postUserDetails,
   postAddress,
   userDetails,
-  addVehicle
+  addVehicle,
+  webhook,
+  addLicense,
+  userLicense,
+  editLicense
 } from "../controllers/userController";
 import {
   getAllUpEvents,
@@ -77,6 +95,7 @@ router.get("/getAllEvents", getAllEvents);
 router.get("/getUserProfile/:id",userAuth, getUserProfile);
 router.get("/userDetails/:id",userAuth,userDetails)
 router.get("/userCommunities/:id",userAuth,userCommunities)
+router.get("/userLicense",userAuth,userLicense)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);
@@ -87,8 +106,11 @@ router.post("/changePass", changePass);
 router.post("/addPayment", addPayment);
 router.post("/postUserDetails",userAuth,postUserDetails)
 router.post("/postAddress",userAuth,postAddress)
+router.post("/webhook", express.raw({type: 'application/json'}),webhook)
 
 router.post("/addVehicle",userAuth,vUploads.array("image"),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
+router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
+router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)
 
 export default router;

@@ -102,7 +102,6 @@ export const deleteBanner = async (req: Request, res: Response) => {
           fs.unlink(imagePath, (err) => {
             if (err) {
               console.error(err);
-              return;
             } else {
               console.log("banner image deleted successfully");
             }
