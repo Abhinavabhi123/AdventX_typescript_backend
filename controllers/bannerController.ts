@@ -256,3 +256,37 @@ export const postBannerEdit = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+export const getUserBanner = async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      bannerData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+      const bannerData = await bannerModel.find()
+      if(bannerData){
+        obj={
+          message:"Data fetched successfully",
+          status:200,
+          error:"",
+          bannerData
+        }
+        res.status(obj.status).send(obj)
+      }else{
+        obj={
+          message:'',
+          status:404,
+          error:"Data not found"
+        }
+        res.status(obj.status).send(obj)
+      }
+  } catch (error) {
+    console.error(error);
+  }
+}

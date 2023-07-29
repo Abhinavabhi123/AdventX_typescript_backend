@@ -52,9 +52,10 @@ export const storage = multer.diskStorage({
   });
   const vUploads = multer({
     storage:vStorage,
-    limits:{
-      fieldSize:1024*1024*100
+    limits: {
+      fileSize: 1024 * 1024 * 100,
     },
+    fileFilter: fileFilter,
   })
   const LUploads = multer({
     storage:LStorage,
@@ -79,7 +80,9 @@ import {
   webhook,
   addLicense,
   userLicense,
-  editLicense
+  editLicense,
+  create_checkout_session,
+  getUserEvent
 } from "../controllers/userController";
 import {
   getAllUpEvents,
@@ -87,6 +90,7 @@ import {
   getAllEvents,
 } from "../controllers/eventController";
 import {userCommunities} from "../controllers/communityController"
+import {getUserBanner}from "../controllers/bannerController"
 import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
@@ -96,6 +100,8 @@ router.get("/getUserProfile/:id",userAuth, getUserProfile);
 router.get("/userDetails/:id",userAuth,userDetails)
 router.get("/userCommunities/:id",userAuth,userCommunities)
 router.get("/userLicense",userAuth,userLicense)
+router.get("/getUserEvent",getUserEvent)
+router.get("/getBanner",getUserBanner)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);
@@ -106,9 +112,12 @@ router.post("/changePass", changePass);
 router.post("/addPayment", addPayment);
 router.post("/postUserDetails",userAuth,postUserDetails)
 router.post("/postAddress",userAuth,postAddress)
-router.post("/webhook", express.raw({type: 'application/json'}),webhook)
+router.post("/webhook",express.raw({type:'application/json'}),webhook)
+// 
+router.post("/create-checkout-session",userAuth,create_checkout_session)
+// 
 
-router.post("/addVehicle",userAuth,vUploads.array("image"),addVehicle)
+router.post("/addVehicle",userAuth,vUploads.array("array",3),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
 router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)

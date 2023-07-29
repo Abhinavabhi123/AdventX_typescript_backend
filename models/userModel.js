@@ -35,13 +35,13 @@ const userSchema = new mongoose_1.Schema({
     },
     image: {
         type: String,
-        required: false
+        required: false,
     },
     community: [
         {
             communityId: mongodb_1.ObjectId,
-            _id: false
-        }
+            _id: false,
+        },
     ],
     about: {
         type: String,
@@ -79,20 +79,20 @@ const userSchema = new mongoose_1.Schema({
     eventParticipation: [
         {
             eventId: {
-                type: [mongoose_1.SchemaTypes.ObjectId]
-            }
-        }
+                type: [mongoose_1.SchemaTypes.ObjectId],
+            },
+        },
     ],
     license: {
         licenseNumber: String,
         ExpiryDate: String,
-        image: String
+        image: String,
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 }, {
-    timestamps: true
+    timestamps: true,
 });
 exports.default = (0, mongoose_1.model)("User", userSchema);

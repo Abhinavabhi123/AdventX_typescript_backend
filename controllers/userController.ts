@@ -8,6 +8,7 @@ import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcrypt";
+import eventModel from "../models/eventModel";
 
 const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
 
@@ -402,6 +403,8 @@ export const addPayment = async (req: Request, res: Response) => {
     });
     console.log(paymentIntent, "success payment");
     if (paymentIntent)
+      // console.log(paymentIntent.url,"ojojoj");
+
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
@@ -689,25 +692,24 @@ export const userDetails = async (req: Request, res: Response) => {
 export const addVehicle = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
+    console.log(req.files);
+    
     const array = req.files;
     console.log(array, "ooi");
   } catch (error) {
-    console.error(error);
+    console.error(error); 
   }
 };
 
 export const webhook = async (req: Request, res: Response) => {
+  console.log("Success payment");
+  
   const sig = req.headers["stripe-signature"];
-  let event;
+  let event;  
   try {
     if (typeof sig !== "string") {
       return;
     }
-
-    // if (typeof req.body !== "string" && !Buffer.isBuffer(req.body)) {
-    //   res.sendStatus(400);
-    //   return;
-    // }
 
     const secret: string | undefined = process.env.END_POINT_SECRET;
     if (secret === undefined) {
@@ -716,9 +718,19 @@ export const webhook = async (req: Request, res: Response) => {
 
     const Stripe = new stripe(secret_strip, { apiVersion: "2022-11-15" });
 
-    console.log(req.body, "bodyyy");
+    let payload: Buffer | string;
 
-    event = Stripe.webhooks.constructEvent(req.body, sig, secret);
+    if (typeof req.body === "string" || Buffer.isBuffer(req.body)) {
+      payload = req.body;
+    } else {
+      payload = JSON.stringify(req.body);
+    }
+
+    console.log(sig,"oppppppooo");
+    console.log(payload,"itgkjgakjdsg");
+    
+    
+    event = stripes.webhooks.constructEvent(payload, sig, secret);
     console.log("evide nd");
 
     console.log(event, "eventos");
@@ -741,53 +753,54 @@ export const webhook = async (req: Request, res: Response) => {
     }
   }
 };
-export const userLicense = async(req:Request,res:Response)=>{
+export const userLicense = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string;
-      userData?:{}
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      userData?: {};
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-  const {id}=req.query
-  console.log(id,"idddd");
-  if(id){
-    const userData = await userModel.findOne({_id:id},{license:1,_id:0})
-    if(userData){
-      console.log(userData);
-      obj={
-        message:"User data fetched successfully",
-        status:200,
-        error:"",
-        userData
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.query;
+
+    if (id) {
+      const userData = await userModel.findOne(
+        { _id: id },
+        { license: 1, _id: 0 }
+      );
+      if (userData) {
+        obj = {
+          message: "User data fetched successfully",
+          status: 200,
+          error: "",
+          userData,
+        };
+        res.status(obj.status).send(obj);
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: "User Records not found",
+        };
+        res.status(obj.status).send(obj);
       }
-      res.status(obj.status).send(obj)
-    }else{
-      obj={
-        message:"",
-        status:404,
-        error:"User Records not found"
-      }
-      res.status(obj.status).send(obj)
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: "User not found",
+      };
+      res.status(obj.status).send(obj);
     }
-  }else{
-    obj={
-      message:"",
-      status:404,
-      error:"User not found"
-    }
-    res.status(obj.status).send(obj)
-  }
-  
   } catch (error) {
     console.error(error);
   }
-}
+};
 export const addLicense = async (req: Request, res: Response) => {
   try {
     interface Obj {
@@ -817,16 +830,16 @@ export const addLicense = async (req: Request, res: Response) => {
           .updateOne(
             { _id: userId },
             {
-              $set:{license:{
-                licenseNumber: Number,
-                ExpiryDate: lExpiry,
-                image: req.file.filename,
-              }},
+              $set: {
+                license: {
+                  licenseNumber: Number,
+                  ExpiryDate: lExpiry,
+                  image: req.file.filename,
+                },
+              },
             }
           )
           .then(() => {
-
-            
             obj = {
               message: "License added successfully",
               status: 200,
@@ -840,7 +853,7 @@ export const addLicense = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
-export const editLicense = async(req:Request,res:Response)=>{
+export const editLicense = async (req: Request, res: Response) => {
   try {
     interface Obj {
       message: string;
@@ -852,8 +865,6 @@ export const editLicense = async(req:Request,res:Response)=>{
       status: 0,
       error: "",
     };
-    console.log("Edit Ethi");
-
     const { Number, lExpiry, userId } = req.body;
     const userData = await userModel.findOne({ _id: userId });
     if (!userData) {
@@ -869,26 +880,27 @@ export const editLicense = async(req:Request,res:Response)=>{
           .updateOne(
             { _id: userId },
             {
-              $set:{license:{
-                licenseNumber: Number,
-                ExpiryDate: lExpiry,
-                image: req.file.filename,
-              }},
+              $set: {
+                license: {
+                  licenseNumber: Number,
+                  ExpiryDate: lExpiry,
+                  image: req.file.filename,
+                },
+              },
             }
           )
           .then(() => {
-            if(userData?.license?.image){
-              const imageUrl:string = userData?.license?.image  as string
-              const imagePath = path.join(__dirname,"../public/License")
-              const delImagePath = path.join(imagePath,imageUrl)
-              fs.unlink(delImagePath,(err)=>{
-                if(err){
+            if (userData?.license?.image) {
+              const imageUrl: string = userData?.license?.image as string;
+              const imagePath = path.join(__dirname, "../public/License");
+              const delImagePath = path.join(imagePath, imageUrl);
+              fs.unlink(delImagePath, (err) => {
+                if (err) {
                   console.error(err);
-                }else{
+                } else {
                   console.log(`LIcense image data removed successfully`);
-                  
                 }
-              })
+              });
             }
             obj = {
               message: "License added successfully",
@@ -899,6 +911,106 @@ export const editLicense = async(req:Request,res:Response)=>{
           });
       }
     }
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const create_checkout_session = async (req: Request, res: Response) => {
+  try {
+    const { userId, amount } = req.body;
+    console.log(process.env.CLIENT_DOMAIN);
+    
+    //create checkout session with stripe api
+    const Stripe = new stripe(secret_strip, { apiVersion: "2022-11-15" });
+    // const session = await Stripe.checkout.sessions.create({
+    //   payment_method_types: ["card"],
+    //   line_items:[
+    //     {
+    //       price_data:{
+    //         currency:'inr',
+    //         product_data:{
+    //           name:"Premium Plan"
+    //         },
+    //         unit_amount:amount
+    //       },
+    //       quantity:1
+    //     }
+    //   ],
+    //   mode:"payment",
+    //   metadata:{
+    //     userId
+    //   },
+    //   success_url:`http://localhost:5173/subscribe/success `,
+    //   cancel_url:`http://localhost:5173/subscribe/cancel`
+    // })
+    const session = await stripes.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items:[
+            {
+              price_data:{
+                currency:'inr',
+                product_data:{
+                  name:"Premium Plan"
+                },
+                unit_amount:amount
+              },
+              quantity:1
+            }
+          ],
+      mode: 'payment',
+      metadata:{
+            userId
+      },
+      success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success`,
+      cancel_url: `${process.env.CLIENT_DOMAIN}/subscribe/cancel`,
+    });
+    res.json({ url: session.url});
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const getUserEvent = async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      eventData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+      const {id}=req.query
+      if(id){
+        const eventData = await eventModel.findOne({_id:id})
+        if(eventData){
+          obj={
+            message:"Data fetched successfully",
+            status:200,
+            error:'',
+            eventData
+          }
+          res.status(obj.status).send(obj)
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`No event data found at id${id}`
+          }
+          res.status(obj.status).send(obj)
+        }
+
+      }else{
+        obj={
+          message:"",
+          status:404, 
+          error:`can't find the event id`
+        }
+        res.status(obj.status).send(obj)
+      }
+      
   } catch (error) {
     console.error(error);
   }

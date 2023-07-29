@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.getUserEvent = exports.create_checkout_session = exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -45,6 +45,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const eventModel_1 = __importDefault(require("../models/eventModel"));
 const secret_strip = process.env.STRIPE_SECRET_KEY;
 const stripes = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
 const secretKey = process.env.USER_JWT_SECRET || "";
@@ -389,6 +390,7 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         console.log(paymentIntent, "success payment");
         if (paymentIntent)
+            // console.log(paymentIntent.url,"ojojoj");
             res.send({
                 clientSecret: paymentIntent.client_secret,
             });
@@ -664,6 +666,7 @@ exports.userDetails = userDetails;
 const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(req.body);
+        console.log(req.files);
         const array = req.files;
         console.log(array, "ooi");
     }
@@ -673,23 +676,28 @@ const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.addVehicle = addVehicle;
 const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Success payment");
     const sig = req.headers["stripe-signature"];
     let event;
     try {
         if (typeof sig !== "string") {
             return;
         }
-        // if (typeof req.body !== "string" && !Buffer.isBuffer(req.body)) {
-        //   res.sendStatus(400);
-        //   return;
-        // }
         const secret = process.env.END_POINT_SECRET;
         if (secret === undefined) {
             return;
         }
         const Stripe = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
-        console.log(req.body, "bodyyy");
-        event = Stripe.webhooks.constructEvent(req.body, sig, secret);
+        let payload;
+        if (typeof req.body === "string" || Buffer.isBuffer(req.body)) {
+            payload = req.body;
+        }
+        else {
+            payload = JSON.stringify(req.body);
+        }
+        console.log(sig, "oppppppooo");
+        console.log(payload, "itgkjgakjdsg");
+        event = stripes.webhooks.constructEvent(payload, sig, secret);
         console.log("evide nd");
         console.log(event, "eventos");
     }
@@ -715,19 +723,17 @@ const userLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         const { id } = req.query;
-        console.log(id, "idddd");
         if (id) {
             const userData = yield userModel_1.default.findOne({ _id: id }, { license: 1, _id: 0 });
             if (userData) {
-                console.log(userData);
                 obj = {
                     message: "User data fetched successfully",
                     status: 200,
                     error: "",
-                    userData
+                    userData,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -735,7 +741,7 @@ const userLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 obj = {
                     message: "",
                     status: 404,
-                    error: "User Records not found"
+                    error: "User Records not found",
                 };
                 res.status(obj.status).send(obj);
             }
@@ -744,7 +750,7 @@ const userLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             obj = {
                 message: "",
                 status: 404,
-                error: "User not found"
+                error: "User not found",
             };
             res.status(obj.status).send(obj);
         }
@@ -776,11 +782,13 @@ const addLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             if (req.body && req.file) {
                 yield userModel_1.default
                     .updateOne({ _id: userId }, {
-                    $set: { license: {
+                    $set: {
+                        license: {
                             licenseNumber: Number,
                             ExpiryDate: lExpiry,
                             image: req.file.filename,
-                        } },
+                        },
+                    },
                 })
                     .then(() => {
                     obj = {
@@ -805,7 +813,6 @@ const editLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             status: 0,
             error: "",
         };
-        console.log("Edit Ethi");
         const { Number, lExpiry, userId } = req.body;
         const userData = yield userModel_1.default.findOne({ _id: userId });
         if (!userData) {
@@ -820,11 +827,13 @@ const editLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             if (req.body && req.file) {
                 yield userModel_1.default
                     .updateOne({ _id: userId }, {
-                    $set: { license: {
+                    $set: {
+                        license: {
                             licenseNumber: Number,
                             ExpiryDate: lExpiry,
                             image: req.file.filename,
-                        } },
+                        },
+                    },
                 })
                     .then(() => {
                     var _a, _b;
@@ -856,3 +865,100 @@ const editLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.editLicense = editLicense;
+const create_checkout_session = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId, amount } = req.body;
+        console.log(process.env.CLIENT_DOMAIN);
+        //create checkout session with stripe api
+        const Stripe = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
+        // const session = await Stripe.checkout.sessions.create({
+        //   payment_method_types: ["card"],
+        //   line_items:[
+        //     {
+        //       price_data:{
+        //         currency:'inr',
+        //         product_data:{
+        //           name:"Premium Plan"
+        //         },
+        //         unit_amount:amount
+        //       },
+        //       quantity:1
+        //     }
+        //   ],
+        //   mode:"payment",
+        //   metadata:{
+        //     userId
+        //   },
+        //   success_url:`http://localhost:5173/subscribe/success `,
+        //   cancel_url:`http://localhost:5173/subscribe/cancel`
+        // })
+        const session = yield stripes.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'inr',
+                        product_data: {
+                            name: "Premium Plan"
+                        },
+                        unit_amount: amount
+                    },
+                    quantity: 1
+                }
+            ],
+            mode: 'payment',
+            metadata: {
+                userId
+            },
+            success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success`,
+            cancel_url: `${process.env.CLIENT_DOMAIN}/subscribe/cancel`,
+        });
+        res.json({ url: session.url });
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.create_checkout_session = create_checkout_session;
+const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { id } = req.query;
+        if (id) {
+            const eventData = yield eventModel_1.default.findOne({ _id: id });
+            if (eventData) {
+                obj = {
+                    message: "Data fetched successfully",
+                    status: 200,
+                    error: '',
+                    eventData
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `No event data found at id${id}`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `can't find the event id`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getUserEvent = getUserEvent;

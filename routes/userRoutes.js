@@ -75,8 +75,9 @@ exports.upload = (0, multer_1.default)({
 const vUploads = (0, multer_1.default)({
     storage: exports.vStorage,
     limits: {
-        fieldSize: 1024 * 1024 * 100
+        fileSize: 1024 * 1024 * 100,
     },
+    fileFilter: exports.fileFilter,
 });
 const LUploads = (0, multer_1.default)({
     storage: exports.LStorage,
@@ -87,6 +88,7 @@ const LUploads = (0, multer_1.default)({
 const userController_1 = require("../controllers/userController");
 const eventController_1 = require("../controllers/eventController");
 const communityController_1 = require("../controllers/communityController");
+const bannerController_1 = require("../controllers/bannerController");
 const checkUserAuth_1 = __importDefault(require("../Middleware/checkUserAuth"));
 router.get("/getAllUpEvents", eventController_1.getAllUpEvents);
 router.get("/getEvent", eventController_1.getEvent);
@@ -95,6 +97,8 @@ router.get("/getUserProfile/:id", checkUserAuth_1.default, userController_1.getU
 router.get("/userDetails/:id", checkUserAuth_1.default, userController_1.userDetails);
 router.get("/userCommunities/:id", checkUserAuth_1.default, communityController_1.userCommunities);
 router.get("/userLicense", checkUserAuth_1.default, userController_1.userLicense);
+router.get("/getUserEvent", userController_1.getUserEvent);
+router.get("/getBanner", bannerController_1.getUserBanner);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);
@@ -105,7 +109,10 @@ router.post("/addPayment", userController_1.addPayment);
 router.post("/postUserDetails", checkUserAuth_1.default, userController_1.postUserDetails);
 router.post("/postAddress", checkUserAuth_1.default, userController_1.postAddress);
 router.post("/webhook", express_1.default.raw({ type: 'application/json' }), userController_1.webhook);
-router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("image"), userController_1.addVehicle);
+// 
+router.post("/create-checkout-session", checkUserAuth_1.default, userController_1.create_checkout_session);
+// 
+router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("array", 3), userController_1.addVehicle);
 router.post('/userImage', checkUserAuth_1.default, exports.upload.single("images"), userController_1.userImage);
 router.post("/addLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.addLicense);
 router.post("/editLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.editLicense);

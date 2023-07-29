@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postBannerEdit = exports.getBanner = exports.deleteBanner = exports.banners = exports.AddBanner = void 0;
+exports.getUserBanner = exports.postBannerEdit = exports.getBanner = exports.deleteBanner = exports.banners = exports.AddBanner = void 0;
 const bannerModel_1 = __importDefault(require("../models/bannerModel"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -255,3 +255,34 @@ const postBannerEdit = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.postBannerEdit = postBannerEdit;
+const getUserBanner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const bannerData = yield bannerModel_1.default.find();
+        if (bannerData) {
+            obj = {
+                message: "Data fetched successfully",
+                status: 200,
+                error: "",
+                bannerData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: '',
+                status: 404,
+                error: "Data not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getUserBanner = getUserBanner;
