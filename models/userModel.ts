@@ -19,6 +19,7 @@ interface User extends Document {
   ];
   address: { [key: string]: number | string };
   primeMember: boolean;
+  paymentId:string;
   height?: number;
   weight?: number;
   vehicles: ObjectId[];
@@ -84,6 +85,10 @@ const userSchema = new Schema<User>(
     primeMember: {
       type: Boolean,
       default: false,
+    },
+    paymentId:{
+      type:String,
+      required:false
     },
     height: {
       type: Number,

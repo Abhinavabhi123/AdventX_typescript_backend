@@ -32,6 +32,7 @@ const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const socket_io_1 = require("socket.io");
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
 const db_1 = __importDefault(require("./db"));
@@ -53,4 +54,11 @@ app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use("/", userRoutes_1.default);
 app.use("/admin", adminRoutes_1.default);
-app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
+const server = app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
+const io = new socket_io_1.Server(server);
+io.on("connection", (socket) => {
+    console.log("user connected", socket.id);
+    socket.on("disconnect", () => {
+        console.log("user disconnected");
+    });
+});

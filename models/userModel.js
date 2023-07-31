@@ -59,6 +59,10 @@ const userSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    paymentId: {
+        type: String,
+        required: false
+    },
     height: {
         type: Number,
         required: false,

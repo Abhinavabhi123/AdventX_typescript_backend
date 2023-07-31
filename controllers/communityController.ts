@@ -462,20 +462,17 @@ export const userCommunities = async (req: Request, res: Response) => {
         { community: 1, _id: 0 }
       );
       if (userData) {
-        console.log(userData);
         const community = userData?.community;
         let array: any[] = [];
         await Promise.all(
           community.map(async (item, i) => {
-            console.log(item?.communityId, "opppopopo");
+
             const communityData = await communityModel.findOne({$and:[
               {_id: String(item?.communityId)},{status:"Active"}]
             });
-            console.log(communityData, "kliklik", i);
             array.push(communityData);
           })
         );
-        console.log(array, "community data");
         obj={
           message:'Data fetched successfully',
           status:200,
@@ -503,3 +500,13 @@ export const userCommunities = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const communityData = async(req:Request,res:Response)=>{
+  try {
+    console.log(req.params);
+    console.log(req.query);
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

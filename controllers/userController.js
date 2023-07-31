@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserEvent = exports.create_checkout_session = exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.addPrimeUser = exports.getUserEvent = exports.create_checkout_session = exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -631,7 +631,6 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const { id } = req.params;
         if (id) {
             const userData = yield userModel_1.default.findOne({ _id: id });
-            console.log(userData, "hhhh");
             if (userData) {
                 obj = {
                     message: "data fetched successfully",
@@ -892,27 +891,29 @@ const create_checkout_session = (req, res) => __awaiter(void 0, void 0, void 0, 
         //   success_url:`http://localhost:5173/subscribe/success `,
         //   cancel_url:`http://localhost:5173/subscribe/cancel`
         // })
+        console.log(userId, "oopopopkop");
         const session = yield stripes.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [
                 {
                     price_data: {
-                        currency: 'inr',
+                        currency: "inr",
                         product_data: {
-                            name: "Premium Plan"
+                            name: "Premium Plan",
                         },
-                        unit_amount: amount
+                        unit_amount: amount,
                     },
-                    quantity: 1
-                }
+                    quantity: 1,
+                },
             ],
-            mode: 'payment',
+            mode: "payment",
             metadata: {
-                userId
+                userId,
             },
-            success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success`,
+            success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success?_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_DOMAIN}/subscribe/cancel`,
         });
+        console.log(session, "seddddddd");
         res.json({ url: session.url });
     }
     catch (error) {
@@ -925,7 +926,7 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         let obj = {
             message: "",
             status: 0,
-            error: ""
+            error: "",
         };
         const { id } = req.query;
         if (id) {
@@ -934,8 +935,8 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 obj = {
                     message: "Data fetched successfully",
                     status: 200,
-                    error: '',
-                    eventData
+                    error: "",
+                    eventData,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -943,7 +944,7 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 obj = {
                     message: "",
                     status: 404,
-                    error: `No event data found at id${id}`
+                    error: `No event data found at id${id}`,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -952,7 +953,7 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             obj = {
                 message: "",
                 status: 404,
-                error: `can't find the event id`
+                error: `can't find the event id`,
             };
             res.status(obj.status).send(obj);
         }
@@ -962,3 +963,64 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getUserEvent = getUserEvent;
+const addPrimeUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        console.log("bodyyy", req.body);
+        const { _id, userId } = req.body;
+        if (userId && _id) {
+            const userData = yield userModel_1.default.findOne({ _id: userId });
+            if (userData) {
+                yield userModel_1.default
+                    .updateOne({ _id: userId }, { $set: { paymentId: _id, primeMember: true } })
+                    .then((data) => {
+                    console.log(data, "datataaa");
+                    (() => __awaiter(void 0, void 0, void 0, function* () {
+                        const user = yield userModel_1.default.findOne({ _id: userId });
+                        if (user) {
+                            const jwtToken = jsonwebtoken_1.default.sign({
+                                _id: user === null || user === void 0 ? void 0 : user._id,
+                                name: user === null || user === void 0 ? void 0 : user.firstName,
+                                is_prime: user === null || user === void 0 ? void 0 : user.primeMember,
+                                status: user === null || user === void 0 ? void 0 : user.status,
+                                email: user.email,
+                            }, secretKey, { expiresIn: "30d" });
+                            console.log(jwtToken, "llloooo");
+                            obj = {
+                                message: "success",
+                                status: 200,
+                                error: "",
+                                jwtToken
+                            };
+                            res.status(obj.status).send(obj);
+                        }
+                    }))();
+                });
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `user with id ${userId} not found`,
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "Please provide userId and payment Id in body.",
+                status: 404,
+                error: "Invalid Request",
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.addPrimeUser = addPrimeUser;

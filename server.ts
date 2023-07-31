@@ -5,6 +5,7 @@ import cors from "cors"
 import morgan from "morgan"
 import path from "path";
 import cookieParser from "cookie-parser"
+import { Server, Socket } from 'socket.io';
 
 import userRoute from "./routes/userRoutes"
 import adminRoute from "./routes/adminRoutes"
@@ -13,6 +14,7 @@ import connectDB from "./db";
 
 dotenv.config();
 const app: Express = express();
+
 const Port = process.env.PORT || 3000 ||5000;
 
 connectDB()
@@ -29,10 +31,21 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser())
 // app.use(express.raw({ type: 'application/json' }))
 
+
+
+
 app.use(morgan("dev"))
 
 app.use("/",userRoute)
 
 app.use("/admin",adminRoute)
 
-app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
+const server = app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
+const io = new Server(server)
+io.on("connection",(socket:Socket)=>{
+    console.log("user connected",socket.id);
+    socket.on("disconnect",()=>{
+        console.log("user disconnected");
+        
+    })
+})

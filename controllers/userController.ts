@@ -661,7 +661,6 @@ export const userDetails = async (req: Request, res: Response) => {
     const { id } = req.params;
     if (id) {
       const userData = await userModel.findOne({ _id: id });
-      console.log(userData, "hhhh");
       if (userData) {
         obj = {
           message: "data fetched successfully",
@@ -693,19 +692,19 @@ export const addVehicle = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
     console.log(req.files);
-    
+
     const array = req.files;
     console.log(array, "ooi");
   } catch (error) {
-    console.error(error); 
+    console.error(error);
   }
 };
 
 export const webhook = async (req: Request, res: Response) => {
   console.log("Success payment");
-  
+
   const sig = req.headers["stripe-signature"];
-  let event;  
+  let event;
   try {
     if (typeof sig !== "string") {
       return;
@@ -726,10 +725,9 @@ export const webhook = async (req: Request, res: Response) => {
       payload = JSON.stringify(req.body);
     }
 
-    console.log(sig,"oppppppooo");
-    console.log(payload,"itgkjgakjdsg");
-    
-    
+    console.log(sig, "oppppppooo");
+    console.log(payload, "itgkjgakjdsg");
+
     event = stripes.webhooks.constructEvent(payload, sig, secret);
     console.log("evide nd");
 
@@ -919,7 +917,7 @@ export const create_checkout_session = async (req: Request, res: Response) => {
   try {
     const { userId, amount } = req.body;
     console.log(process.env.CLIENT_DOMAIN);
-    
+
     //create checkout session with stripe api
     const Stripe = new stripe(secret_strip, { apiVersion: "2022-11-15" });
     // const session = await Stripe.checkout.sessions.create({
@@ -942,76 +940,151 @@ export const create_checkout_session = async (req: Request, res: Response) => {
     //   },
     //   success_url:`http://localhost:5173/subscribe/success `,
     //   cancel_url:`http://localhost:5173/subscribe/cancel`
+
     // })
+    console.log(userId, "oopopopkop");
+
     const session = await stripes.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items:[
-            {
-              price_data:{
-                currency:'inr',
-                product_data:{
-                  name:"Premium Plan"
-                },
-                unit_amount:amount
-              },
-              quantity:1
-            }
-          ],
-      mode: 'payment',
-      metadata:{
-            userId
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: "Premium Plan",
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      metadata: {
+        userId,
       },
-      success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success`,
+      success_url: `${process.env.CLIENT_DOMAIN}/subscribe/success?_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_DOMAIN}/subscribe/cancel`,
     });
-    res.json({ url: session.url});
+    console.log(session, "seddddddd");
+
+    res.json({ url: session.url });
   } catch (error) {
     console.error(error);
   }
 };
-export const getUserEvent = async(req:Request,res:Response)=>{
+export const getUserEvent = async (req: Request, res: Response) => {
   try {
-    interface Obj{
-      message:string;
-      status:number;
-      error:string;
-      eventData?:{}
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      eventData?: {};
     }
-    let obj:Obj={
-      message:"",
-      status:0,
-      error:""
-    }
-      const {id}=req.query
-      if(id){
-        const eventData = await eventModel.findOne({_id:id})
-        if(eventData){
-          obj={
-            message:"Data fetched successfully",
-            status:200,
-            error:'',
-            eventData
-          }
-          res.status(obj.status).send(obj)
-        }else{
-          obj={
-            message:"",
-            status:404,
-            error:`No event data found at id${id}`
-          }
-          res.status(obj.status).send(obj)
-        }
-
-      }else{
-        obj={
-          message:"",
-          status:404, 
-          error:`can't find the event id`
-        }
-        res.status(obj.status).send(obj)
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.query;
+    if (id) {
+      const eventData = await eventModel.findOne({ _id: id });
+      if (eventData) {
+        obj = {
+          message: "Data fetched successfully",
+          status: 200,
+          error: "",
+          eventData,
+        };
+        res.status(obj.status).send(obj);
+      } else {
+        obj = {
+          message: "",
+          status: 404,
+          error: `No event data found at id${id}`,
+        };
+        res.status(obj.status).send(obj);
       }
-      
+    } else {
+      obj = {
+        message: "",
+        status: 404,
+        error: `can't find the event id`,
+      };
+      res.status(obj.status).send(obj);
+    }
   } catch (error) {
     console.error(error);
   }
-}
+};
+
+export const addPrimeUser = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+      jwtToken?: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    console.log("bodyyy", req.body);
+    const { _id, userId } = req.body;
+    if (userId && _id) {
+      const userData = await userModel.findOne({ _id: userId });
+      if (userData) {
+        await userModel
+          .updateOne(
+            { _id: userId },
+            { $set: { paymentId: _id, primeMember: true } }
+          )
+          .then((data) => {
+            console.log(data, "datataaa");
+            (async () => {
+              const user: any = await userModel.findOne({ _id: userId });
+              if (user) {
+                const jwtToken = jwt.sign(
+                  {
+                    _id: user?._id,
+                    name: user?.firstName,
+                    is_prime: user?.primeMember,
+                    status: user?.status,
+                    email: user.email,
+                  },
+                  secretKey,
+                  { expiresIn: "30d" }
+                );
+                console.log(jwtToken,"llloooo");
+                
+                obj = {
+                  message: "success",
+                  status: 200,
+                  error: "",
+                  jwtToken
+                };
+                res.status(obj.status).send(obj);
+              }
+            })();
+          });
+      } else {  
+        obj = {
+          message: "",
+          status: 404,
+          error: `user with id ${userId} not found`,
+        };
+        res.status(obj.status).send(obj);
+      }
+    } else {
+      obj = {
+        message: "Please provide userId and payment Id in body.",
+        status: 404,
+        error: "Invalid Request",
+      };
+      res.status(obj.status).send(obj);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};

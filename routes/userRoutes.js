@@ -99,6 +99,7 @@ router.get("/userCommunities/:id", checkUserAuth_1.default, communityController_
 router.get("/userLicense", checkUserAuth_1.default, userController_1.userLicense);
 router.get("/getUserEvent", userController_1.getUserEvent);
 router.get("/getBanner", bannerController_1.getUserBanner);
+router.get("/communityData", checkUserAuth_1.default, communityController_1.communityData);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);
@@ -108,11 +109,12 @@ router.post("/changePass", userController_1.changePass);
 router.post("/addPayment", userController_1.addPayment);
 router.post("/postUserDetails", checkUserAuth_1.default, userController_1.postUserDetails);
 router.post("/postAddress", checkUserAuth_1.default, userController_1.postAddress);
+router.post("/addPrimeUser", checkUserAuth_1.default, userController_1.addPrimeUser);
 router.post("/webhook", express_1.default.raw({ type: 'application/json' }), userController_1.webhook);
 // 
 router.post("/create-checkout-session", checkUserAuth_1.default, userController_1.create_checkout_session);
 // 
-router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("array", 3), userController_1.addVehicle);
+router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("image"), userController_1.addVehicle);
 router.post('/userImage', checkUserAuth_1.default, exports.upload.single("images"), userController_1.userImage);
 router.post("/addLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.addLicense);
 router.post("/editLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.editLicense);

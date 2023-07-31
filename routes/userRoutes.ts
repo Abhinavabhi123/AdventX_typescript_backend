@@ -82,14 +82,15 @@ import {
   userLicense,
   editLicense,
   create_checkout_session,
-  getUserEvent
+  getUserEvent,
+  addPrimeUser
 } from "../controllers/userController";
 import {
   getAllUpEvents,
   getEvent,
   getAllEvents,
 } from "../controllers/eventController";
-import {userCommunities} from "../controllers/communityController"
+import {userCommunities,communityData} from "../controllers/communityController"
 import {getUserBanner}from "../controllers/bannerController"
 import userAuth from "../Middleware/checkUserAuth";
 
@@ -102,6 +103,7 @@ router.get("/userCommunities/:id",userAuth,userCommunities)
 router.get("/userLicense",userAuth,userLicense)
 router.get("/getUserEvent",getUserEvent)
 router.get("/getBanner",getUserBanner)
+router.get("/communityData",userAuth,communityData)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);
@@ -112,12 +114,13 @@ router.post("/changePass", changePass);
 router.post("/addPayment", addPayment);
 router.post("/postUserDetails",userAuth,postUserDetails)
 router.post("/postAddress",userAuth,postAddress)
+router.post("/addPrimeUser",userAuth,addPrimeUser)
 router.post("/webhook",express.raw({type:'application/json'}),webhook)
 // 
 router.post("/create-checkout-session",userAuth,create_checkout_session)
 // 
 
-router.post("/addVehicle",userAuth,vUploads.array("array",3),addVehicle)
+router.post("/addVehicle",userAuth,vUploads.array("image"),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
 router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)
