@@ -76,4 +76,5 @@ router.delete("/deleteBanner", checkAdminAuth_1.default, bannerController_1.dele
 router.post("/createCommunity", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.createCommunity);
 router.post("/addBanner", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.AddBanner);
 router.post("/postBannerEdit", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.postBannerEdit);
+router.post("/changeCommunityImage/:id", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.changeCommunityWI);
 exports.default = router;

@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongodb";
 import userModel from "../models/userModel";
 import communityModel from "../models/communityModel";
+import path from "path";
+import fs from "fs";
 
 export const getCommunityUsers = async (req: Request, res: Response) => {
   try {
@@ -448,7 +450,7 @@ export const userCommunities = async (req: Request, res: Response) => {
       message: string;
       status: number;
       error: string;
-      array?:any[]
+      array?: any[];
     }
     let obj: Obj = {
       message: "",
@@ -466,20 +468,19 @@ export const userCommunities = async (req: Request, res: Response) => {
         let array: any[] = [];
         await Promise.all(
           community.map(async (item, i) => {
-
-            const communityData = await communityModel.findOne({$and:[
-              {_id: String(item?.communityId)},{status:"Active"}]
+            const communityData = await communityModel.findOne({
+              $and: [{ _id: String(item?.communityId) }, { status: "Active" }],
             });
             array.push(communityData);
           })
         );
-        obj={
-          message:'Data fetched successfully',
-          status:200,
-          error:'',
-          array
-        }
-        res.status(obj.status).send(obj)
+        obj = {
+          message: "Data fetched successfully",
+          status: 200,
+          error: "",
+          array,
+        };
+        res.status(obj.status).send(obj);
       } else {
         obj = {
           message: "",
@@ -501,12 +502,74 @@ export const userCommunities = async (req: Request, res: Response) => {
   }
 };
 
-export const communityData = async(req:Request,res:Response)=>{
+export const communityData = async (req: Request, res: Response) => {
   try {
     console.log(req.params);
     console.log(req.query);
-    
   } catch (error) {
     console.error(error);
   }
-}
+};
+
+export const changeCommunityWI = async (req: Request, res: Response) => {
+  try {
+    interface Obj {
+      message: string;
+      status: number;
+      error: string;
+    }
+    let obj: Obj = {
+      message: "",
+      status: 0,
+      error: "",
+    };
+    const { id } = req.params;
+    if (id) {
+      if(!req.file){
+        return
+      }
+      const communityData = await communityModel.findOne({ _id: id });
+      if (communityData) {
+        console.log(req.file.filename);
+        await communityModel
+          .updateOne({ _id: id }, { $set: { logo: req.file.filename } })
+          .then(() => {
+            if (communityData?.logo) {
+              const imageUrl = communityData?.logo;
+              const imagePath = path.join(__dirname, "../public/uploads");
+              const delImagePath = path.join(imagePath, imageUrl);
+              fs.unlink(delImagePath, (err) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log("image deleted");
+                }
+              });
+            }
+            obj={
+              message:'Image changed successfully',
+              status:200,
+              error:""
+            }
+            res.status(obj.status).send(obj)
+          });
+      } else {
+      obj={
+        message:"",
+        status:404,
+        error:"community Data not found "
+      }
+      res.status(obj.status).send(obj)
+      }
+    } else {
+      obj={
+        message:"",
+        status:404,
+        error:"Id not found"
+      }
+      res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

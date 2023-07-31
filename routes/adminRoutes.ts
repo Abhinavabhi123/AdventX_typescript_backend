@@ -65,6 +65,7 @@ import {
   addUserECommunity,
   changeCommunity,
   deleteCommunity,
+  changeCommunityWI
 } from "../controllers/communityController";
 import {
   addEvent,
@@ -103,5 +104,6 @@ router.delete("/deleteBanner",isAuth,deleteBanner)
 router.post("/createCommunity",isAuth,upload.single("image"),createCommunity);
 router.post("/addBanner", isAuth, bannerUploads.single("image"), AddBanner);
 router.post("/postBannerEdit",isAuth,bannerUploads.single("image"),postBannerEdit)
+router.post("/changeCommunityImage/:id",isAuth,upload.single("image"),changeCommunityWI)
 
 export default router;

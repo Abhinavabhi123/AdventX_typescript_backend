@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.changeCommunityWI = exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userData = yield userModel_1.default.find({
@@ -391,17 +393,16 @@ const userCommunities = (req, res) => __awaiter(void 0, void 0, void 0, function
                 const community = userData === null || userData === void 0 ? void 0 : userData.community;
                 let array = [];
                 yield Promise.all(community.map((item, i) => __awaiter(void 0, void 0, void 0, function* () {
-                    const communityData = yield communityModel_1.default.findOne({ $and: [
-                            { _id: String(item === null || item === void 0 ? void 0 : item.communityId) }, { status: "Active" }
-                        ]
+                    const communityData = yield communityModel_1.default.findOne({
+                        $and: [{ _id: String(item === null || item === void 0 ? void 0 : item.communityId) }, { status: "Active" }],
                     });
                     array.push(communityData);
                 })));
                 obj = {
-                    message: 'Data fetched successfully',
+                    message: "Data fetched successfully",
                     status: 200,
-                    error: '',
-                    array
+                    error: "",
+                    array,
                 };
                 res.status(obj.status).send(obj);
             }
@@ -438,3 +439,65 @@ const communityData = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.communityData = communityData;
+const changeCommunityWI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: "",
+        };
+        const { id } = req.params;
+        if (id) {
+            if (!req.file) {
+                return;
+            }
+            const communityData = yield communityModel_1.default.findOne({ _id: id });
+            if (communityData) {
+                console.log(req.file.filename);
+                yield communityModel_1.default
+                    .updateOne({ _id: id }, { $set: { logo: req.file.filename } })
+                    .then(() => {
+                    if (communityData === null || communityData === void 0 ? void 0 : communityData.logo) {
+                        const imageUrl = communityData === null || communityData === void 0 ? void 0 : communityData.logo;
+                        const imagePath = path_1.default.join(__dirname, "../public/uploads");
+                        const delImagePath = path_1.default.join(imagePath, imageUrl);
+                        fs_1.default.unlink(delImagePath, (err) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                console.log("image deleted");
+                            }
+                        });
+                    }
+                    obj = {
+                        message: 'Image changed successfully',
+                        status: 200,
+                        error: ""
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "community Data not found "
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Id not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.changeCommunityWI = changeCommunityWI;
