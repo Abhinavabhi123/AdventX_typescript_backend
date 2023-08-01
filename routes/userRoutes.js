@@ -40,7 +40,7 @@ exports.storage = multer_1.default.diskStorage({
 });
 exports.vStorage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./public/Vehicles/");
+        cb(null, "./public/Vehicles");
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + file.originalname);
@@ -72,13 +72,11 @@ exports.upload = (0, multer_1.default)({
     },
     fileFilter: exports.fileFilter,
 });
-const vUploads = (0, multer_1.default)({
-    storage: exports.vStorage,
+const vUploads = (0, multer_1.default)({ storage: exports.vStorage,
     limits: {
         fileSize: 1024 * 1024 * 100,
     },
-    fileFilter: exports.fileFilter,
-});
+    fileFilter: exports.fileFilter, });
 const LUploads = (0, multer_1.default)({
     storage: exports.LStorage,
     limits: {
@@ -89,6 +87,7 @@ const userController_1 = require("../controllers/userController");
 const eventController_1 = require("../controllers/eventController");
 const communityController_1 = require("../controllers/communityController");
 const bannerController_1 = require("../controllers/bannerController");
+const vehiclecontroller_1 = require("../controllers/vehiclecontroller");
 const checkUserAuth_1 = __importDefault(require("../Middleware/checkUserAuth"));
 router.get("/getAllUpEvents", eventController_1.getAllUpEvents);
 router.get("/getEvent", eventController_1.getEvent);
@@ -100,6 +99,7 @@ router.get("/userLicense", checkUserAuth_1.default, userController_1.userLicense
 router.get("/getUserEvent", userController_1.getUserEvent);
 router.get("/getBanner", bannerController_1.getUserBanner);
 router.get("/communityData", checkUserAuth_1.default, communityController_1.communityData);
+router.get("/getAllVehicles/:id", checkUserAuth_1.default, vehiclecontroller_1.getAllVehicles);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);
@@ -114,7 +114,7 @@ router.post("/webhook", express_1.default.raw({ type: 'application/json' }), use
 // 
 router.post("/create-checkout-session", checkUserAuth_1.default, userController_1.create_checkout_session);
 // 
-router.post("/addVehicle", checkUserAuth_1.default, vUploads.single("array"), userController_1.addVehicle);
+router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("image", 5), vehiclecontroller_1.addVehicle);
 router.post('/userImage', checkUserAuth_1.default, exports.upload.single("images"), userController_1.userImage);
 router.post("/addLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.addLicense);
 router.post("/editLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.editLicense);

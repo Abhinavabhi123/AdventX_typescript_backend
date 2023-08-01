@@ -65,7 +65,7 @@ export const sendOpt = async (req: Request, res: Response) => {
           .send({ message: "User already exists, try another email" });
       } else {
         var mailOptions = {
-          from: "adventx.dev@gmail.com",
+          from: process.env.SMTP_EMAIL ,
           to: email,
           subject: "OTP for Signup is: ",
           html:
@@ -281,7 +281,7 @@ export const postForget = async (req: Request, res: Response) => {
     const userData = await userModel.findOne({ email: email });
     if (userData) {
       var mailOptions = {
-        from: "adventx.dev@gmail.com",
+        from: process.env.SMTP_EMAIL ,
         to: email,
         subject: "OTP for Signup is: ",
         html:
@@ -688,17 +688,7 @@ export const userDetails = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
-export const addVehicle = async (req: Request, res: Response) => {
-  try {
-    console.log(req.body);
-    console.log(req.files);
 
-    const array = req.files;
-    console.log(array, "ooi");
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 export const webhook = async (req: Request, res: Response) => {
   console.log("Success payment");

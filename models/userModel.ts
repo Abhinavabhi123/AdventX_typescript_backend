@@ -104,7 +104,9 @@ const userSchema = new Schema<User>(
           type: [SchemaTypes.ObjectId],
           ref: "Vehicles",
           required: false,
+          
         },
+        _id:false
       },
     ],
     eventParticipation: [
@@ -112,6 +114,7 @@ const userSchema = new Schema<User>(
         eventId: {
           type: [SchemaTypes.ObjectId],
         },
+        
       },
     ],
     license: {

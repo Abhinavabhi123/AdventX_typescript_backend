@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addPrimeUser = exports.getUserEvent = exports.create_checkout_session = exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.addVehicle = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
+exports.addPrimeUser = exports.getUserEvent = exports.create_checkout_session = exports.editLicense = exports.addLicense = exports.userLicense = exports.webhook = exports.userDetails = exports.postAddress = exports.postUserDetails = exports.userImage = exports.getUserProfile = exports.addPayment = exports.changePass = exports.postOtp = exports.postForget = exports.userLogin = exports.postUserSignup = exports.sendOpt = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv = __importStar(require("dotenv"));
@@ -96,7 +96,7 @@ const sendOpt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
             else {
                 var mailOptions = {
-                    from: "adventx.dev@gmail.com",
+                    from: process.env.SMTP_EMAIL,
                     to: email,
                     subject: "OTP for Signup is: ",
                     html: "<h3>OTP for account verification is </h3>" +
@@ -280,7 +280,7 @@ const postForget = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const userData = yield userModel_1.default.findOne({ email: email });
         if (userData) {
             var mailOptions = {
-                from: "adventx.dev@gmail.com",
+                from: process.env.SMTP_EMAIL,
                 to: email,
                 subject: "OTP for Signup is: ",
                 html: "<h3>OTP for Reset password is </h3>" +
@@ -662,18 +662,6 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.userDetails = userDetails;
-const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(req.body);
-        console.log(req.files);
-        const array = req.files;
-        console.log(array, "ooi");
-    }
-    catch (error) {
-        console.error(error);
-    }
-});
-exports.addVehicle = addVehicle;
 const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Success payment");
     const sig = req.headers["stripe-signature"];

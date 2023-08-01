@@ -78,6 +78,7 @@ const userSchema = new mongoose_1.Schema({
                 ref: "Vehicles",
                 required: false,
             },
+            _id: false
         },
     ],
     eventParticipation: [

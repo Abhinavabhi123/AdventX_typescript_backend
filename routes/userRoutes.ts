@@ -13,7 +13,7 @@ export const storage = multer.diskStorage({
   });
   export const vStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, "./public/Vehicles/");
+      cb(null, "./public/Vehicles");
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + file.originalname);
@@ -50,13 +50,11 @@ export const storage = multer.diskStorage({
     },
     fileFilter: fileFilter,
   });
-  const vUploads = multer({
-    storage:vStorage,
+  const vUploads = multer({storage:vStorage, 
     limits: {
-      fileSize: 1024 * 1024 * 100,
-    },
-    fileFilter: fileFilter,
-  })
+    fileSize: 1024 * 1024 * 100,
+  },
+  fileFilter: fileFilter,})
   const LUploads = multer({
     storage:LStorage,
     limits:{
@@ -76,7 +74,6 @@ import {
   postUserDetails,
   postAddress,
   userDetails,
-  addVehicle,
   webhook,
   addLicense,
   userLicense,
@@ -92,6 +89,7 @@ import {
 } from "../controllers/eventController";
 import {userCommunities,communityData} from "../controllers/communityController"
 import {getUserBanner}from "../controllers/bannerController"
+import {addVehicle,getAllVehicles} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
@@ -104,6 +102,7 @@ router.get("/userLicense",userAuth,userLicense)
 router.get("/getUserEvent",getUserEvent)
 router.get("/getBanner",getUserBanner)
 router.get("/communityData",userAuth,communityData)
+router.get("/getAllVehicles/:id",userAuth,getAllVehicles)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);
@@ -120,7 +119,7 @@ router.post("/webhook",express.raw({type:'application/json'}),webhook)
 router.post("/create-checkout-session",userAuth,create_checkout_session)
 // 
 
-router.post("/addVehicle",userAuth,vUploads.single("array"),addVehicle)
+router.post("/addVehicle",userAuth,vUploads.array("image",5),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
 router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)
