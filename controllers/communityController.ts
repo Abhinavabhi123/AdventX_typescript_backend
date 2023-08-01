@@ -438,7 +438,6 @@ export const deleteCommunity = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
 
-    console.log("ethi");
   } catch (error) {
     console.error(error);
   }

@@ -120,7 +120,7 @@ router.post("/webhook",express.raw({type:'application/json'}),webhook)
 router.post("/create-checkout-session",userAuth,create_checkout_session)
 // 
 
-router.post("/addVehicle",userAuth,vUploads.array("image"),addVehicle)
+router.post("/addVehicle",userAuth,vUploads.single("array"),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
 router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)

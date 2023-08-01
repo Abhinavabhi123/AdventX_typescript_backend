@@ -372,7 +372,6 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
             };
             res.status(obj.status).send(obj);
         }
-        console.log("ethi");
     }
     catch (error) {
         console.error(error);

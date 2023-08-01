@@ -20,8 +20,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
 
   auth: {
-    user: "adventx.dev@gmail.com",
-    pass: "lpfsewdiqwkpqdln",
+    user:process.env.SMTP_EMAIL ,
+    pass:process.env.SMTP_PASSWORD,
   },
 });
 // const OTP: number = Math.floor(Math.random() * 1000000);
