@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import userModel from "../models/userModel";
 import vehicleModel from "../models/vehicleModel";
+import fs from "fs"
+import path from "path";
 
 
 
@@ -132,6 +134,70 @@ export const addVehicle = async (req: Request, res: Response) => {
             }
             res.status(obj.status).send(obj)
         }
+        
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+  export const deleteVehicle=async(req:Request,res:Response)=>{
+    try {
+        interface Obj{
+            message:string;
+            status:number;
+            error:string;
+        }
+        let obj:Obj={
+            message:"",
+            status:0,
+            error:""
+        }
+        const {id}=req.params;
+    if(id){
+        const vehicleData = await vehicleModel.findOne({_id:id})
+        if(vehicleData){
+            await vehicleModel.deleteOne({_id:id}).then(async(data)=>{
+                console.log(vehicleData?.userId,'kdkdkdd');
+                const userData = await userModel.updateOne({_id:vehicleData?.userId},{$pull:{vehicles:{vehicleId:id}}}).then(()=>{
+                    console.log(vehicleData.images);
+                    for(let i=0;i<vehicleData.images.length;i++){
+                       
+                        const imagePath = path.join(__dirname, "../public/Vehicles");
+                        const delImagePath = path.join(imagePath,vehicleData?.images[i]);
+                        fs.unlink(delImagePath, (err) => {
+                          if (err) {
+                            console.error(err);
+                          } else {
+                            console.log(`LIcense image data removed successfully`);
+                          }
+                        });
+                    }
+                    console.log("deleted");
+                    obj={
+                        message:"vehicle deleted successfully",
+                        status:200,
+                        error:""
+                    }
+                    res.status(obj.status).send(obj)
+                })
+                
+            })
+        }else{
+            obj={
+                message:"",
+                status:404,
+                error:"vehicle data not found"
+            }
+            res.status(obj.status).send(obj)
+        }
+    }else{
+        obj={
+            message:"",
+            status:404,
+            error:'something went wrong'
+        }
+        res.status(obj.status).send(obj)
+    }
         
     } catch (error) {
         console.error(error);

@@ -12,9 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllVehicles = exports.addVehicle = void 0;
+exports.deleteVehicle = exports.getAllVehicles = exports.addVehicle = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const vehicleModel_1 = __importDefault(require("../models/vehicleModel"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let obj = {
@@ -141,3 +143,63 @@ const getAllVehicles = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getAllVehicles = getAllVehicles;
+const deleteVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { id } = req.params;
+        if (id) {
+            const vehicleData = yield vehicleModel_1.default.findOne({ _id: id });
+            if (vehicleData) {
+                yield vehicleModel_1.default.deleteOne({ _id: id }).then((data) => __awaiter(void 0, void 0, void 0, function* () {
+                    console.log(vehicleData === null || vehicleData === void 0 ? void 0 : vehicleData.userId, 'kdkdkdd');
+                    const userData = yield userModel_1.default.updateOne({ _id: vehicleData === null || vehicleData === void 0 ? void 0 : vehicleData.userId }, { $pull: { vehicles: { vehicleId: id } } }).then(() => {
+                        console.log(vehicleData.images);
+                        for (let i = 0; i < vehicleData.images.length; i++) {
+                            const imagePath = path_1.default.join(__dirname, "../public/Vehicles");
+                            const delImagePath = path_1.default.join(imagePath, vehicleData === null || vehicleData === void 0 ? void 0 : vehicleData.images[i]);
+                            fs_1.default.unlink(delImagePath, (err) => {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                else {
+                                    console.log(`LIcense image data removed successfully`);
+                                }
+                            });
+                        }
+                        console.log("deleted");
+                        obj = {
+                            message: "vehicle deleted successfully",
+                            status: 200,
+                            error: ""
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }));
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "vehicle data not found"
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: 'something went wrong'
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.deleteVehicle = deleteVehicle;

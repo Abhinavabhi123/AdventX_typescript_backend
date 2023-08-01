@@ -118,4 +118,5 @@ router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("image", 5), 
 router.post('/userImage', checkUserAuth_1.default, exports.upload.single("images"), userController_1.userImage);
 router.post("/addLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.addLicense);
 router.post("/editLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.editLicense);
+router.delete("/deleteVehicle/:id", checkUserAuth_1.default, vehiclecontroller_1.deleteVehicle);
 exports.default = router;

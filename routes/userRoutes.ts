@@ -89,7 +89,7 @@ import {
 } from "../controllers/eventController";
 import {userCommunities,communityData} from "../controllers/communityController"
 import {getUserBanner}from "../controllers/bannerController"
-import {addVehicle,getAllVehicles} from "../controllers/vehiclecontroller"
+import {addVehicle,getAllVehicles,deleteVehicle} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
@@ -123,5 +123,7 @@ router.post("/addVehicle",userAuth,vUploads.array("image",5),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)
 router.post("/addLicense",userAuth,LUploads.single("image"),addLicense)
 router.post("/editLicense",userAuth,LUploads.single("image"),editLicense)
+
+router.delete("/deleteVehicle/:id",userAuth,deleteVehicle)
 
 export default router;
