@@ -157,11 +157,9 @@ export const addVehicle = async (req: Request, res: Response) => {
         const vehicleData = await vehicleModel.findOne({_id:id})
         if(vehicleData){
             await vehicleModel.deleteOne({_id:id}).then(async(data)=>{
-                console.log(vehicleData?.userId,'kdkdkdd');
                 const userData = await userModel.updateOne({_id:vehicleData?.userId},{$pull:{vehicles:{vehicleId:id}}}).then(()=>{
                     console.log(vehicleData.images);
                     for(let i=0;i<vehicleData.images.length;i++){
-                       
                         const imagePath = path.join(__dirname, "../public/Vehicles");
                         const delImagePath = path.join(imagePath,vehicleData?.images[i]);
                         fs.unlink(delImagePath, (err) => {

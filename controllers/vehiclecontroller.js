@@ -155,7 +155,6 @@ const deleteVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const vehicleData = yield vehicleModel_1.default.findOne({ _id: id });
             if (vehicleData) {
                 yield vehicleModel_1.default.deleteOne({ _id: id }).then((data) => __awaiter(void 0, void 0, void 0, function* () {
-                    console.log(vehicleData === null || vehicleData === void 0 ? void 0 : vehicleData.userId, 'kdkdkdd');
                     const userData = yield userModel_1.default.updateOne({ _id: vehicleData === null || vehicleData === void 0 ? void 0 : vehicleData.userId }, { $pull: { vehicles: { vehicleId: id } } }).then(() => {
                         console.log(vehicleData.images);
                         for (let i = 0; i < vehicleData.images.length; i++) {
