@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeCommunityWI = exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.communityUsers = exports.getUserCommunity = exports.changeCommunityWI = exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
@@ -500,3 +500,95 @@ const changeCommunityWI = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.changeCommunityWI = changeCommunityWI;
+const getUserCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.query, "lkllk");
+        const { commId } = req.query;
+        if (commId) {
+            const communityData = yield communityModel_1.default.findOne({ _id: commId });
+            if (communityData) {
+                obj = {
+                    message: 'Data fetched successfully',
+                    status: 200,
+                    error: '',
+                    communityData
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `The community Data not found`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: '',
+                status: 404,
+                error: `The community not found`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getUserCommunity = getUserCommunity;
+const communityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: '',
+            status: 0,
+            error: ""
+        };
+        const { commId } = req.query;
+        if (commId) {
+            const communityData = yield communityModel_1.default.findOne({ _id: commId });
+            if (communityData) {
+                const communityMembers = communityData === null || communityData === void 0 ? void 0 : communityData.members;
+                if (communityMembers.length >= 1) {
+                    const dataArray = yield Promise.all(communityMembers.map((member) => __awaiter(void 0, void 0, void 0, function* () {
+                        const data = yield userModel_1.default.findOne({ _id: member === null || member === void 0 ? void 0 : member.userId }, { _id: 0, firstName: 1, lastName: 1, image: 1 });
+                        return data ? data : null;
+                    })));
+                    obj = {
+                        message: "Successfully fetched data",
+                        status: 200,
+                        error: '',
+                        commUsers: dataArray
+                    };
+                    res.status(obj.status).send(obj);
+                }
+            }
+            else {
+                obj = {
+                    message: '',
+                    status: 404,
+                    error: `There is no community data`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Community data not found`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.communityUsers = communityUsers;

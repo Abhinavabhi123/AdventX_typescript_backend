@@ -86,8 +86,9 @@ import {
   getAllUpEvents,
   getEvent,
   getAllEvents,
+  getUserAllEvents
 } from "../controllers/eventController";
-import {userCommunities,communityData} from "../controllers/communityController"
+import {userCommunities,communityData,getUserCommunity,communityUsers} from "../controllers/communityController"
 import {getUserBanner}from "../controllers/bannerController"
 import {addVehicle,getAllVehicles,deleteVehicle} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
@@ -95,6 +96,7 @@ import userAuth from "../Middleware/checkUserAuth";
 router.get("/getAllUpEvents", getAllUpEvents);
 router.get("/getEvent", getEvent);
 router.get("/getAllEvents", getAllEvents);
+router.get("/getUserAllEvents",getUserAllEvents)
 router.get("/getUserProfile/:id",userAuth, getUserProfile);
 router.get("/userDetails/:id",userAuth,userDetails)
 router.get("/userCommunities/:id",userAuth,userCommunities)
@@ -103,6 +105,8 @@ router.get("/getUserEvent",getUserEvent)
 router.get("/getBanner",getUserBanner)
 router.get("/communityData",userAuth,communityData)
 router.get("/getAllVehicles/:id",userAuth,getAllVehicles)
+router.get("/getUserCommunity",userAuth,getUserCommunity)
+router.get("/communityUsers",userAuth,communityUsers)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -318,3 +318,34 @@ const getAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getAllEvents = getAllEvents;
+const getUserAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: '',
+            status: 0,
+            error: ''
+        };
+        const eventData = yield eventModel_1.default.find({ status: "Active" });
+        if (eventData) {
+            obj = {
+                message: "Event data fetched successfully",
+                status: 200,
+                error: "",
+                eventData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `No event data found`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getUserAllEvents = getUserAllEvents;

@@ -269,7 +269,7 @@ export const getUserBanner = async(req:Request,res:Response)=>{
       status:0,
       error:""
     }
-      const bannerData = await bannerModel.find()
+      const bannerData = await bannerModel.find({status:true})
       if(bannerData){
         obj={
           message:"Data fetched successfully",

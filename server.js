@@ -58,6 +58,9 @@ const server = app.listen(Port, () => console.log(`⚡️[Server] : Server is ru
 const io = new socket_io_1.Server(server);
 io.on("connection", (socket) => {
     console.log("user connected", socket.id);
+    socket.on("communityChat", (community) => {
+        console.log("connected to the community", community);
+    });
     socket.on("disconnect", () => {
         console.log("user disconnected");
     });

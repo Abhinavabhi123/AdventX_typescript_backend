@@ -572,3 +572,107 @@ export const changeCommunityWI = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const getUserCommunity =async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      communityData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    console.log(req.query,"lkllk");
+    const {commId}=req.query
+    if(commId){
+      const communityData = await communityModel.findOne({_id:commId})
+      if(communityData){
+        obj={
+          message:'Data fetched successfully',
+          status:200,
+          error:'',
+          communityData
+        }
+        res.status(obj.status).send(obj)
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:`The community Data not found`
+        }
+        res.status(obj.status).send(obj)
+      }
+    } else{
+      obj={
+        message:'',
+        status:404,
+        error:`The community not found`
+      }
+      res.status(obj.status).send(obj)
+    }   
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const communityUsers =async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      commUsers?:any[]
+    }
+    let obj:Obj={
+      message:'',
+      status:0,
+      error:""
+    }
+    const {commId}=req.query
+    
+    if(commId){
+      const communityData = await communityModel.findOne({_id:commId})
+      if(communityData){
+          const communityMembers = communityData?.members
+          if(communityMembers.length>=1){
+
+            const dataArray = await Promise.all(
+              communityMembers.map(async (member) => {
+                const data = await userModel.findOne(
+                  { _id: member?.userId },
+                  { _id: 0, firstName: 1, lastName: 1, image: 1 }
+                );          
+                return data ? data : null;
+              })
+            )            
+              obj={
+                message:"Successfully fetched data",
+                status:200,
+                error:'',
+                commUsers:dataArray
+              }
+            res.status(obj.status).send(obj)
+          }
+      }else{
+        obj={
+          message:'',
+          status:404,
+          error:`There is no community data`
+        }
+        res.status(obj.status).send(obj)
+      }
+    }else{
+obj={
+  message:"",
+  status:404,
+  error:`Community data not found`
+}
+res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}

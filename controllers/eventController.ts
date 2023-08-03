@@ -345,3 +345,37 @@ export const getAllEvents =async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+export const getUserAllEvents =async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      eventData?:{}
+    }
+    let obj:Obj={
+      message:'',
+      status:0,
+      error:''
+    }
+    const eventData = await eventModel.find({status:"Active"})
+    if(eventData){
+      obj={
+        message:"Event data fetched successfully",
+        status:200,
+        error:"",
+        eventData
+      }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`No event data found`
+      }
+      res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}

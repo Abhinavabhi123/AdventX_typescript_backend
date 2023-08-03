@@ -262,7 +262,7 @@ const getUserBanner = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             status: 0,
             error: ""
         };
-        const bannerData = yield bannerModel_1.default.find();
+        const bannerData = yield bannerModel_1.default.find({ status: true });
         if (bannerData) {
             obj = {
                 message: "Data fetched successfully",
