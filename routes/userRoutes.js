@@ -116,7 +116,9 @@ router.post("/addPrimeUser", checkUserAuth_1.default, userController_1.addPrimeU
 router.post("/webhook", express_1.default.raw({ type: 'application/json' }), userController_1.webhook);
 // 
 router.post("/create-checkout-session", checkUserAuth_1.default, userController_1.create_checkout_session);
-// 
+//todo: chat
+router.post("/postMessage", checkUserAuth_1.default, communityController_1.postMessage);
+router.post("/getMessages", checkUserAuth_1.default, communityController_1.getMessages);
 router.post("/addVehicle", checkUserAuth_1.default, vUploads.array("image", 5), vehiclecontroller_1.addVehicle);
 router.post('/userImage', checkUserAuth_1.default, exports.upload.single("images"), userController_1.userImage);
 router.post("/addLicense", checkUserAuth_1.default, LUploads.single("image"), userController_1.addLicense);

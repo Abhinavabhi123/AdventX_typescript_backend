@@ -88,7 +88,7 @@ import {
   getAllEvents,
   getUserAllEvents
 } from "../controllers/eventController";
-import {userCommunities,communityData,getUserCommunity,communityUsers} from "../controllers/communityController"
+import {userCommunities,communityData,getUserCommunity,communityUsers,postMessage,getMessages} from "../controllers/communityController"
 import {getUserBanner}from "../controllers/bannerController"
 import {addVehicle,getAllVehicles,deleteVehicle} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
@@ -121,7 +121,9 @@ router.post("/addPrimeUser",userAuth,addPrimeUser)
 router.post("/webhook",express.raw({type:'application/json'}),webhook)
 // 
 router.post("/create-checkout-session",userAuth,create_checkout_session)
-// 
+//todo: chat
+router.post("/postMessage",userAuth,postMessage)
+router.post("/getMessages",userAuth,getMessages)
 
 router.post("/addVehicle",userAuth,vUploads.array("image",5),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)

@@ -13,7 +13,7 @@ interface Community extends Document {
   chat?: [
     {
       userId: ObjectId;
-      text: string;
+      message: string;
     }
   ];
   logo: string;
@@ -51,6 +51,10 @@ const communitySchema = new Schema<Community>(
           ref: "User",
           required: false,
         },
+        message:{
+          type :String,
+          required:true
+        }
       },
     ],
     logo: {

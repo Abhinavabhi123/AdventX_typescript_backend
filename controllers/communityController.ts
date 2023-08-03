@@ -586,7 +586,6 @@ export const getUserCommunity =async(req:Request,res:Response)=>{
       status:0,
       error:""
     }
-    console.log(req.query,"lkllk");
     const {commId}=req.query
     if(commId){
       const communityData = await communityModel.findOne({_id:commId})
@@ -671,6 +670,93 @@ obj={
   error:`Community data not found`
 }
 res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// todo:community chat 
+export const postMessage=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const {commId,userId,message}=req.body;
+    if(req.body){
+      const userData = await userModel.findOne({_id:userId})
+      if(userData){
+        const communityData = await communityModel.find({_id:commId})
+        if(communityData){
+          await communityModel.updateOne({_id:commId},{$push:{chat:{userId,message}}}).then((data)=>{
+            obj={
+              message:'message added successfully',
+              status:200,
+              error:""
+            }
+            res.status(obj.status).send(obj)
+          })
+        }else{
+          obj={
+            message:'',
+            status:404,
+            error:`No Community Found`
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:``,
+          status:404,
+          error:'You are currently not a user'
+        }
+        res.status(obj.status).send(obj)
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const getMessages = async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const {commId}=req.body   
+    if(commId){
+      const communityData = await communityModel.find({_id:commId})
+      if(communityData){
+        console.log(communityData[0].chat,"Ccccccccc");
+        
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:`Community Data not found`
+        }
+        res.status(obj.status).send(obj)
+      }
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Community not found`
+      }
+      res.status(obj.status).send(obj)
     }
   } catch (error) {
     console.error(error);

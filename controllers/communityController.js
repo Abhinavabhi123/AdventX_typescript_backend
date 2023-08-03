@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.communityUsers = exports.getUserCommunity = exports.changeCommunityWI = exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
+exports.getMessages = exports.postMessage = exports.communityUsers = exports.getUserCommunity = exports.changeCommunityWI = exports.communityData = exports.userCommunities = exports.deleteCommunity = exports.changeCommunity = exports.addUserECommunity = exports.changeComStatus = exports.getCommunityDetails = exports.communities = exports.createCommunity = exports.getComUser = exports.getCommunityUsers = void 0;
 const mongodb_1 = require("mongodb");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const communityModel_1 = __importDefault(require("../models/communityModel"));
@@ -507,7 +507,6 @@ const getUserCommunity = (req, res) => __awaiter(void 0, void 0, void 0, functio
             status: 0,
             error: ""
         };
-        console.log(req.query, "lkllk");
         const { commId } = req.query;
         if (commId) {
             const communityData = yield communityModel_1.default.findOne({ _id: commId });
@@ -592,3 +591,86 @@ const communityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.communityUsers = communityUsers;
+// todo:community chat 
+const postMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { commId, userId, message } = req.body;
+        if (req.body) {
+            const userData = yield userModel_1.default.findOne({ _id: userId });
+            if (userData) {
+                const communityData = yield communityModel_1.default.find({ _id: commId });
+                if (communityData) {
+                    yield communityModel_1.default.updateOne({ _id: commId }, { $push: { chat: { userId, message } } }).then((data) => {
+                        obj = {
+                            message: 'message added successfully',
+                            status: 200,
+                            error: ""
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+                else {
+                    obj = {
+                        message: '',
+                        status: 404,
+                        error: `No Community Found`
+                    };
+                    res.status(obj.status).send(obj);
+                }
+            }
+            else {
+                obj = {
+                    message: ``,
+                    status: 404,
+                    error: 'You are currently not a user'
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.postMessage = postMessage;
+const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { commId } = req.body;
+        if (commId) {
+            const communityData = yield communityModel_1.default.find({ _id: commId });
+            if (communityData) {
+                console.log(communityData[0].chat, "Ccccccccc");
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `Community Data not found`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Community not found`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.getMessages = getMessages;

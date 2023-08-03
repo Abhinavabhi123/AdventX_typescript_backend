@@ -30,6 +30,10 @@ const communitySchema = new mongoose_1.Schema({
                 ref: "User",
                 required: false,
             },
+            message: {
+                type: String,
+                required: true
+            }
         },
     ],
     logo: {
