@@ -33,7 +33,11 @@ const communitySchema = new mongoose_1.Schema({
             message: {
                 type: String,
                 required: true
-            }
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            },
         },
     ],
     logo: {

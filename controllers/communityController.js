@@ -645,11 +645,39 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             status: 0,
             error: ""
         };
+        // interface Data{
+        //   userName:string;
+        //   userId:string|ObjectId;
+        //   message:string;
+        //   createdAt:string;
+        // }
         const { commId } = req.body;
         if (commId) {
-            const communityData = yield communityModel_1.default.find({ _id: commId });
+            const communityData = yield communityModel_1.default.findOne({ _id: commId });
             if (communityData) {
-                console.log(communityData[0].chat, "Ccccccccc");
+                const chats = communityData.chat;
+                if (chats) {
+                    const communityMessages = yield Promise.all(chats.map((chat) => __awaiter(void 0, void 0, void 0, function* () {
+                        console.log(chat);
+                        const userName = yield userModel_1.default.findOne({ _id: chat === null || chat === void 0 ? void 0 : chat.userId }, { _id: 0, firstName: 1 });
+                        const obj = {
+                            userName: userName === null || userName === void 0 ? void 0 : userName.firstName,
+                            userId: chat === null || chat === void 0 ? void 0 : chat.userId,
+                            message: chat === null || chat === void 0 ? void 0 : chat.message,
+                            time: chat === null || chat === void 0 ? void 0 : chat.createdAt
+                        };
+                        return obj ? obj : null;
+                    })));
+                    obj = {
+                        message: "Message fetched successfully",
+                        status: 200,
+                        error: "",
+                        messages: communityMessages
+                    };
+                    res.status(obj.status).send(obj);
+                }
+                else {
+                }
             }
             else {
                 obj = {

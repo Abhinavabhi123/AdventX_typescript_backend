@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Document, Schema, SchemaTypes, model } from "mongoose";
+import mongoose, { Document, Schema, SchemaTypes, model } from "mongoose";
 
 //  *creating interface for the community schema
 interface Community extends Document {
@@ -12,8 +12,9 @@ interface Community extends Document {
   ];
   chat?: [
     {
-      userId: ObjectId;
+      userId: mongoose.Schema.Types.ObjectId;
       message: string;
+      createdAt: string;
     }
   ];
   logo: string;
@@ -54,7 +55,11 @@ const communitySchema = new Schema<Community>(
         message:{
           type :String,
           required:true
-        }
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
     logo: {

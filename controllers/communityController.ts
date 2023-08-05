@@ -730,17 +730,49 @@ export const getMessages = async(req:Request,res:Response)=>{
       message:string;
       status:number;
       error:string;
+      messages?:any[]
     }
     let obj:Obj={
       message:"",
       status:0,
       error:""
     }
+    // interface Data{
+    //   userName:string;
+    //   userId:string|ObjectId;
+    //   message:string;
+    //   createdAt:string;
+    // }
     const {commId}=req.body   
     if(commId){
-      const communityData = await communityModel.find({_id:commId})
+      const communityData = await communityModel.findOne({_id:commId})
       if(communityData){
-        console.log(communityData[0].chat,"Ccccccccc");
+        const chats = communityData.chat
+        if(chats){
+          const communityMessages= await Promise.all(
+            chats.map(async(chat)=>{
+              console.log(chat);
+              const userName = await userModel.findOne({_id:chat?.userId},{_id:0,firstName:1})
+              const obj={
+                userName:userName?.firstName,
+                userId:chat?.userId,
+                message:chat?.message,
+                time:chat?.createdAt
+              }
+              return obj?obj:null
+            })
+          )
+         obj={
+          message:"Message fetched successfully",
+          status:200,
+          error:"",
+          messages:communityMessages
+         }
+          res.status(obj.status).send(obj)
+        }else{
+
+        }
+        
         
       }else{
         obj={
