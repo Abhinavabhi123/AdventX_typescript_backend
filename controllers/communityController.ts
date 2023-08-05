@@ -751,7 +751,6 @@ export const getMessages = async(req:Request,res:Response)=>{
         if(chats){
           const communityMessages= await Promise.all(
             chats.map(async(chat)=>{
-              console.log(chat);
               const userName = await userModel.findOne({_id:chat?.userId},{_id:0,firstName:1})
               const obj={
                 userName:userName?.firstName,

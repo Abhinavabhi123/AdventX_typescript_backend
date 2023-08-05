@@ -658,7 +658,6 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 const chats = communityData.chat;
                 if (chats) {
                     const communityMessages = yield Promise.all(chats.map((chat) => __awaiter(void 0, void 0, void 0, function* () {
-                        console.log(chat);
                         const userName = yield userModel_1.default.findOne({ _id: chat === null || chat === void 0 ? void 0 : chat.userId }, { _id: 0, firstName: 1 });
                         const obj = {
                             userName: userName === null || userName === void 0 ? void 0 : userName.firstName,

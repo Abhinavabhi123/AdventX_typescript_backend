@@ -39,18 +39,29 @@ app.use(morgan("dev"))
 app.use("/",userRoute)
 
 app.use("/admin",adminRoute)
-
+const users: { [key: string]: Socket } = {};
 const server = app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
 const io = new Server(server)
 io.on("connection",(socket:Socket)=>{
-    console.log("user connected",socket.id);
-    socket.on("communityChat",(community)=>{
-        console.log("connected to the community",community);
-        
-    })
-
-    socket.on("disconnect",()=>{
-        console.log("user disconnected");
-        
-    })
+   socket.on('joinRoom',({commId,userId})=>{
+    console.log(commId,userId,"iooo");
+    
+    console.log("joined to the room");
+    
+    socket.join(commId);
+    users[userId]=socket;
+   })
+   socket.on("chatMessage",({commId,userId,message})=>{
+       console.log(commId,userId,message,"oooyaa");
+    socket.broadcast.to(commId).emit("message",{userId,message});
+    
+   })
+   socket.on("disconnect",()=>{
+    for(const [userId,socketInstance] of Object.entries(users)){
+        if(socketInstance===socket){
+            delete users[userId];
+            break;
+        }
+    }
+   })
 })
