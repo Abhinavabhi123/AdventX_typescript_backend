@@ -22,6 +22,23 @@ interface Event extends Document {
     userId: ObjectId;
     vehicleId: ObjectId;
   }[];
+  winners:[
+    {
+        first:{
+            name:string;
+            image:string;
+        },
+        second:{
+            name:string;
+            image:string;
+        },
+        third:{
+            name:string;
+            image:string
+        }
+    }
+  ]
+  images:[string]
   createdAt: Date;
 }
 
@@ -104,6 +121,44 @@ const eventSchema = new Schema<Event>({
 
         }
     ],
+    winners:[
+        {
+            first:{
+                name:{
+                    type:String,
+                    requires:true
+                },
+                image:{
+                    type:String,
+                    required:true
+                }
+            },
+            second:{
+                 name:{
+                    type:String,
+                    requires:true
+                },
+                image:{
+                    type:String,
+                    required:true
+                }
+            },
+            third:{
+                 name:{
+                    type:String,
+                    requires:true
+                },
+                image:{
+                    type:String,
+                    required:true
+                }
+            }
+        }
+    ],
+    images:{
+        type:[String],
+        required:true
+    },
     createdAt:{
         type:Date,
         default:Date.now

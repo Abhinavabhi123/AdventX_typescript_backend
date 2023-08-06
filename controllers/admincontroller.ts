@@ -39,7 +39,7 @@ export const postAdminLogin = async (req: Request, res: Response) => {
         access: false,
         message: "",
         error: "Email not matching",
-        status: 401,
+        status: 404,
       };
       return res.status(object.status).send(object);
     }

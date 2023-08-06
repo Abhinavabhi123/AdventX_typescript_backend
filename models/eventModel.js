@@ -80,6 +80,44 @@ const eventSchema = new mongoose_1.Schema({
             }
         }
     ],
+    winners: [
+        {
+            first: {
+                name: {
+                    type: String,
+                    requires: true
+                },
+                image: {
+                    type: String,
+                    required: true
+                }
+            },
+            second: {
+                name: {
+                    type: String,
+                    requires: true
+                },
+                image: {
+                    type: String,
+                    required: true
+                }
+            },
+            third: {
+                name: {
+                    type: String,
+                    requires: true
+                },
+                image: {
+                    type: String,
+                    required: true
+                }
+            }
+        }
+    ],
+    images: {
+        type: [String],
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

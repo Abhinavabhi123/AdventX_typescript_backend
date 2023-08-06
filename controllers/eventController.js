@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -470,3 +470,14 @@ const editEventImage = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.editEventImage = editEventImage;
+const addWinners = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.body);
+        // console.log();
+        const { firstName, secondName, thirdName, image } = req.body;
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addWinners = addWinners;

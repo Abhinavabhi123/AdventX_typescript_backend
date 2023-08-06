@@ -537,3 +537,17 @@ export const editEventImage=async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+
+export const addWinners=async(req:Request,res:Response)=>{
+  try {
+    console.log(req.body);
+// console.log();
+
+    const {firstName,secondName,thirdName,image} =req.body
+
+    
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

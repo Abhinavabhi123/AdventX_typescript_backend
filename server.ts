@@ -39,6 +39,7 @@ app.use(morgan("dev"))
 app.use("/",userRoute)
 
 app.use("/admin",adminRoute)
+
 const users: { [key: string]: Socket } = {};
 const server = app.listen(Port, () => console.log(`⚡️[Server] : Server is running at http://localhost:${Port}`));
 const io = new Server(server)
