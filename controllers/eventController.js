@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -349,3 +349,124 @@ const getUserAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getUserAllEvents = getUserAllEvents;
+const editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { id } = req.params;
+        const { eventName, subTitle, location, date, type, fee, firstPrice, secondPrice, thirdPrice, description, about, status } = req.body;
+        if (id) {
+            const eventData = yield eventModel_1.default.findOne({ _id: id });
+            if (eventData) {
+                if (req.body) {
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: {
+                            eventName: eventName,
+                            subName: subTitle,
+                            location,
+                            date,
+                            eventType: type,
+                            fee,
+                            firstPrice,
+                            secondPrice,
+                            thirdPrice,
+                            description,
+                            about,
+                            status
+                        } }).then(() => {
+                        obj = {
+                            message: `data changed successfully`,
+                            status: 200,
+                            error: "",
+                            eventData
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `The event is not present `
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "can't find the event"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.editEvent = editEvent;
+const editEventImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const { id } = req.params;
+        const { eventName, subTitle, location, date, type, fee, firstPrice, secondPrice, thirdPrice, description, about, status, imageUrl } = req.body;
+        if (id) {
+            const eventData = yield eventModel_1.default.findOne({ _id: id });
+            if (eventData) {
+                if (req.body) {
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: {
+                            eventName: eventName,
+                            subName: subTitle,
+                            location,
+                            date,
+                            eventType: type,
+                            fee,
+                            firstPrice,
+                            secondPrice,
+                            thirdPrice,
+                            description,
+                            about,
+                            status,
+                            primaryImage: imageUrl
+                        } }).then(() => {
+                        obj = {
+                            message: `data changed successfully`,
+                            status: 200,
+                            error: "",
+                            eventData
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `The event is not present `
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "can't find the event"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.editEventImage = editEventImage;

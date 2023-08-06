@@ -379,3 +379,161 @@ export const getUserAllEvents =async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+
+export const editEvent=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string,
+      status:number,
+      error:string;
+      eventData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const {id}=req.params
+    
+    const {
+      eventName,
+      subTitle,
+      location,
+      date,
+      type,
+      fee,
+      firstPrice,
+      secondPrice,
+      thirdPrice,
+      description,
+      about,
+      status} =req.body
+      if(id){
+        const eventData = await eventModel.findOne({_id:id})
+        if(eventData){
+         if(req.body){
+          await eventModel.updateOne({_id:id},{$set:{
+            eventName:eventName,
+            subName:subTitle,
+            location,
+            date,
+            eventType:type,
+            fee,
+            firstPrice,
+            secondPrice,
+            thirdPrice,
+            description,
+            about,
+            status
+          }}).then(()=>{
+            obj={
+              message:`data changed successfully`,
+              status:200,
+              error:"",
+              eventData
+            }
+            res.status(obj.status).send(obj)
+          })
+         }
+          
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`The event is not present `
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"can't find the event"
+        }
+        res.status(obj.status).send(obj)
+      }
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const editEventImage=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string,
+      status:number,
+      error:string;
+      eventData?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    const {id}=req.params
+    
+    const {
+      eventName,
+      subTitle,
+      location,
+      date,
+      type,
+      fee,
+      firstPrice,
+      secondPrice,
+      thirdPrice,
+      description,
+      about,
+      status,
+      imageUrl} =req.body
+      if(id){
+        const eventData = await eventModel.findOne({_id:id})
+        if(eventData){
+         if(req.body){
+          await eventModel.updateOne({_id:id},{$set:{
+            eventName:eventName,
+            subName:subTitle,
+            location,
+            date,
+            eventType:type,
+            fee,
+            firstPrice,
+            secondPrice,
+            thirdPrice,
+            description,
+            about,
+            status,
+            primaryImage:imageUrl
+          }}).then(()=>{
+            obj={
+              message:`data changed successfully`,
+              status:200,
+              error:"",
+              eventData
+            }
+            res.status(obj.status).send(obj)
+          })
+         }
+          
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`The event is not present `
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"can't find the event"
+        }
+        res.status(obj.status).send(obj)
+      }
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

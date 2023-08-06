@@ -73,6 +73,8 @@ import {
   getEventDetails,
   getEventData,
   deleteEvent,
+  editEvent,
+  editEventImage
 } from "../controllers/eventController";
 import { AddBanner,banners,deleteBanner,getBanner,postBannerEdit} from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
@@ -95,6 +97,8 @@ router.post("/blockUser", isAuth, blockUser);
 router.post("/changeComStatus", isAuth, changeComStatus);
 router.post("/changeCommunity/:id", isAuth, changeCommunity);
 router.post("/addEvent", isAuth, addEvent);
+router.post("/editEvent/:id",isAuth,editEvent)
+router.post("/editEventImage/:id",isAuth,editEventImage)
 
 
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
