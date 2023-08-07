@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import eventModel from "../models/eventModel";
 import { ObjectId } from "mongodb";
+import cloudinary from "../utils/cloudnaryConfig"
+import fs from "fs"
+import path from "path";
 
 
 export const addEvent = async (req: Request, res: Response) => {
@@ -120,6 +123,7 @@ export const getEventDetails = async (req: Request, res: Response) => {
       error: string;
       data?: { [key: string]: string | number | ObjectId | any };
     }
+      
     let obj: Obj = {
       message: "",
       status: 0,
@@ -546,6 +550,118 @@ export const addWinners=async(req:Request,res:Response)=>{
     const {firstName,secondName,thirdName,image} =req.body
 
     
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const eventImages=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:''    
+    }
+    const {id}=req.params
+    const file = req.files as any
+    const eventData = await eventModel.findOne({_id:id})
+    if(eventData){
+
+      if(file){
+        const array:string[]=[]
+        const folder = path.join(__dirname, "../public/eventIMage");
+        for(const image in file){
+        const data = file[image]
+        const imageUrl =data?.filename
+        const imagePath = path.join(folder, imageUrl);
+        const options={
+          folder:"events",
+          fetch_format: "auto"
+        }
+       await cloudinary.v2.uploader.upload(data.path,options).then((data)=>{
+          array.push(data?.url)
+          fs.unlink(imagePath,(err)=>{
+            if (err) {
+              console.error(err);
+            } else {
+              console.log("Event image deleted successfully");
+            }
+          })
+        })
+        
+      }
+        await eventModel.updateOne({_id:id},{$set:{images:array}}).then(()=>{
+          obj={
+            message:"Image saved successfully",
+            status:200,
+            error:''
+          }
+          res.status(obj.status).send(obj)
+        })
+      }
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Can't find the event`
+      }
+      res.status(obj.status).send(obj)
+    }   
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const changeEventStatus=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    console.log(req.body);
+    const {_id,selected}=req.body
+    if(_id){
+      const id = _id
+      const eventData = await eventModel.findOne({_id:id})
+      if(eventData){
+       await eventModel.updateOne({_id:id},{$set:{
+        is_completed:selected
+       }}).then(()=>{
+          obj={
+            message:"Event status has been changed",
+            status:200,
+            error:''
+          }
+          res.status(obj.status).send(obj)
+       })
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:`Event data is not available`
+        }
+        res.status(obj.status).send(obj)
+      }
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Can't find the event data `
+      }
+      res.status(obj.status).send(obj)
+    }
     
   } catch (error) {
     console.error(error);

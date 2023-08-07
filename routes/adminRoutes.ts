@@ -2,6 +2,7 @@ import { Router, Request } from "express";
 const router = Router();
 import multer, { FileFilterCallback } from "multer";
 
+
 export const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/uploads/");
@@ -13,6 +14,14 @@ export const storage = multer.diskStorage({
 export const bannerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/banners/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+export const eventStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/eventIMage/");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
@@ -49,6 +58,13 @@ export const bannerUploads = multer({
   },
   fileFilter: fileFilter,
 });
+export const eventUploads = multer({
+  storage: eventStorage,
+  limits: {
+    fileSize: 1024 * 1024 * 100,
+  },
+  fileFilter: fileFilter,
+});
 import {
   postAdminLogin,
   getAllUser,
@@ -75,10 +91,13 @@ import {
   deleteEvent,
   editEvent,
   editEventImage,
-  addWinners
+  addWinners,
+  eventImages,
+  changeEventStatus
 } from "../controllers/eventController";
 import { AddBanner,banners,deleteBanner,getBanner,postBannerEdit} from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
+
 
 router.get("/getAllUser", isAuth, getAllUser);
 router.get("/singleUser", isAuth, singleUser);
@@ -101,7 +120,7 @@ router.post("/addEvent", isAuth, addEvent);
 router.post("/editEvent/:id",isAuth,editEvent)
 router.post("/editEventImage/:id",isAuth,editEventImage)
 router.post("/addWinners/:id",isAuth,addWinners)
-
+router.post("/changeEventStatus",isAuth,changeEventStatus)
 
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
 router.delete("/deleteEvent", isAuth, deleteEvent);
@@ -111,5 +130,6 @@ router.post("/createCommunity",isAuth,upload.single("image"),createCommunity);
 router.post("/addBanner", isAuth, bannerUploads.single("image"), AddBanner);
 router.post("/postBannerEdit",isAuth,bannerUploads.single("image"),postBannerEdit)
 router.post("/changeCommunityImage/:id",isAuth,upload.single("image"),changeCommunityWI)
+router.post("/eventImages/:id",isAuth,eventUploads.array("image",9),eventImages)
 
 export default router;

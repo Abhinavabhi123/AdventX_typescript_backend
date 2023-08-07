@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bannerUploads = exports.upload = exports.fileFilter = exports.bannerStorage = exports.storage = void 0;
+exports.eventUploads = exports.bannerUploads = exports.upload = exports.fileFilter = exports.eventStorage = exports.bannerStorage = exports.storage = void 0;
 const express_1 = require("express");
 const router = (0, express_1.Router)();
 const multer_1 = __importDefault(require("multer"));
@@ -18,6 +18,14 @@ exports.storage = multer_1.default.diskStorage({
 exports.bannerStorage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./public/banners/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    },
+});
+exports.eventStorage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/eventIMage/");
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + file.originalname);
@@ -48,6 +56,13 @@ exports.bannerUploads = (0, multer_1.default)({
     },
     fileFilter: exports.fileFilter,
 });
+exports.eventUploads = (0, multer_1.default)({
+    storage: exports.eventStorage,
+    limits: {
+        fileSize: 1024 * 1024 * 100,
+    },
+    fileFilter: exports.fileFilter,
+});
 const admincontroller_1 = require("../controllers/admincontroller");
 const communityController_1 = require("../controllers/communityController");
 const eventController_1 = require("../controllers/eventController");
@@ -73,6 +88,7 @@ router.post("/addEvent", checkAdminAuth_1.default, eventController_1.addEvent);
 router.post("/editEvent/:id", checkAdminAuth_1.default, eventController_1.editEvent);
 router.post("/editEventImage/:id", checkAdminAuth_1.default, eventController_1.editEventImage);
 router.post("/addWinners/:id", checkAdminAuth_1.default, eventController_1.addWinners);
+router.post("/changeEventStatus", checkAdminAuth_1.default, eventController_1.changeEventStatus);
 router.delete("/deleteCommunity/:id", checkAdminAuth_1.default, communityController_1.deleteCommunity);
 router.delete("/deleteEvent", checkAdminAuth_1.default, eventController_1.deleteEvent);
 router.delete("/deleteBanner", checkAdminAuth_1.default, bannerController_1.deleteBanner);
@@ -80,4 +96,5 @@ router.post("/createCommunity", checkAdminAuth_1.default, exports.upload.single(
 router.post("/addBanner", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.AddBanner);
 router.post("/postBannerEdit", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.postBannerEdit);
 router.post("/changeCommunityImage/:id", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.changeCommunityWI);
+router.post("/eventImages/:id", checkAdminAuth_1.default, exports.eventUploads.array("image", 9), eventController_1.eventImages);
 exports.default = router;

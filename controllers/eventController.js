@@ -12,8 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
+const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let obj = {
@@ -481,3 +484,108 @@ const addWinners = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.addWinners = addWinners;
+const eventImages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ''
+        };
+        const { id } = req.params;
+        const file = req.files;
+        const eventData = yield eventModel_1.default.findOne({ _id: id });
+        if (eventData) {
+            if (file) {
+                const array = [];
+                const folder = path_1.default.join(__dirname, "../public/eventIMage");
+                for (const image in file) {
+                    const data = file[image];
+                    const imageUrl = data === null || data === void 0 ? void 0 : data.filename;
+                    const imagePath = path_1.default.join(folder, imageUrl);
+                    const options = {
+                        folder: "events",
+                        fetch_format: "auto"
+                    };
+                    yield cloudnaryConfig_1.default.v2.uploader.upload(data.path, options).then((data) => {
+                        array.push(data === null || data === void 0 ? void 0 : data.url);
+                        fs_1.default.unlink(imagePath, (err) => {
+                            if (err) {
+                                console.error(err);
+                            }
+                            else {
+                                console.log("Event image deleted successfully");
+                            }
+                        });
+                    });
+                }
+                yield eventModel_1.default.updateOne({ _id: id }, { $set: { images: array } }).then(() => {
+                    obj = {
+                        message: "Image saved successfully",
+                        status: 200,
+                        error: ''
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Can't find the event`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.eventImages = eventImages;
+const changeEventStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        const { _id, selected } = req.body;
+        if (_id) {
+            const id = _id;
+            const eventData = yield eventModel_1.default.findOne({ _id: id });
+            if (eventData) {
+                yield eventModel_1.default.updateOne({ _id: id }, { $set: {
+                        is_completed: selected
+                    } }).then(() => {
+                    obj = {
+                        message: "Event status has been changed",
+                        status: 200,
+                        error: ''
+                    };
+                    res.status(obj.status).send(obj);
+                });
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `Event data is not available`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Can't find the event data `
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.changeEventStatus = changeEventStatus;
