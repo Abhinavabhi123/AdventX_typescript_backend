@@ -165,25 +165,28 @@ export const userLogin = async (req: Request, res: Response) => {
     };
 
     const { email, password } = req.body;
-    const userData: any = await userModel.find({ email: email });
-
+    console.log(req.body,"useeee");
+    if(email&&password){
+      
+    const userData: any = await userModel.findOne({ email: email });
+    
     if (userData) {
       const grantAccess: boolean = await compareHash(
         password,
-        userData[0].password
+        userData.password
       );
       if (grantAccess) {
         console.log(userData[0]?.status, "userddd");
-        if (userData[0]?.status === true) {
+        if (userData?.status === true) {
           console.log("ivide");
 
           const jwtToken = jwt.sign(
             {
-              _id: userData[0]?._id,
-              name: userData[0]?.firstName,
-              is_prime: userData[0]?.primeMember,
-              status: userData[0]?.status,
-              email: userData[0].email,
+              _id: userData?._id,
+              name: userData?.firstName,
+              is_prime: userData?.primeMember,
+              status: userData?.status,
+              email: userData.email,
             },
             secretKey,
             { expiresIn: "30d" }
@@ -229,7 +232,7 @@ export const userLogin = async (req: Request, res: Response) => {
         {
           object = {
             message: "",
-            status: 500,
+            status: 404,
             error: "Password not matching",
             loggedIn: false,
             userData: {
@@ -244,7 +247,7 @@ export const userLogin = async (req: Request, res: Response) => {
     } else {
       object = {
         message: "",
-        status: 500,
+        status: 404,
         error: "email not matching",
         loggedIn: false,
         userData: {
@@ -255,6 +258,20 @@ export const userLogin = async (req: Request, res: Response) => {
       };
       res.status(object.status).send(object);
     }
+  }else{
+    object={
+      message:'',
+      status:404,
+      error:"something went wrong",
+      loggedIn: false,
+      userData: {
+        firstName: undefined,
+        lastName: undefined,
+        email: undefined,
+      },
+    }
+    res.status(object.status).send(object)
+  }
   } catch (error) {
     console.error(error);
   }
