@@ -152,8 +152,9 @@ const eventSchema = new Schema<Event>({
                     type:String,
                     required:true
                 }
-            }
-        }
+            },
+            _id:false
+        },
     ],
     images:{
         type:[String],

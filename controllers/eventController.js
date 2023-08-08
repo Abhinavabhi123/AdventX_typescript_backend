@@ -297,7 +297,7 @@ const getAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             status: 0,
             error: ""
         };
-        const data = yield eventModel_1.default.find();
+        const data = yield eventModel_1.default.find({ is_completed: true });
         if (data) {
             obj = {
                 message: "Data fetched successfully",
@@ -475,9 +475,86 @@ const editEventImage = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.editEventImage = editEventImage;
 const addWinners = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
-        // console.log();
-        const { firstName, secondName, thirdName, image } = req.body;
+        let obj = {
+            message: "",
+            status: 0,
+            error: ''
+        };
+        const { id } = req.params;
+        const { firstName, secondName, thirdName } = req.body;
+        if (id) {
+            const eventData = yield eventModel_1.default.findOne({ _id: id });
+            if (eventData) {
+                if (req.files && req.body) {
+                    const array = [];
+                    const file = req.files;
+                    const folder = path_1.default.join(__dirname, "../public/eventIMage");
+                    for (const img of file) {
+                        const imageUrl = img === null || img === void 0 ? void 0 : img.filename;
+                        const imagePath = path_1.default.join(folder, imageUrl);
+                        const options = {
+                            folder: "winners",
+                            format: "webp"
+                        };
+                        yield cloudnaryConfig_1.default.v2.uploader.upload(img.path, options).then((data) => {
+                            array.push(data === null || data === void 0 ? void 0 : data.url);
+                            fs_1.default.unlink(imagePath, (err) => {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                else {
+                                    console.log("Event image deleted successfully");
+                                }
+                            });
+                        });
+                    }
+                    const obj1 = {
+                        name: firstName,
+                        image: array[0]
+                    };
+                    const obj2 = {
+                        name: secondName,
+                        image: array[1]
+                    };
+                    const obj3 = {
+                        name: thirdName,
+                        image: array[2]
+                    };
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: [{ first: obj1 }, { second: obj2 }, { third: obj3 }] } }).then((data) => {
+                        obj = {
+                            message: "Data updated successfully",
+                            status: 200,
+                            error: ''
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+                else {
+                    obj = {
+                        message: "",
+                        status: 404,
+                        error: `Data not found`
+                    };
+                    res.status(obj.status).send(obj);
+                }
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `Can't fetch the event data`
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Cant find the event data`
+            };
+            res.status(obj.status).send(obj);
+        }
     }
     catch (error) {
         console.error(error);
@@ -504,7 +581,7 @@ const eventImages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     const imagePath = path_1.default.join(folder, imageUrl);
                     const options = {
                         folder: "events",
-                        fetch_format: "auto"
+                        format: "webp"
                     };
                     yield cloudnaryConfig_1.default.v2.uploader.upload(data.path, options).then((data) => {
                         array.push(data === null || data === void 0 ? void 0 : data.url);

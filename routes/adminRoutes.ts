@@ -119,7 +119,6 @@ router.post("/changeCommunity/:id", isAuth, changeCommunity);
 router.post("/addEvent", isAuth, addEvent);
 router.post("/editEvent/:id",isAuth,editEvent)
 router.post("/editEventImage/:id",isAuth,editEventImage)
-router.post("/addWinners/:id",isAuth,addWinners)
 router.post("/changeEventStatus",isAuth,changeEventStatus)
 
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
@@ -131,5 +130,6 @@ router.post("/addBanner", isAuth, bannerUploads.single("image"), AddBanner);
 router.post("/postBannerEdit",isAuth,bannerUploads.single("image"),postBannerEdit)
 router.post("/changeCommunityImage/:id",isAuth,upload.single("image"),changeCommunityWI)
 router.post("/eventImages/:id",isAuth,eventUploads.array("image",9),eventImages)
+router.post("/addWinners/:id",isAuth,eventUploads.array("file",3),addWinners)
 
 export default router;

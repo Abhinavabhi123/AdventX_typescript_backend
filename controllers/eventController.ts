@@ -328,7 +328,7 @@ export const getAllEvents =async(req:Request,res:Response)=>{
         error:""
       }
 
-      const data = await eventModel.find()
+      const data = await eventModel.find({is_completed:true})
       if(data){
         obj={
           message:"Data fetched successfully",
@@ -544,10 +544,93 @@ export const editEventImage=async(req:Request,res:Response)=>{
 
 export const addWinners=async(req:Request,res:Response)=>{
   try {
-    console.log(req.body);
-// console.log();
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj={
+      message:"",
+      status:0,
+      error:''
+    }
+    const {id}=req.params
+    const {firstName,secondName,thirdName} = req.body
+    if(id){
+      const eventData = await eventModel.findOne({_id:id})
+      if(eventData){
+        if(req.files&&req.body){
+          const array:string[]=[]
+          const file = req.files as any
+          const folder = path.join(__dirname,"../public/eventIMage");
+          for(const img of file){
+            const imageUrl =img?.filename
+            const imagePath = path.join(folder, imageUrl);
+            const options={
+              folder:"winners",
+              format: "webp"
+          }
+          await cloudinary.v2.uploader.upload(img.path,options).then((data)=>{
+            array.push(data?.url)
+            fs.unlink(imagePath,(err)=>{
+              if (err) {
+                console.error(err);
+              } else {
+                console.log("Event image deleted successfully");
+              }
+            })
+          })
+        }
+          interface Data{
+            name:string;
+            image:string
+          }
+          const obj1:Data={
+            name:firstName,
+            image:array[0]
+          }
+          const obj2:Data={
+            name:secondName,
+            image:array[1]
+          }
+          const obj3:Data={
+            name:thirdName,
+            image:array[2]
+          }
+          await eventModel.updateOne({_id:id},{$set:{winners:[{first:obj1},{second:obj2},{third:obj3}]}}).then((data)=>{
+            
+            obj={
+              message:"Data updated successfully",
+              status:200,
+              error:''
+            }
+            res.status(obj.status).send(obj)
+          })
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`Data not found`
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error: `Can't fetch the event data`
+        }
+        res.status(obj.status).send(obj)
+      }
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Cant find the event data`
+      }
+      res.status(obj.status).send(obj)
+    }
 
-    const {firstName,secondName,thirdName,image} =req.body
 
     
     
@@ -582,7 +665,7 @@ export const eventImages=async(req:Request,res:Response)=>{
         const imagePath = path.join(folder, imageUrl);
         const options={
           folder:"events",
-          fetch_format: "auto"
+          format: "webp"
         }
        await cloudinary.v2.uploader.upload(data.path,options).then((data)=>{
           array.push(data?.url)

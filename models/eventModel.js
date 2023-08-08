@@ -111,8 +111,9 @@ const eventSchema = new mongoose_1.Schema({
                     type: String,
                     required: true
                 }
-            }
-        }
+            },
+            _id: false
+        },
     ],
     images: {
         type: [String],
