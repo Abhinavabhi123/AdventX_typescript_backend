@@ -12,10 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserBanner = exports.postBannerEdit = exports.getBanner = exports.deleteBanner = exports.banners = exports.AddBanner = void 0;
+exports.about = exports.getUserBanner = exports.postBannerEdit = exports.getBanner = exports.deleteBanner = exports.banners = exports.AddBanner = void 0;
 const bannerModel_1 = __importDefault(require("../models/bannerModel"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const userModel_1 = __importDefault(require("../models/userModel"));
+const eventModel_1 = __importDefault(require("../models/eventModel"));
+const communityModel_1 = __importDefault(require("../models/communityModel"));
 const AddBanner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let obj = {
@@ -286,3 +289,35 @@ const getUserBanner = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getUserBanner = getUserBanner;
+const about = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ''
+        };
+        const [userCount, eventCount, communityCount] = yield Promise.all([
+            userModel_1.default.countDocuments(),
+            eventModel_1.default.countDocuments(),
+            communityModel_1.default.countDocuments()
+        ]);
+        const data = {
+            userCount,
+            eventCount,
+            communityCount
+        };
+        if (data) {
+            obj = {
+                message: "Data fetched successfully",
+                status: 200,
+                error: "",
+                data
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.about = about;

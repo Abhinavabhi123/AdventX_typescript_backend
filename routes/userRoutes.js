@@ -91,6 +91,7 @@ const vehiclecontroller_1 = require("../controllers/vehiclecontroller");
 const checkUserAuth_1 = __importDefault(require("../Middleware/checkUserAuth"));
 router.get("/getAllUpEvents", eventController_1.getAllUpEvents);
 router.get("/getEvent", eventController_1.getEvent);
+router.get('/about', bannerController_1.about);
 router.get("/getAllEvents", eventController_1.getAllEvents);
 router.get("/getUserAllEvents", eventController_1.getUserAllEvents);
 router.get("/getUserProfile/:id", checkUserAuth_1.default, userController_1.getUserProfile);

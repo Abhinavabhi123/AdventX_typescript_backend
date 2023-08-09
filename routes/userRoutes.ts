@@ -89,12 +89,13 @@ import {
   getUserAllEvents
 } from "../controllers/eventController";
 import {userCommunities,communityData,getUserCommunity,communityUsers,postMessage,getMessages} from "../controllers/communityController"
-import {getUserBanner}from "../controllers/bannerController"
+import {getUserBanner,about}from "../controllers/bannerController"
 import {addVehicle,getAllVehicles,deleteVehicle} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
 
 router.get("/getAllUpEvents", getAllUpEvents);
 router.get("/getEvent", getEvent);
+router.get('/about',about)
 router.get("/getAllEvents", getAllEvents);
 router.get("/getUserAllEvents",getUserAllEvents)
 router.get("/getUserProfile/:id",userAuth, getUserProfile);

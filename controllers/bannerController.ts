@@ -1,7 +1,10 @@
-import { Express, Request, Response } from "express";
+import { Express, Request, Response, response } from "express";
 import bannerModel from "../models/bannerModel";
 import fs from "fs";
 import path from "path";
+import userModel from "../models/userModel";
+import eventModel from "../models/eventModel";
+import communityModel from "../models/communityModel";
 
 export const AddBanner = async (req: Request, res: Response) => {
   try {
@@ -286,6 +289,45 @@ export const getUserBanner = async(req:Request,res:Response)=>{
         }
         res.status(obj.status).send(obj)
       }
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const about=async(req:Request,res:Response)=>{
+  
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      data?:{}
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:''
+    }
+    const [userCount, eventCount, communityCount] = await Promise.all([
+      userModel.countDocuments(),
+      eventModel.countDocuments(),
+      communityModel.countDocuments()
+    ]);
+    
+    const data = {
+      userCount,
+      eventCount,
+      communityCount
+    };
+    if(data){
+      obj={
+        message:"Data fetched successfully",
+        status:200,
+        error:"",
+        data
+      }
+      res.status(obj.status).send(obj)
+    }
+    
   } catch (error) {
     console.error(error);
   }
