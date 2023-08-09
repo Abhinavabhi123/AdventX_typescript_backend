@@ -547,7 +547,7 @@ const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
                     })
                         .then(() => {
                         obj = {
-                            message: "success",
+                            message: "Profile changed successfully",
                             status: 200,
                             error: "",
                         };

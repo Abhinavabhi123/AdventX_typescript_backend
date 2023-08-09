@@ -570,7 +570,7 @@ export const postUserDetails = async (req: Request, res: Response) => {
             )
             .then(() => {
               obj = {
-                message: "success",
+                message: "Profile changed successfully",
                 status: 200,
                 error: "",
               };

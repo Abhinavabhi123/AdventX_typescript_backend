@@ -17,7 +17,7 @@ interface Vehicles extends Document {
 const vehicleScheme = new Schema<Vehicles>(
   {
     userId: {
-      type: [SchemaTypes.ObjectId],
+      type: SchemaTypes.ObjectId,
       ref: "User",
     },
     vehicleNumber: {
