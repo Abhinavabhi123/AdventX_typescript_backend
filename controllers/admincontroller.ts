@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import Jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import eventModel from "../models/eventModel";
 dotenv.config();
 
 const adminSecret: string = process.env.ADMIN_JWT_SECRET || "";
@@ -140,4 +141,34 @@ export const singleUser = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+export const accounts=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      subscription?:number;
+      eventAmount?:number;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:''
+    }
+    const primeMembers = await userModel.find({primeMember:true}).count()
+    const subscription=primeMembers*2000
+    const eventAmount = await eventModel.aggregate([{$group:{
+      _id:null,
+      totalCount:{$sum:"$participants"},
+      totalAmount:{$sum:"$totalCount"}
+    }}])
+    console.log(eventAmount,'eventkkkkk');
+    
 
+    console.log(subscription,"kjkjkjj");
+    
+    
+  } catch (error) {
+    console.error(error);
+  }
+}

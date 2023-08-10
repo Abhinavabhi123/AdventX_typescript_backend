@@ -35,12 +35,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
+exports.accounts = exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
 const adminModel_1 = __importDefault(require("../models/adminModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv = __importStar(require("dotenv"));
+const eventModel_1 = __importDefault(require("../models/eventModel"));
 dotenv.config();
 const adminSecret = process.env.ADMIN_JWT_SECRET || "";
 const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -155,3 +156,25 @@ const singleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.singleUser = singleUser;
+const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ''
+        };
+        const primeMembers = yield userModel_1.default.find({ primeMember: true }).count();
+        const subscription = primeMembers * 2000;
+        const eventAmount = yield eventModel_1.default.aggregate([{ $group: {
+                    _id: null,
+                    totalCount: { $sum: "$participants" },
+                    totalAmount: { $sum: "$totalCount" }
+                } }]);
+        console.log(eventAmount, 'eventkkkkk');
+        console.log(subscription, "kjkjkjj");
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.accounts = accounts;

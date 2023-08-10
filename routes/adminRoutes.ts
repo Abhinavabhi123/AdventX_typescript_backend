@@ -70,6 +70,7 @@ import {
   getAllUser,
   blockUser,
   singleUser,
+  accounts
 } from "../controllers/admincontroller";
 import {
   getCommunityUsers,
@@ -111,6 +112,7 @@ router.get("/getEventDetails", isAuth, getEventDetails);
 router.get("/getEventData", isAuth, getEventData);
 router.get("/banners",isAuth,banners)
 router.get("/getBanner",getBanner)
+router.get('/accounts',isAuth,accounts)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);

@@ -36,11 +36,11 @@ const vehicleScheme = new mongoose_1.Schema({
     },
     checked: {
         type: Boolean,
-        default: false,
+        default: true,
     },
     approved: {
         type: Boolean,
-        default: false,
+        default: true,
     },
     createdAt: {
         type: Date,
