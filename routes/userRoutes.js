@@ -104,6 +104,7 @@ router.get("/communityData", checkUserAuth_1.default, communityController_1.comm
 router.get("/getAllVehicles/:id", checkUserAuth_1.default, vehiclecontroller_1.getAllVehicles);
 router.get("/getUserCommunity", checkUserAuth_1.default, communityController_1.getUserCommunity);
 router.get("/communityUsers", checkUserAuth_1.default, communityController_1.communityUsers);
+router.get("/userEvents/:id", checkUserAuth_1.default, eventController_1.userEvents);
 router.post("/postSignup", userController_1.postUserSignup);
 router.post("/userLogin", userController_1.userLogin);
 router.post("/sendOpt", userController_1.sendOpt);

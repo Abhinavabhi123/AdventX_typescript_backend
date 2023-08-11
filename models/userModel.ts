@@ -113,6 +113,7 @@ const userSchema = new Schema<User>(
       {
         eventId: {
           type: SchemaTypes.ObjectId,
+          ref:"Event"
         },
         _id:false
       },

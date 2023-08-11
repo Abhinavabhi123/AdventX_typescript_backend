@@ -6,6 +6,7 @@ import fs from "fs"
 import path from "path";import stripe from "stripe";
 import * as dotenv from "dotenv";
 import userModel from "../models/userModel";
+import { log } from "console";
 dotenv.config();
 
 const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
@@ -913,6 +914,32 @@ export const addParticipation=async(req:Request,res:Response)=>{
       }
 
     }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const userEvents=async(req:Request,res:Response)=>{
+  try {
+    console.log(req.body);
+    console.log(req.params);
+    const {id}=req.params
+    if(id){
+      const userData:any = await userModel.findOne({_id:id},{_id:0,eventParticipation:1})
+      if(userData){
+       const array=[]
+       for(const data of userData){
+
+       }
+        
+
+      }else{
+
+      }
+    }else{
+
+    }
+    
   } catch (error) {
     console.error(error);
   }

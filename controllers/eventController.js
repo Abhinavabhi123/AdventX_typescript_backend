@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.userEvents = exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
 const fs_1 = __importDefault(require("fs"));
@@ -839,3 +839,26 @@ const addParticipation = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.addParticipation = addParticipation;
+const userEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.body);
+        console.log(req.params);
+        const { id } = req.params;
+        if (id) {
+            const userData = yield userModel_1.default.findOne({ _id: id }, { _id: 0, eventParticipation: 1 });
+            if (userData) {
+                const array = [];
+                for (const data of userData) {
+                }
+            }
+            else {
+            }
+        }
+        else {
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.userEvents = userEvents;

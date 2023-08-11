@@ -88,7 +88,8 @@ import {
   getAllEvents,
   getUserAllEvents,
   eventPayment,
-  addParticipation
+  addParticipation,
+  userEvents
 } from "../controllers/eventController";
 import {userCommunities,communityData,getUserCommunity,communityUsers,postMessage,getMessages} from "../controllers/communityController"
 import {getUserBanner,about}from "../controllers/bannerController"
@@ -111,6 +112,7 @@ router.get("/communityData",userAuth,communityData)
 router.get("/getAllVehicles/:id",userAuth,getAllVehicles)
 router.get("/getUserCommunity",userAuth,getUserCommunity)
 router.get("/communityUsers",userAuth,communityUsers)
+router.get("/userEvents/:id",userAuth,userEvents)
 
 router.post("/postSignup", postUserSignup);
 router.post("/userLogin", userLogin);

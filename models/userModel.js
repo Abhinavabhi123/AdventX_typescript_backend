@@ -85,6 +85,7 @@ const userSchema = new mongoose_1.Schema({
         {
             eventId: {
                 type: mongoose_1.SchemaTypes.ObjectId,
+                ref: "Event"
             },
             _id: false
         },
