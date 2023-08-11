@@ -86,12 +86,15 @@ import {
   getAllUpEvents,
   getEvent,
   getAllEvents,
-  getUserAllEvents
+  getUserAllEvents,
+  eventPayment,
+  addParticipation
 } from "../controllers/eventController";
 import {userCommunities,communityData,getUserCommunity,communityUsers,postMessage,getMessages} from "../controllers/communityController"
 import {getUserBanner,about}from "../controllers/bannerController"
 import {addVehicle,getAllVehicles,deleteVehicle} from "../controllers/vehiclecontroller"
 import userAuth from "../Middleware/checkUserAuth";
+
 
 router.get("/getAllUpEvents", getAllUpEvents);
 router.get("/getEvent", getEvent);
@@ -120,11 +123,15 @@ router.post("/postUserDetails",userAuth,postUserDetails)
 router.post("/postAddress",userAuth,postAddress)
 router.post("/addPrimeUser",userAuth,addPrimeUser)
 router.post("/webhook",express.raw({type:'application/json'}),webhook)
-// 
+router.post("/addParticipation",userAuth,addParticipation)
+
+// todo:Payments
 router.post("/create-checkout-session",userAuth,create_checkout_session)
+router.post("/eventPayment",userAuth,eventPayment)
 //todo: chat
 router.post("/postMessage",userAuth,postMessage)
 router.post("/getMessages",userAuth,getMessages)
+// 
 
 router.post("/addVehicle",userAuth,vUploads.array("image",5),addVehicle)
 router.post('/userImage',userAuth,upload.single("images"),userImage)

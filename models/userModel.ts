@@ -112,9 +112,9 @@ const userSchema = new Schema<User>(
     eventParticipation: [
       {
         eventId: {
-          type: [SchemaTypes.ObjectId],
+          type: SchemaTypes.ObjectId,
         },
-        
+        _id:false
       },
     ],
     license: {

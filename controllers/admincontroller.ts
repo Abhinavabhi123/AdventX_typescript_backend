@@ -160,7 +160,7 @@ export const accounts=async(req:Request,res:Response)=>{
     const eventAmount = await eventModel.aggregate([
       {
         $project: {
-          eventName: 1,
+          _id: 1,
           number:{$sum:"$participants"},
           totalAmount: { $multiply: ["$number", "$fee"] }
         }

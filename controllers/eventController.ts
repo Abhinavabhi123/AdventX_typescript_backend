@@ -3,7 +3,13 @@ import eventModel from "../models/eventModel";
 import { ObjectId } from "mongodb";
 import cloudinary from "../utils/cloudnaryConfig"
 import fs from "fs"
-import path from "path";
+import path from "path";import stripe from "stripe";
+import * as dotenv from "dotenv";
+import userModel from "../models/userModel";
+dotenv.config();
+
+const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
+const stripes = new stripe(secret_strip, { apiVersion: "2022-11-15" });
 
 
 export const addEvent = async (req: Request, res: Response) => {
@@ -784,4 +790,130 @@ export const eventEarnings=async(req:Request,res:Response)=>{
     } catch (error) {
       console.error(error);
     }
+}
+
+export const eventPayment=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      url?:string|null
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    console.log(req.body);
+    console.log("Ethiiii");
+    const {userId,amount,eventName,eventId,license,vehicle} = req.body;
+    const userData = await userModel.findOne({_id:userId})
+    if(userId){
+      const eventData = await eventModel.findOne({_id:eventId})
+      if(eventData){
+
+      
+      const session = await stripes.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "inr",
+              product_data: {
+                name: eventName,
+              },
+              unit_amount: amount,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        metadata: {
+          userId,
+          eventId
+        },
+        success_url: `${process.env.CLIENT_DOMAIN}/eventPayment/success?eveId=${eventId}&_id={CHECKOUT_SESSION_ID}&li=${license}&veh=${vehicle}`,
+        cancel_url: `${process.env.CLIENT_DOMAIN}/eventPayment/cancel`,
+      });
+      console.log(session,"session");
+      
+      obj={
+        message:"success",
+        status:200,
+        error:"",
+        url: session.url 
+      }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:"Event data not found"
+      }
+      res.status(obj.status).send(obj)
+
+    }
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:"User not found"
+      }
+      res.status(obj.status).send(obj)
+    }
+    
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const addParticipation=async(req:Request,res:Response)=>{
+  try {interface Obj{
+    message:string;
+    status:number;
+    error:string
+  }
+  let obj:Obj={
+    message:"",
+    status:0,
+    error:""
+  }
+    console.log(req.body);
+    const {_id,eventId,userId,vehicle,license}=req.body
+    if(_id&&eventId&&userId&&vehicle&&license){
+      const eventData = await eventModel.findOne({_id:eventId})
+      if(eventData){
+        await eventModel.updateOne({_id:eventId},{$push:{
+          participants:{
+            userId:userId,
+            vehicleId:vehicle,
+            licenseId:license,
+            paymentId:_id
+          }
+        }}).then(async()=>{
+          await userModel.updateOne({_id:userId},{$push:{eventParticipation:{eventId:eventData?._id}}}).then(()=>{
+            obj={
+              message:"Event participation successful",
+              status:200,
+              error:""
+            }
+            res.status(obj.status).send(obj)
+          })
+          
+        })
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"Event data not found"
+        }
+        res.status(obj.status).send(obj)
+      }
+
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }

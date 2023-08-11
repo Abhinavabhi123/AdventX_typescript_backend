@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,11 +35,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const stripe_1 = __importDefault(require("stripe"));
+const dotenv = __importStar(require("dotenv"));
+const userModel_1 = __importDefault(require("../models/userModel"));
+dotenv.config();
+const secret_strip = process.env.STRIPE_SECRET_KEY;
+const stripes = new stripe_1.default(secret_strip, { apiVersion: "2022-11-15" });
 const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let obj = {
@@ -697,3 +726,116 @@ const eventEarnings = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.eventEarnings = eventEarnings;
+const eventPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        console.log("Ethiiii");
+        const { userId, amount, eventName, eventId, license, vehicle } = req.body;
+        const userData = yield userModel_1.default.findOne({ _id: userId });
+        if (userId) {
+            const eventData = yield eventModel_1.default.findOne({ _id: eventId });
+            if (eventData) {
+                const session = yield stripes.checkout.sessions.create({
+                    payment_method_types: ["card"],
+                    line_items: [
+                        {
+                            price_data: {
+                                currency: "inr",
+                                product_data: {
+                                    name: eventName,
+                                },
+                                unit_amount: amount,
+                            },
+                            quantity: 1,
+                        },
+                    ],
+                    mode: "payment",
+                    metadata: {
+                        userId,
+                        eventId
+                    },
+                    success_url: `${process.env.CLIENT_DOMAIN}/eventPayment/success?eveId=${eventId}&_id={CHECKOUT_SESSION_ID}&li=${license}&veh=${vehicle}`,
+                    cancel_url: `${process.env.CLIENT_DOMAIN}/eventPayment/cancel`,
+                });
+                console.log(session, "session");
+                obj = {
+                    message: "success",
+                    status: 200,
+                    error: "",
+                    url: session.url
+                };
+                res.status(obj.status).send(obj);
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "Event data not found"
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "User not found"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.eventPayment = eventPayment;
+const addParticipation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body);
+        const { _id, eventId, userId, vehicle, license } = req.body;
+        if (_id && eventId && userId && vehicle && license) {
+            const eventData = yield eventModel_1.default.findOne({ _id: eventId });
+            if (eventData) {
+                yield eventModel_1.default.updateOne({ _id: eventId }, { $push: {
+                        participants: {
+                            userId: userId,
+                            vehicleId: vehicle,
+                            licenseId: license,
+                            paymentId: _id
+                        }
+                    } }).then(() => __awaiter(void 0, void 0, void 0, function* () {
+                    yield userModel_1.default.updateOne({ _id: userId }, { $push: { eventParticipation: { eventId: eventData === null || eventData === void 0 ? void 0 : eventData._id } } }).then(() => {
+                        obj = {
+                            message: "Event participation successful",
+                            status: 200,
+                            error: ""
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }));
+            }
+            else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: "Event data not found"
+                };
+                res.status(obj.status).send(obj);
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.addParticipation = addParticipation;

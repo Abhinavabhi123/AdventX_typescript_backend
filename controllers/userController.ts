@@ -927,28 +927,7 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 
     //create checkout session with stripe api
     const Stripe = new stripe(secret_strip, { apiVersion: "2022-11-15" });
-    // const session = await Stripe.checkout.sessions.create({
-    //   payment_method_types: ["card"],
-    //   line_items:[
-    //     {
-    //       price_data:{
-    //         currency:'inr',
-    //         product_data:{
-    //           name:"Premium Plan"
-    //         },
-    //         unit_amount:amount
-    //       },
-    //       quantity:1
-    //     }
-    //   ],
-    //   mode:"payment",
-    //   metadata:{
-    //     userId
-    //   },
-    //   success_url:`http://localhost:5173/subscribe/success `,
-    //   cancel_url:`http://localhost:5173/subscribe/cancel`
-
-    // })
+    
     console.log(userId, "oopopopkop");
 
     const session = await stripes.checkout.sessions.create({

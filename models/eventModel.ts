@@ -21,6 +21,8 @@ interface Event extends Document {
   participants: {
     userId: ObjectId;
     vehicleId: ObjectId;
+    paymentId:string;
+    licenseNo:string;
   }[];
   winners:[
     {
@@ -35,7 +37,7 @@ interface Event extends Document {
         third:{
             name:string;
             image:string
-        }
+        },
     }
   ]
   images:[string]
@@ -117,8 +119,16 @@ const eventSchema = new Schema<Event>({
             vehicleId:{
                 type:ObjectId,
                 ref:"Vehicles"
-            }
-
+            },
+            paymentId:{
+                required:true,
+                type:String
+            },
+            licenseNo:{
+                type:String,
+                required: true
+            },
+            _id:false
         }
     ],
     winners:[

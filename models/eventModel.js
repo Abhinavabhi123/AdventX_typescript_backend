@@ -77,7 +77,16 @@ const eventSchema = new mongoose_1.Schema({
             vehicleId: {
                 type: mongodb_1.ObjectId,
                 ref: "Vehicles"
-            }
+            },
+            paymentId: {
+                required: true,
+                type: String
+            },
+            licenseNo: {
+                type: String,
+                required: true
+            },
+            _id: false
         }
     ],
     winners: [

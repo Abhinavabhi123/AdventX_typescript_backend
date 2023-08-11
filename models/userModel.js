@@ -84,8 +84,9 @@ const userSchema = new mongoose_1.Schema({
     eventParticipation: [
         {
             eventId: {
-                type: [mongoose_1.SchemaTypes.ObjectId],
+                type: mongoose_1.SchemaTypes.ObjectId,
             },
+            _id: false
         },
     ],
     license: {

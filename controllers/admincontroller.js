@@ -168,7 +168,7 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const eventAmount = yield eventModel_1.default.aggregate([
             {
                 $project: {
-                    eventName: 1,
+                    _id: 1,
                     number: { $sum: "$participants" },
                     totalAmount: { $multiply: ["$number", "$fee"] }
                 }
