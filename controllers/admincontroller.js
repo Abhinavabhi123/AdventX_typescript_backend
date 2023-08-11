@@ -165,13 +165,31 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         const primeMembers = yield userModel_1.default.find({ primeMember: true }).count();
         const subscription = primeMembers * 2000;
-        const eventAmount = yield eventModel_1.default.aggregate([{ $group: {
+        const eventAmount = yield eventModel_1.default.aggregate([
+            {
+                $project: {
+                    eventName: 1,
+                    number: { $sum: "$participants" },
+                    totalAmount: { $multiply: ["$number", "$fee"] }
+                }
+            },
+            {
+                $group: {
                     _id: null,
-                    totalCount: { $sum: "$participants" },
-                    totalAmount: { $sum: "$totalCount" }
-                } }]);
+                    totalAmount: { $sum: "$totalAmount" }
+                }
+            }
+        ]);
         console.log(eventAmount, 'eventkkkkk');
         console.log(subscription, "kjkjkjj");
+        obj = {
+            message: "data fetched successfully",
+            status: 200,
+            error: "",
+            subAmount: subscription,
+            eventAmount: eventAmount[0].totalAmount
+        };
+        res.status(obj.status).send(obj);
     }
     catch (error) {
         console.error(error);

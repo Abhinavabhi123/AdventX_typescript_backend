@@ -750,3 +750,38 @@ export const changeEventStatus=async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+export const eventEarnings=async(req:Request,res:Response)=>{
+    try {
+      interface Obj{
+        message:string;
+        status:number;
+        error:string;
+        eventData?:any[]
+      }
+      let obj:Obj={
+        message:"",
+        status:0,
+        error:''
+      }
+       const eventData = await eventModel.find({},{_id:0,fee:1,participants:1,eventName:1})
+       if(eventData){
+        obj={
+          message:`Event data fetched successfully`,
+          status:200,
+          error:"",
+          eventData
+        }
+        res.status(obj.status).send(obj)
+       }
+       else{
+        obj={
+          message:"",
+          status:404,
+          error:"Something went wrong"
+        }
+        res.status(obj.status).send(obj)
+       }
+    } catch (error) {
+      console.error(error);
+    }
+}

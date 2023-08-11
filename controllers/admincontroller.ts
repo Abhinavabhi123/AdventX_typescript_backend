@@ -147,7 +147,7 @@ export const accounts=async(req:Request,res:Response)=>{
       message:string;
       status:number;
       error:string;
-      subscription?:number;
+      subAmount?:number;
       eventAmount?:number;
     }
     let obj:Obj={
@@ -157,15 +157,33 @@ export const accounts=async(req:Request,res:Response)=>{
     }
     const primeMembers = await userModel.find({primeMember:true}).count()
     const subscription=primeMembers*2000
-    const eventAmount = await eventModel.aggregate([{$group:{
-      _id:null,
-      totalCount:{$sum:"$participants"},
-      totalAmount:{$sum:"$totalCount"}
-    }}])
+    const eventAmount = await eventModel.aggregate([
+      {
+        $project: {
+          eventName: 1,
+          number:{$sum:"$participants"},
+          totalAmount: { $multiply: ["$number", "$fee"] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$totalAmount" }
+        }
+      }
+    ]);
     console.log(eventAmount,'eventkkkkk');
     
 
     console.log(subscription,"kjkjkjj");
+    obj={
+      message:"data fetched successfully",
+      status:200,
+      error:"",
+      subAmount:subscription,
+      eventAmount:eventAmount[0].totalAmount
+    }
+    res.status(obj.status).send(obj)
     
     
   } catch (error) {

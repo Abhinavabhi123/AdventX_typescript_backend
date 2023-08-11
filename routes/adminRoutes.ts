@@ -70,7 +70,7 @@ import {
   getAllUser,
   blockUser,
   singleUser,
-  accounts
+  accounts,
 } from "../controllers/admincontroller";
 import {
   getCommunityUsers,
@@ -94,7 +94,8 @@ import {
   editEventImage,
   addWinners,
   eventImages,
-  changeEventStatus
+  changeEventStatus,
+  eventEarnings
 } from "../controllers/eventController";
 import { AddBanner,banners,deleteBanner,getBanner,postBannerEdit} from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
@@ -113,6 +114,7 @@ router.get("/getEventData", isAuth, getEventData);
 router.get("/banners",isAuth,banners)
 router.get("/getBanner",getBanner)
 router.get('/accounts',isAuth,accounts)
+router.get("/eventEarnings",isAuth,eventEarnings)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);

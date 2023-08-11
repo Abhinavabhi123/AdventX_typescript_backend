@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
 const fs_1 = __importDefault(require("fs"));
@@ -666,3 +666,34 @@ const changeEventStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.changeEventStatus = changeEventStatus;
+const eventEarnings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ''
+        };
+        const eventData = yield eventModel_1.default.find({}, { _id: 0, fee: 1, participants: 1, eventName: 1 });
+        if (eventData) {
+            obj = {
+                message: `Event data fetched successfully`,
+                status: 200,
+                error: "",
+                eventData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Something went wrong"
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.eventEarnings = eventEarnings;
