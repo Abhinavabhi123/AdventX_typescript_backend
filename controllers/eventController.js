@@ -841,20 +841,44 @@ const addParticipation = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.addParticipation = addParticipation;
 const userEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
-        console.log(req.params);
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
         const { id } = req.params;
         if (id) {
-            const userData = yield userModel_1.default.findOne({ _id: id }, { _id: 0, eventParticipation: 1 });
+            const userData = yield userModel_1.default.findOne({ _id: id });
             if (userData) {
                 const array = [];
-                for (const data of userData) {
+                for (const data of userData.eventParticipation) {
+                    const event = yield eventModel_1.default.findOne({ _id: data.eventId });
+                    array.push(event);
                 }
+                obj = {
+                    message: "Data fetched successfully",
+                    status: 200,
+                    error: "",
+                    eventList: array
+                };
+                res.status(obj.status).send(obj);
             }
             else {
+                obj = {
+                    message: "",
+                    status: 404,
+                    error: `Data not found`
+                };
+                res.status(obj.status).send(obj);
             }
         }
         else {
+            obj = {
+                message: "",
+                status: 404,
+                error: "Something wen't wrong"
+            };
+            res.status(obj.status).send(obj);
         }
     }
     catch (error) {

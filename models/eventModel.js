@@ -86,6 +86,10 @@ const eventSchema = new mongoose_1.Schema({
                 type: String,
                 required: true
             },
+            confirmed: {
+                type: String,
+                default: "confirmed"
+            },
             _id: false
         }
     ],

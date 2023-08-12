@@ -23,6 +23,7 @@ interface Event extends Document {
     vehicleId: ObjectId;
     paymentId:string;
     licenseNo:string;
+    confirmed:string;
   }[];
   winners:[
     {
@@ -127,6 +128,10 @@ const eventSchema = new Schema<Event>({
             licenseNo:{
                 type:String,
                 required: true
+            },
+            confirmed:{
+                type:String,
+                default:"confirmed"
             },
             _id:false
         }

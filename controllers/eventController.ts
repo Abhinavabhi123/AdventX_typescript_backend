@@ -921,25 +921,49 @@ export const addParticipation=async(req:Request,res:Response)=>{
 
 export const userEvents=async(req:Request,res:Response)=>{
   try {
-    console.log(req.body);
-    console.log(req.params);
-    const {id}=req.params
-    if(id){
-      const userData:any = await userModel.findOne({_id:id},{_id:0,eventParticipation:1})
-      if(userData){
-       const array=[]
-       for(const data of userData){
-
-       }
-        
-
-      }else{
-
+      interface Obj{
+        message:string;
+        status:number;
+        error:string
+        eventList?:any[]
+      }  
+      let obj:Obj={
+        message:"",
+        status:0,
+        error:""
       }
-    }else{
-
-    }
-    
+      const {id}=req.params
+      if(id){
+        const userData:any = await userModel.findOne({_id:id})
+        if(userData){ 
+          const array=[]
+          for(const data of userData.eventParticipation){
+          const event = await eventModel.findOne({_id:data.eventId})
+          array.push(event)
+          }
+          obj={
+            message:"Data fetched successfully",
+            status:200,
+            error:"",
+            eventList:array
+          }
+          res.status(obj.status).send(obj)
+        }else{
+          obj={
+            message:"",
+            status:404,
+            error:`Data not found`
+          }
+          res.status(obj.status).send(obj)
+        }
+      }else{
+        obj={
+          message:"",
+          status:404,
+          error:"Something wen't wrong"
+        }
+        res.status(obj.status).send(obj)
+      }  
   } catch (error) {
     console.error(error);
   }
