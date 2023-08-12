@@ -115,6 +115,10 @@ const userSchema = new Schema<User>(
           type: SchemaTypes.ObjectId,
           ref:"Event"
         },
+        confirmed:{
+            type:String,
+            default:"confirmed"
+        },
         _id:false
       },
     ],

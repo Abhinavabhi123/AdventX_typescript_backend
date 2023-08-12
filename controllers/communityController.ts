@@ -588,7 +588,7 @@ export const getUserCommunity =async(req:Request,res:Response)=>{
     }
     const {commId}=req.query
     if(commId){
-      const communityData = await communityModel.findOne({_id:commId})
+      const communityData = await communityModel.findOne({_id:commId}).sort({"char.createdAt":-1})
       if(communityData){
         obj={
           message:'Data fetched successfully',

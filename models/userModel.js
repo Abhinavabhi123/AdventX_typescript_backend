@@ -87,6 +87,10 @@ const userSchema = new mongoose_1.Schema({
                 type: mongoose_1.SchemaTypes.ObjectId,
                 ref: "Event"
             },
+            confirmed: {
+                type: String,
+                default: "confirmed"
+            },
             _id: false
         },
     ],

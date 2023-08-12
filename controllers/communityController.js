@@ -509,7 +509,7 @@ const getUserCommunity = (req, res) => __awaiter(void 0, void 0, void 0, functio
         };
         const { commId } = req.query;
         if (commId) {
-            const communityData = yield communityModel_1.default.findOne({ _id: commId });
+            const communityData = yield communityModel_1.default.findOne({ _id: commId }).sort({ "char.createdAt": -1 });
             if (communityData) {
                 obj = {
                     message: 'Data fetched successfully',
