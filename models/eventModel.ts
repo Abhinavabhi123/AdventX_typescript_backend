@@ -26,7 +26,6 @@ interface Event extends Document {
     confirmed:string;
   }[];
   winners:[
-    {
         first:{
             name:string;
             image:string;
@@ -38,8 +37,7 @@ interface Event extends Document {
         third:{
             name:string;
             image:string
-        },
-    }
+    },
   ]
   images:[string]
   createdAt: Date;

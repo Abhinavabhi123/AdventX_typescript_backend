@@ -604,7 +604,7 @@ export const addWinners=async(req:Request,res:Response)=>{
             name:thirdName,
             image:array[2]
           }
-          await eventModel.updateOne({_id:id},{$set:{winners:[{first:obj1},{second:obj2},{third:obj3}]}}).then((data)=>{
+          await eventModel.updateOne({_id:id},{$set:{winners:[{first:obj1,second:obj2,third:obj3}]}}).then((data)=>{
             
             obj={
               message:"Data updated successfully",
@@ -1023,6 +1023,81 @@ export const deleteEventImages=async(req:Request,res:Response)=>{
         }
         res.status(obj.status).send(obj)
       }
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const editWinner=async(req:Request,res:Response)=>{
+  try {
+  interface Obj{
+    message:string;
+    status:number;
+    error:string;
+  }
+  let obj:Obj={
+    message:"",
+    status:0,
+    error:""
+  }
+    console.log(req.body,'body');
+    console.log(req.files,"files");
+    const {id}=req.params
+    const {firstName,secondName,thirdName}=req.body
+    const eventData:any = await eventModel.findOne({_id:id})
+    console.log(eventData,"klklklk");
+    
+    if(eventData){
+      console.log(typeof req.files);
+      
+      if(req.files){
+        if(Object.keys(req.files).length > 0){
+          console.log("ivide");
+          const images = req.files as any
+          for (const image in images){
+            console.log(image,"name");
+            
+            console.log(images[image],"iamge");
+          } 
+
+        }else{
+          console.log(eventData,"please");       
+          
+          const array =[
+            {
+              first:{
+                name:firstName,
+                image:eventData?.winners[0]?.first?.image
+              },
+              second:{
+                name:secondName,
+                image:eventData?.winners[1]?.second?.image
+              },
+              third:{
+                name:thirdName,
+                image:eventData?.winners[2]?.third?.image
+              }
+            },
+          ]
+          await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
+            obj={
+              message:"Event updated successfully",
+              status:200,
+              error:""
+            }
+            res.status(obj.status).send(obj)
+          })
+          
+        }
+     
+      }
+    }else{
+      obj={
+        message:'',
+        status:404,
+        error:'Event Data Not found,Please try after some time!'
+      }
+      res.status(obj.status).send(obj)
+    }
   } catch (error) {
     console.error(error);
   }

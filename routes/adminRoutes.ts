@@ -96,7 +96,8 @@ import {
   eventImages,
   changeEventStatus,
   eventEarnings,
-  deleteEventImages
+  deleteEventImages,
+  editWinner
 } from "../controllers/eventController";
 import { AddBanner,banners,deleteBanner,getBanner,postBannerEdit} from "../controllers/bannerController";
 import isAuth from "../Middleware/checkAdminAuth";
@@ -137,5 +138,11 @@ router.post("/postBannerEdit",isAuth,bannerUploads.single("image"),postBannerEdi
 router.post("/changeCommunityImage/:id",isAuth,upload.single("image"),changeCommunityWI)
 router.post("/eventImages/:id",isAuth,eventUploads.array("image",9),eventImages)
 router.post("/addWinners/:id",isAuth,eventUploads.array("file",3),addWinners)
+router.post("/editWinner/:id",isAuth,eventUploads.fields(
+  [
+    {name:"first",maxCount:1},
+    {name:"second",maxCount:1},
+    {name:"third",maxCount:1}
+  ]),editWinner)
 
 export default router;

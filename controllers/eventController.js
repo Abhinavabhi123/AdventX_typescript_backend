@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteEventImages = exports.userEvents = exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.editWinner = exports.deleteEventImages = exports.userEvents = exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
 const fs_1 = __importDefault(require("fs"));
@@ -549,7 +549,7 @@ const addWinners = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         name: thirdName,
                         image: array[2]
                     };
-                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: [{ first: obj1 }, { second: obj2 }, { third: obj3 }] } }).then((data) => {
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: [{ first: obj1, second: obj2, third: obj3 }] } }).then((data) => {
                         obj = {
                             message: "Data updated successfully",
                             status: 200,
@@ -942,3 +942,71 @@ const deleteEventImages = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.deleteEventImages = deleteEventImages;
+const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f;
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.body, 'body');
+        console.log(req.files, "files");
+        const { id } = req.params;
+        const { firstName, secondName, thirdName } = req.body;
+        const eventData = yield eventModel_1.default.findOne({ _id: id });
+        console.log(eventData, "klklklk");
+        if (eventData) {
+            console.log(typeof req.files);
+            if (req.files) {
+                if (Object.keys(req.files).length > 0) {
+                    console.log("ivide");
+                    const images = req.files;
+                    for (const image in images) {
+                        console.log(image, "name");
+                        console.log(images[image], "iamge");
+                    }
+                }
+                else {
+                    console.log(eventData, "please");
+                    const array = [
+                        {
+                            first: {
+                                name: firstName,
+                                image: (_b = (_a = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0]) === null || _a === void 0 ? void 0 : _a.first) === null || _b === void 0 ? void 0 : _b.image
+                            },
+                            second: {
+                                name: secondName,
+                                image: (_d = (_c = eventData === null || eventData === void 0 ? void 0 : eventData.winners[1]) === null || _c === void 0 ? void 0 : _c.second) === null || _d === void 0 ? void 0 : _d.image
+                            },
+                            third: {
+                                name: thirdName,
+                                image: (_f = (_e = eventData === null || eventData === void 0 ? void 0 : eventData.winners[2]) === null || _e === void 0 ? void 0 : _e.third) === null || _f === void 0 ? void 0 : _f.image
+                            }
+                        },
+                    ];
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: array } }).then(() => {
+                        obj = {
+                            message: "Event updated successfully",
+                            status: 200,
+                            error: ""
+                        };
+                        res.status(obj.status).send(obj);
+                    });
+                }
+            }
+        }
+        else {
+            obj = {
+                message: '',
+                status: 404,
+                error: 'Event Data Not found,Please try after some time!'
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.editWinner = editWinner;

@@ -100,4 +100,9 @@ router.post("/postBannerEdit", checkAdminAuth_1.default, exports.bannerUploads.s
 router.post("/changeCommunityImage/:id", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.changeCommunityWI);
 router.post("/eventImages/:id", checkAdminAuth_1.default, exports.eventUploads.array("image", 9), eventController_1.eventImages);
 router.post("/addWinners/:id", checkAdminAuth_1.default, exports.eventUploads.array("file", 3), eventController_1.addWinners);
+router.post("/editWinner/:id", checkAdminAuth_1.default, exports.eventUploads.fields([
+    { name: "first", maxCount: 1 },
+    { name: "second", maxCount: 1 },
+    { name: "third", maxCount: 1 }
+]), eventController_1.editWinner);
 exports.default = router;
