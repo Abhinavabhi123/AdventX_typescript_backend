@@ -943,7 +943,7 @@ const deleteEventImages = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.deleteEventImages = deleteEventImages;
 const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         let obj = {
             message: "",
@@ -959,13 +959,85 @@ const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (eventData) {
             console.log(typeof req.files);
             if (req.files) {
+                let object = {
+                    name: "",
+                    image: ""
+                };
+                const array = [];
                 if (Object.keys(req.files).length > 0) {
                     console.log("ivide");
                     const images = req.files;
+                    const folder = path_1.default.join(__dirname, "../public/eventIMage");
                     for (const image in images) {
                         console.log(image, "name");
-                        console.log(images[image], "iamge");
+                        const imageUrl = images[image][0].filename;
+                        const imagePath = path_1.default.join(folder, imageUrl);
+                        const ImgPath = images[image][0].path;
+                        const options = {
+                            folder: "winners",
+                            format: "webp"
+                        };
+                        if (image === "first") {
+                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
+                                console.log("success 1");
+                                object = {
+                                    name: firstName,
+                                    image: data === null || data === void 0 ? void 0 : data.url
+                                };
+                                array.push(object);
+                            });
+                            console.log("ok");
+                        }
+                        else {
+                            object = {
+                                name: firstName,
+                                image: (_a = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].first) === null || _a === void 0 ? void 0 : _a.image
+                            };
+                            array.push(object);
+                        }
+                        if (image === "second") {
+                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
+                                console.log("success 2");
+                                object = {
+                                    name: secondName,
+                                    image: data === null || data === void 0 ? void 0 : data.url
+                                };
+                                array.push(object);
+                            });
+                        }
+                        else {
+                            object = {
+                                name: secondName,
+                                image: (_b = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].second) === null || _b === void 0 ? void 0 : _b.image
+                            };
+                            array.push(object);
+                        }
+                        if (image === "third") {
+                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
+                                console.log("success 3");
+                                object = {
+                                    name: thirdName,
+                                    image: data === null || data === void 0 ? void 0 : data.url
+                                };
+                                array.push(object);
+                            });
+                        }
+                        else {
+                            object = {
+                                name: thirdName,
+                                image: (_c = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].third) === null || _c === void 0 ? void 0 : _c.image
+                            };
+                            array.push(object);
+                        }
                     }
+                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: array } }).then(() => {
+                        obj = {
+                            message: "Event updated successfully",
+                            status: 200,
+                            error: ""
+                        };
+                        res.status(obj.status).send(obj);
+                    });
                 }
                 else {
                     console.log(eventData, "please");
@@ -973,15 +1045,15 @@ const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         {
                             first: {
                                 name: firstName,
-                                image: (_b = (_a = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0]) === null || _a === void 0 ? void 0 : _a.first) === null || _b === void 0 ? void 0 : _b.image
+                                image: (_e = (_d = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0]) === null || _d === void 0 ? void 0 : _d.first) === null || _e === void 0 ? void 0 : _e.image
                             },
                             second: {
                                 name: secondName,
-                                image: (_d = (_c = eventData === null || eventData === void 0 ? void 0 : eventData.winners[1]) === null || _c === void 0 ? void 0 : _c.second) === null || _d === void 0 ? void 0 : _d.image
+                                image: (_g = (_f = eventData === null || eventData === void 0 ? void 0 : eventData.winners[1]) === null || _f === void 0 ? void 0 : _f.second) === null || _g === void 0 ? void 0 : _g.image
                             },
                             third: {
                                 name: thirdName,
-                                image: (_f = (_e = eventData === null || eventData === void 0 ? void 0 : eventData.winners[2]) === null || _e === void 0 ? void 0 : _e.third) === null || _f === void 0 ? void 0 : _f.image
+                                image: (_j = (_h = eventData === null || eventData === void 0 ? void 0 : eventData.winners[2]) === null || _h === void 0 ? void 0 : _h.third) === null || _j === void 0 ? void 0 : _j.image
                             }
                         },
                     ];

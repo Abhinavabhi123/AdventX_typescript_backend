@@ -576,7 +576,7 @@ export const addWinners=async(req:Request,res:Response)=>{
             const options={
               folder:"winners",
               format: "webp"
-          }
+            }
           await cloudinary.v2.uploader.upload(img.path,options).then((data)=>{
             array.push(data?.url)
             fs.unlink(imagePath,(err)=>{
@@ -1050,15 +1050,97 @@ export const editWinner=async(req:Request,res:Response)=>{
       console.log(typeof req.files);
       
       if(req.files){
+        interface Object{
+          name:string;
+          image:string
+        }
+        interface Data{
+          name:string;
+          image:string
+        }
+        let object:Object={
+          name:"",
+          image:""
+        } 
+        const array:Data[]=[]
         if(Object.keys(req.files).length > 0){
           console.log("ivide");
           const images = req.files as any
+          const folder = path.join(__dirname,"../public/eventIMage");
           for (const image in images){
             console.log(image,"name");
-            
-            console.log(images[image],"iamge");
-          } 
+            const imageUrl =images[image][0].filename
+            const imagePath = path.join(folder, imageUrl);
+            const ImgPath = images[image][0].path
+             const options={
+              folder:"winners",
+              format: "webp"
+            }
+            if(image==="first"){
+              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+               console.log("success 1");
+               
+                object={
+                  name:firstName,
+                  image:data?.url
+                }
+                array.push(object)
+              })
+              console.log("ok");
+            }else{
+              object={
+                name:firstName,
+                image:eventData?.winners[0].first?.image
+              }
+             array.push(object)
+            }
+            if(image==="second"){
+              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+                console.log("success 2");
+                
+                 object={
+                   name:secondName,
+                   image:data?.url
+                 }
+                 array.push(object)
+               })
+              
+            }else{
+              object={
+                name:secondName,
+                image:eventData?.winners[0].second?.image
+              }
+             array.push(object)
+              
+            } 
+            if(image==="third"){
+              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+                console.log("success 3");
+                
+                 object={
+                   name:thirdName,
+                   image:data?.url
+                 }
+                 array.push(object)
+               })
 
+            } else{
+              object={
+                name:thirdName,
+                image:eventData?.winners[0].third?.image
+              }
+             array.push(object)
+            }        
+          } 
+            await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
+            obj={
+              message:"Event updated successfully",
+              status:200,
+              error:""
+            }
+            res.status(obj.status).send(obj)
+          })
+          
         }else{
           console.log(eventData,"please");       
           
