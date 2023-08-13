@@ -6,7 +6,7 @@ import fs from "fs"
 import path from "path";import stripe from "stripe";
 import * as dotenv from "dotenv";
 import userModel from "../models/userModel";
-import { log } from "console";
+import { error, log } from "console";
 dotenv.config();
 
 const secret_strip = <string>process.env.STRIPE_SECRET_KEY;
@@ -686,7 +686,7 @@ export const eventImages=async(req:Request,res:Response)=>{
         })
         
       }
-        await eventModel.updateOne({_id:id},{$set:{images:array}}).then(()=>{
+        await eventModel.updateOne({_id:id},{$push:{images:array}}).then(()=>{
           obj={
             message:"Image saved successfully",
             status:200,
@@ -964,6 +964,65 @@ export const userEvents=async(req:Request,res:Response)=>{
         }
         res.status(obj.status).send(obj)
       }  
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const deleteEventImages=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+      console.log(req.query);
+      console.log(req.body.selectedValues);
+      const {selectedValues}=req.body
+      const {id}=req.query
+      const eventData = await eventModel.findOne({_id:id})
+      if(eventData){
+        for(const image of selectedValues){
+          try {
+            console.log(image.value,"popoo");
+            const images = image?.value.split("/")
+            const data = images[images.length-1]
+            const img = data.split(".")[0]
+
+            const destroyResult = await cloudinary.v2.uploader.destroy( `events/${img}`);
+            if (destroyResult.result === 'ok') {
+              await eventModel.updateOne({ _id: id }, { $pull: { 
+                images:image?.value
+              } }).then(()=>{
+                console.log("Image removed from database");
+                
+              })
+            } else {
+              console.log('Cloudinary error:', destroyResult.result);
+            }
+          } catch (error) {
+            console.log('Error deleting image:', error);
+          }
+        }
+        obj={
+          message:"Images removed successfully",
+          status:200,
+          error:""
+        }
+        res.status(obj.status).send(obj)
+      }else{
+        obj={
+          message:'',
+          status:404,
+          error:`Can't find the event data`
+        }
+        res.status(obj.status).send(obj)
+      }
   } catch (error) {
     console.error(error);
   }

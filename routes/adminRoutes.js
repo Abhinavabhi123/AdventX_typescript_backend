@@ -93,6 +93,7 @@ router.post("/changeEventStatus", checkAdminAuth_1.default, eventController_1.ch
 router.delete("/deleteCommunity/:id", checkAdminAuth_1.default, communityController_1.deleteCommunity);
 router.delete("/deleteEvent", checkAdminAuth_1.default, eventController_1.deleteEvent);
 router.delete("/deleteBanner", checkAdminAuth_1.default, bannerController_1.deleteBanner);
+router.delete("/deleteEventImages", checkAdminAuth_1.default, eventController_1.deleteEventImages);
 router.post("/createCommunity", checkAdminAuth_1.default, exports.upload.single("image"), communityController_1.createCommunity);
 router.post("/addBanner", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.AddBanner);
 router.post("/postBannerEdit", checkAdminAuth_1.default, exports.bannerUploads.single("image"), bannerController_1.postBannerEdit);

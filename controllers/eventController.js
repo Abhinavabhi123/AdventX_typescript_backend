@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userEvents = exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
+exports.deleteEventImages = exports.userEvents = exports.addParticipation = exports.eventPayment = exports.eventEarnings = exports.changeEventStatus = exports.eventImages = exports.addWinners = exports.editEventImage = exports.editEvent = exports.getUserAllEvents = exports.getAllEvents = exports.getEvent = exports.getAllUpEvents = exports.deleteEvent = exports.getEventData = exports.getEventDetails = exports.getAllEvent = exports.addEvent = void 0;
 const eventModel_1 = __importDefault(require("../models/eventModel"));
 const cloudnaryConfig_1 = __importDefault(require("../utils/cloudnaryConfig"));
 const fs_1 = __importDefault(require("fs"));
@@ -624,7 +624,7 @@ const eventImages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                         });
                     });
                 }
-                yield eventModel_1.default.updateOne({ _id: id }, { $set: { images: array } }).then(() => {
+                yield eventModel_1.default.updateOne({ _id: id }, { $push: { images: array } }).then(() => {
                     obj = {
                         message: "Image saved successfully",
                         status: 200,
@@ -886,3 +886,59 @@ const userEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.userEvents = userEvents;
+const deleteEventImages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        console.log(req.query);
+        console.log(req.body.selectedValues);
+        const { selectedValues } = req.body;
+        const { id } = req.query;
+        const eventData = yield eventModel_1.default.findOne({ _id: id });
+        if (eventData) {
+            for (const image of selectedValues) {
+                try {
+                    console.log(image.value, "popoo");
+                    const images = image === null || image === void 0 ? void 0 : image.value.split("/");
+                    const data = images[images.length - 1];
+                    const img = data.split(".")[0];
+                    const destroyResult = yield cloudnaryConfig_1.default.v2.uploader.destroy(`events/${img}`);
+                    if (destroyResult.result === 'ok') {
+                        yield eventModel_1.default.updateOne({ _id: id }, { $pull: {
+                                images: image === null || image === void 0 ? void 0 : image.value
+                            } }).then(() => {
+                            console.log("Image removed from database");
+                        });
+                    }
+                    else {
+                        console.log('Cloudinary error:', destroyResult.result);
+                    }
+                }
+                catch (error) {
+                    console.log('Error deleting image:', error);
+                }
+            }
+            obj = {
+                message: "Images removed successfully",
+                status: 200,
+                error: ""
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: '',
+                status: 404,
+                error: `Can't find the event data`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.deleteEventImages = deleteEventImages;
