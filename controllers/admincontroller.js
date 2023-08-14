@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dashboardCardValues = exports.accounts = exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
+exports.primeMembers = exports.dashboardCardValues = exports.accounts = exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
 const adminModel_1 = __importDefault(require("../models/adminModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -239,3 +239,34 @@ const dashboardCardValues = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.dashboardCardValues = dashboardCardValues;
+const primeMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: '',
+            status: 0,
+            error: ''
+        };
+        const userData = yield userModel_1.default.find({ primeMember: true });
+        if (userData) {
+            obj = {
+                message: `Data fetched successfully`,
+                status: 200,
+                error: '',
+                userData
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Something wen't wrong`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.primeMembers = primeMembers;

@@ -245,3 +245,37 @@ export const dashboardCardValues=async(req:Request,res:Response)=>{
     console.error(error);
   }
 }
+export const primeMembers=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      userData?:any[]
+    }
+    let obj:Obj={
+      message:'',
+      status:0,
+      error:''
+    }
+    const userData =await userModel.find({primeMember:true})
+    if(userData){
+      obj={
+        message:`Data fetched successfully`,
+        status:200,
+        error:'',
+        userData
+      }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Something wen't wrong`
+      }
+      res.status(obj.status).send(obj)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}

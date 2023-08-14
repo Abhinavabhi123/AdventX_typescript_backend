@@ -71,7 +71,8 @@ import {
   blockUser,
   singleUser,
   accounts,
-  dashboardCardValues
+  dashboardCardValues,
+  primeMembers
 } from "../controllers/admincontroller";
 import {
   getCommunityUsers,
@@ -119,6 +120,7 @@ router.get("/getBanner",getBanner)
 router.get('/accounts',isAuth,accounts)
 router.get("/eventEarnings",isAuth,eventEarnings)
 router.get("/dashboardCardValues",isAuth,dashboardCardValues)
+router.get("/primeMembers",isAuth,primeMembers)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);
@@ -128,6 +130,7 @@ router.post("/addEvent", isAuth, addEvent);
 router.post("/editEvent/:id",isAuth,editEvent)
 router.post("/editEventImage/:id",isAuth,editEventImage)
 router.post("/changeEventStatus",isAuth,changeEventStatus)
+
 
 router.delete("/deleteCommunity/:id", isAuth, deleteCommunity);
 router.delete("/deleteEvent", isAuth, deleteEvent);

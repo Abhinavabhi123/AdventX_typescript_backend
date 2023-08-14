@@ -83,6 +83,7 @@ router.get("/getBanner", bannerController_1.getBanner);
 router.get('/accounts', checkAdminAuth_1.default, admincontroller_1.accounts);
 router.get("/eventEarnings", checkAdminAuth_1.default, eventController_1.eventEarnings);
 router.get("/dashboardCardValues", checkAdminAuth_1.default, admincontroller_1.dashboardCardValues);
+router.get("/primeMembers", checkAdminAuth_1.default, admincontroller_1.primeMembers);
 router.post("/AdminLogin", admincontroller_1.postAdminLogin);
 router.post("/blockUser", checkAdminAuth_1.default, admincontroller_1.blockUser);
 router.post("/changeComStatus", checkAdminAuth_1.default, communityController_1.changeComStatus);
