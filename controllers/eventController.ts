@@ -1041,15 +1041,12 @@ export const editWinner=async(req:Request,res:Response)=>{
   }
     console.log(req.body,'body');
     console.log(req.files,"files");
+  
     const {id}=req.params
     const {firstName,secondName,thirdName}=req.body
     const eventData:any = await eventModel.findOne({_id:id})
-    console.log(eventData,"klklklk");
-    
-    if(eventData){
-      console.log(typeof req.files);
-      
-      if(req.files){
+    if(eventData){     
+       if(req.files){
         interface Object{
           name:string;
           image:string
@@ -1063,86 +1060,128 @@ export const editWinner=async(req:Request,res:Response)=>{
           image:""
         } 
         const array:Data[]=[]
+        const names:string[]=["first","second","third"]
+        const values:string[]=[firstName,secondName,thirdName]
+        let i=0;
         if(Object.keys(req.files).length > 0){
-          console.log("ivide");
+          console.log(req.files,"filesss");
+          console.log(Array(req.files).length,"file length");
           const images = req.files as any
           const folder = path.join(__dirname,"../public/eventIMage");
-          for (const image in images){
-            console.log(image,"name");
-            const imageUrl =images[image][0].filename
-            const imagePath = path.join(folder, imageUrl);
-            const ImgPath = images[image][0].path
-             const options={
-              folder:"winners",
-              format: "webp"
-            }
-            if(image==="first"){
-              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-               console.log("success 1");
-               
-                object={
-                  name:firstName,
-                  image:data?.url
-                }
-                array.push(object)
-              })
-              console.log("ok");
-            }else{
-              object={
-                name:firstName,
-                image:eventData?.winners[0].first?.image
-              }
-             array.push(object)
-            }
-            if(image==="second"){
-              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-                console.log("success 2");
-                
-                 object={
-                   name:secondName,
-                   image:data?.url
-                 }
-                 array.push(object)
-               })
-              
-            }else{
-              object={
-                name:secondName,
-                image:eventData?.winners[0].second?.image
-              }
-             array.push(object)
-              
-            } 
-            if(image==="third"){
-              await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-                console.log("success 3");
-                
-                 object={
-                   name:thirdName,
-                   image:data?.url
-                 }
-                 array.push(object)
-               })
+          const thisImages :any[]=[]
 
-            } else{
-              object={
-                name:thirdName,
-                image:eventData?.winners[0].third?.image
-              }
-             array.push(object)
-            }        
-          } 
-            await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
-            obj={
-              message:"Event updated successfully",
-              status:200,
-              error:""
-            }
-            res.status(obj.status).send(obj)
-          })
+          console.log(images);
+          console.log(images[0],"iamgeegegdgswe");
+          
+          for(let i=0;i<3;i++){
+
+
+          }
+
+
+
+
+          // for (const image in images){
+          //   console.log(image,"name");
+          //   const imageUrl =images[image][0].filename
+          //   const imagePath = path.join(folder, imageUrl);
+          //   const ImgPath = images[image][0].path
+          //    const options={
+          //     folder:"winners",
+          //     format: "webp"
+          //   }
+          //   console.log(names[i],"name");
+            
+          //  if(names[i]===image){
+
+          //  }else{
+          //   object={
+          //     name:values[i],
+          //     image:''
+          //   }
+          //   array.push(object)
+          //  }
+          //  i++;
+          //   thisImages.push({image:{image:images[image][0]}})
+          //   // if(image==="first"){
+          //   //   console.log("first if");
+              
+          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+          //   //   //  console.log("success 1");
+               
+          //   //   //   object={
+          //   //   //     name:firstName,
+          //   //   //     image:data?.url
+          //   //   //   }
+          //   //   //   array.push(object)
+          //   //   // })
+          //   //   console.log("ok");
+          //   // }else{
+          //   // console.log("first else");
+            
+          //   //   object={
+          //   //     name:firstName,
+          //   //     image:eventData?.winners[0].first?.image
+          //   //   }
+          //   //  array.push(object)
+          //   // }
+          //   // if(image==="second"){
+          //   //   console.log("second if");
+              
+          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+          //   //   //   console.log("success 2");
+                
+          //   //   //    object={
+          //   //   //      name:secondName,
+          //   //   //      image:data?.url
+          //   //   //    }
+          //   //   //    array.push(object)
+          //   //   //  })
+              
+          //   // }else{
+          //   //   console.log("second else");
+          //   //   object={
+          //   //     name:secondName,
+          //   //     image:eventData?.winners[0].second?.image
+          //   //   }
+          //   //  array.push(object)
+              
+          //   // } 
+          //   // if(image==="third"){
+          //   //   console.log("Third if");              
+          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+          //   //   //   console.log("success 3");
+                
+          //   //   //    object={
+          //   //   //      name:thirdName,
+          //   //   //      image:data?.url
+          //   //   //    }
+          //   //   //    array.push(object)
+          //   //   //  })
+
+          //   // } else{
+          //   //   console.log("Third else");
+          //   //   object={
+          //   //     name:thirdName,
+          //   //     image:eventData?.winners[0].third?.image
+          //   //   }
+          //   //  array.push(object)
+          //   // }        
+          // } 
+          // // console.log(thisImages,"new Images");
+          // console.log(array,"result array");
+          
+          // // console.log(eventData,"please");       
+          // //   await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
+          // //   obj={
+          // //     message:"Event updated successfully",
+          // //     status:200,
+          // //     error:""
+          // //   }
+          // //   res.status(obj.status).send(obj)
+          // // })
           
         }else{
-          console.log(eventData,"please");       
           
           const array =[
             {
@@ -1160,6 +1199,8 @@ export const editWinner=async(req:Request,res:Response)=>{
               }
             },
           ]
+          console.log(array,"this  is the result array");
+          
           await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
             obj={
               message:"Event updated successfully",

@@ -6,6 +6,7 @@ import { ObjectId } from "mongodb";
 import Jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 import eventModel from "../models/eventModel";
+import communityModel from "../models/communityModel";
 dotenv.config();
 
 const adminSecret: string = process.env.ADMIN_JWT_SECRET || "";
@@ -157,21 +158,23 @@ export const accounts=async(req:Request,res:Response)=>{
     }
     const primeMembers = await userModel.find({primeMember:true}).count()
     const subscription=primeMembers*2000
+    const eventData = await eventModel.find()
+    console.log(eventData,"event Data");
+  
     const eventAmount = await eventModel.aggregate([
       {
-        $project: {
-          _id: 1,
-          number:{$sum:"$participants"},
-          totalAmount: { $multiply: ["$number", "$fee"] }
+        $addFields: {
+          participantsCount: { $size: "$participants" } 
         }
       },
       {
         $group: {
           _id: null,
-          totalAmount: { $sum: "$totalAmount" }
+          totalEarnings: { $sum: { $multiply: ["$fee", "$participantsCount"] } }
         }
       }
     ]);
+    // const eventAmount = await eventModel.aggregate([{}])
     console.log(eventAmount,'eventkkkkk');
     
 
@@ -181,11 +184,63 @@ export const accounts=async(req:Request,res:Response)=>{
       status:200,
       error:"",
       subAmount:subscription,
-      eventAmount:eventAmount[0].totalAmount
+      eventAmount:eventAmount[0].totalEarnings
+    
     }
     res.status(obj.status).send(obj)
     
     
+  } catch (error) {
+    console.error(error);
+  }
+}
+export const dashboardCardValues=async(req:Request,res:Response)=>{
+  try {
+    interface Obj{
+      message:string;
+      status:number;
+      error:string;
+      userData?:number;
+      blockedUsers?:number;
+      primeMembers?:number;
+      events?:number;
+      completedEvents?:number;
+      communityCount?:number;
+    }
+    let obj:Obj={
+      message:"",
+      status:0,
+      error:""
+    }
+    
+    const userData = await userModel.find().count()
+    const blockedUsers= await userModel.find({status:false}).count()
+    const primeMembers= await userModel.find({primeMember:true}).count()
+    const events = await eventModel.find().count()
+    const completedEvents = await eventModel.find({is_completed:true}).count()
+    const communityCount = await communityModel.find().count() 
+    if(userData>=0&&blockedUsers>=0&&primeMembers>=0&&events>=0&&completedEvents>=0&&communityCount>=0){
+      obj={
+        message:"Data fetched successfully",
+        status:200,
+        error:"",
+        userData,
+        blockedUsers,
+        primeMembers,
+        events,
+        completedEvents,
+        communityCount
+      }
+      res.status(obj.status).send(obj)
+    }else{
+      obj={
+        message:"",
+        status:404,
+        error:`Something wen't wrong`
+      }
+      res.status(obj.status).send(obj)
+    }
+
   } catch (error) {
     console.error(error);
   }

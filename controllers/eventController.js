@@ -943,7 +943,7 @@ const deleteEventImages = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.deleteEventImages = deleteEventImages;
 const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f;
     try {
         let obj = {
             message: "",
@@ -955,108 +955,132 @@ const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { id } = req.params;
         const { firstName, secondName, thirdName } = req.body;
         const eventData = yield eventModel_1.default.findOne({ _id: id });
-        console.log(eventData, "klklklk");
         if (eventData) {
-            console.log(typeof req.files);
             if (req.files) {
                 let object = {
                     name: "",
                     image: ""
                 };
                 const array = [];
+                const names = ["first", "second", "third"];
+                const values = [firstName, secondName, thirdName];
+                let i = 0;
                 if (Object.keys(req.files).length > 0) {
-                    console.log("ivide");
+                    console.log(req.files, "filesss");
+                    console.log(Array(req.files).length, "file length");
                     const images = req.files;
                     const folder = path_1.default.join(__dirname, "../public/eventIMage");
-                    for (const image in images) {
-                        console.log(image, "name");
-                        const imageUrl = images[image][0].filename;
-                        const imagePath = path_1.default.join(folder, imageUrl);
-                        const ImgPath = images[image][0].path;
-                        const options = {
-                            folder: "winners",
-                            format: "webp"
-                        };
-                        if (image === "first") {
-                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
-                                console.log("success 1");
-                                object = {
-                                    name: firstName,
-                                    image: data === null || data === void 0 ? void 0 : data.url
-                                };
-                                array.push(object);
-                            });
-                            console.log("ok");
-                        }
-                        else {
-                            object = {
-                                name: firstName,
-                                image: (_a = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].first) === null || _a === void 0 ? void 0 : _a.image
-                            };
-                            array.push(object);
-                        }
-                        if (image === "second") {
-                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
-                                console.log("success 2");
-                                object = {
-                                    name: secondName,
-                                    image: data === null || data === void 0 ? void 0 : data.url
-                                };
-                                array.push(object);
-                            });
-                        }
-                        else {
-                            object = {
-                                name: secondName,
-                                image: (_b = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].second) === null || _b === void 0 ? void 0 : _b.image
-                            };
-                            array.push(object);
-                        }
-                        if (image === "third") {
-                            yield cloudnaryConfig_1.default.v2.uploader.upload(ImgPath, options).then((data) => {
-                                console.log("success 3");
-                                object = {
-                                    name: thirdName,
-                                    image: data === null || data === void 0 ? void 0 : data.url
-                                };
-                                array.push(object);
-                            });
-                        }
-                        else {
-                            object = {
-                                name: thirdName,
-                                image: (_c = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0].third) === null || _c === void 0 ? void 0 : _c.image
-                            };
-                            array.push(object);
-                        }
+                    const thisImages = [];
+                    console.log(images);
+                    console.log(images[0], "iamgeegegdgswe");
+                    for (let i = 0; i < 3; i++) {
                     }
-                    yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: array } }).then(() => {
-                        obj = {
-                            message: "Event updated successfully",
-                            status: 200,
-                            error: ""
-                        };
-                        res.status(obj.status).send(obj);
-                    });
+                    // for (const image in images){
+                    //   console.log(image,"name");
+                    //   const imageUrl =images[image][0].filename
+                    //   const imagePath = path.join(folder, imageUrl);
+                    //   const ImgPath = images[image][0].path
+                    //    const options={
+                    //     folder:"winners",
+                    //     format: "webp"
+                    //   }
+                    //   console.log(names[i],"name");
+                    //  if(names[i]===image){
+                    //  }else{
+                    //   object={
+                    //     name:values[i],
+                    //     image:''
+                    //   }
+                    //   array.push(object)
+                    //  }
+                    //  i++;
+                    //   thisImages.push({image:{image:images[image][0]}})
+                    //   // if(image==="first"){
+                    //   //   console.log("first if");
+                    //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+                    //   //   //  console.log("success 1");
+                    //   //   //   object={
+                    //   //   //     name:firstName,
+                    //   //   //     image:data?.url
+                    //   //   //   }
+                    //   //   //   array.push(object)
+                    //   //   // })
+                    //   //   console.log("ok");
+                    //   // }else{
+                    //   // console.log("first else");
+                    //   //   object={
+                    //   //     name:firstName,
+                    //   //     image:eventData?.winners[0].first?.image
+                    //   //   }
+                    //   //  array.push(object)
+                    //   // }
+                    //   // if(image==="second"){
+                    //   //   console.log("second if");
+                    //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+                    //   //   //   console.log("success 2");
+                    //   //   //    object={
+                    //   //   //      name:secondName,
+                    //   //   //      image:data?.url
+                    //   //   //    }
+                    //   //   //    array.push(object)
+                    //   //   //  })
+                    //   // }else{
+                    //   //   console.log("second else");
+                    //   //   object={
+                    //   //     name:secondName,
+                    //   //     image:eventData?.winners[0].second?.image
+                    //   //   }
+                    //   //  array.push(object)
+                    //   // } 
+                    //   // if(image==="third"){
+                    //   //   console.log("Third if");              
+                    //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
+                    //   //   //   console.log("success 3");
+                    //   //   //    object={
+                    //   //   //      name:thirdName,
+                    //   //   //      image:data?.url
+                    //   //   //    }
+                    //   //   //    array.push(object)
+                    //   //   //  })
+                    //   // } else{
+                    //   //   console.log("Third else");
+                    //   //   object={
+                    //   //     name:thirdName,
+                    //   //     image:eventData?.winners[0].third?.image
+                    //   //   }
+                    //   //  array.push(object)
+                    //   // }        
+                    // } 
+                    // // console.log(thisImages,"new Images");
+                    // console.log(array,"result array");
+                    // // console.log(eventData,"please");       
+                    // //   await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
+                    // //   obj={
+                    // //     message:"Event updated successfully",
+                    // //     status:200,
+                    // //     error:""
+                    // //   }
+                    // //   res.status(obj.status).send(obj)
+                    // // })
                 }
                 else {
-                    console.log(eventData, "please");
                     const array = [
                         {
                             first: {
                                 name: firstName,
-                                image: (_e = (_d = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0]) === null || _d === void 0 ? void 0 : _d.first) === null || _e === void 0 ? void 0 : _e.image
+                                image: (_b = (_a = eventData === null || eventData === void 0 ? void 0 : eventData.winners[0]) === null || _a === void 0 ? void 0 : _a.first) === null || _b === void 0 ? void 0 : _b.image
                             },
                             second: {
                                 name: secondName,
-                                image: (_g = (_f = eventData === null || eventData === void 0 ? void 0 : eventData.winners[1]) === null || _f === void 0 ? void 0 : _f.second) === null || _g === void 0 ? void 0 : _g.image
+                                image: (_d = (_c = eventData === null || eventData === void 0 ? void 0 : eventData.winners[1]) === null || _c === void 0 ? void 0 : _c.second) === null || _d === void 0 ? void 0 : _d.image
                             },
                             third: {
                                 name: thirdName,
-                                image: (_j = (_h = eventData === null || eventData === void 0 ? void 0 : eventData.winners[2]) === null || _h === void 0 ? void 0 : _h.third) === null || _j === void 0 ? void 0 : _j.image
+                                image: (_f = (_e = eventData === null || eventData === void 0 ? void 0 : eventData.winners[2]) === null || _e === void 0 ? void 0 : _e.third) === null || _f === void 0 ? void 0 : _f.image
                             }
                         },
                     ];
+                    console.log(array, "this  is the result array");
                     yield eventModel_1.default.updateOne({ _id: id }, { $set: { winners: array } }).then(() => {
                         obj = {
                             message: "Event updated successfully",

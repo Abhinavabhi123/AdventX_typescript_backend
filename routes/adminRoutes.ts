@@ -71,6 +71,7 @@ import {
   blockUser,
   singleUser,
   accounts,
+  dashboardCardValues
 } from "../controllers/admincontroller";
 import {
   getCommunityUsers,
@@ -117,6 +118,7 @@ router.get("/banners",isAuth,banners)
 router.get("/getBanner",getBanner)
 router.get('/accounts',isAuth,accounts)
 router.get("/eventEarnings",isAuth,eventEarnings)
+router.get("/dashboardCardValues",isAuth,dashboardCardValues)
 
 router.post("/AdminLogin", postAdminLogin);
 router.post("/blockUser", isAuth, blockUser);

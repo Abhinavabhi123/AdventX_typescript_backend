@@ -35,13 +35,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.accounts = exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
+exports.dashboardCardValues = exports.accounts = exports.singleUser = exports.blockUser = exports.getAllUser = exports.postAdminLogin = void 0;
 const adminModel_1 = __importDefault(require("../models/adminModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv = __importStar(require("dotenv"));
 const eventModel_1 = __importDefault(require("../models/eventModel"));
+const communityModel_1 = __importDefault(require("../models/communityModel"));
 dotenv.config();
 const adminSecret = process.env.ADMIN_JWT_SECRET || "";
 const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -165,21 +166,22 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         const primeMembers = yield userModel_1.default.find({ primeMember: true }).count();
         const subscription = primeMembers * 2000;
+        const eventData = yield eventModel_1.default.find();
+        console.log(eventData, "event Data");
         const eventAmount = yield eventModel_1.default.aggregate([
             {
-                $project: {
-                    _id: 1,
-                    number: { $sum: "$participants" },
-                    totalAmount: { $multiply: ["$number", "$fee"] }
+                $addFields: {
+                    participantsCount: { $size: "$participants" }
                 }
             },
             {
                 $group: {
                     _id: null,
-                    totalAmount: { $sum: "$totalAmount" }
+                    totalEarnings: { $sum: { $multiply: ["$fee", "$participantsCount"] } }
                 }
             }
         ]);
+        // const eventAmount = await eventModel.aggregate([{}])
         console.log(eventAmount, 'eventkkkkk');
         console.log(subscription, "kjkjkjj");
         obj = {
@@ -187,7 +189,7 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             status: 200,
             error: "",
             subAmount: subscription,
-            eventAmount: eventAmount[0].totalAmount
+            eventAmount: eventAmount[0].totalEarnings
         };
         res.status(obj.status).send(obj);
     }
@@ -196,3 +198,44 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.accounts = accounts;
+const dashboardCardValues = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let obj = {
+            message: "",
+            status: 0,
+            error: ""
+        };
+        const userData = yield userModel_1.default.find().count();
+        const blockedUsers = yield userModel_1.default.find({ status: false }).count();
+        const primeMembers = yield userModel_1.default.find({ primeMember: true }).count();
+        const events = yield eventModel_1.default.find().count();
+        const completedEvents = yield eventModel_1.default.find({ is_completed: true }).count();
+        const communityCount = yield communityModel_1.default.find().count();
+        if (userData >= 0 && blockedUsers >= 0 && primeMembers >= 0 && events >= 0 && completedEvents >= 0 && communityCount >= 0) {
+            obj = {
+                message: "Data fetched successfully",
+                status: 200,
+                error: "",
+                userData,
+                blockedUsers,
+                primeMembers,
+                events,
+                completedEvents,
+                communityCount
+            };
+            res.status(obj.status).send(obj);
+        }
+        else {
+            obj = {
+                message: "",
+                status: 404,
+                error: `Something wen't wrong`
+            };
+            res.status(obj.status).send(obj);
+        }
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+exports.dashboardCardValues = dashboardCardValues;
