@@ -998,9 +998,8 @@ export const deleteEventImages=async(req:Request,res:Response)=>{
             if (destroyResult.result === 'ok') {
               await eventModel.updateOne({ _id: id }, { $pull: { 
                 images:image?.value
-              } }).then(()=>{
+              }}).then(()=>{
                 console.log("Image removed from database");
-                
               })
             } else {
               console.log('Cloudinary error:', destroyResult.result);
@@ -1039,12 +1038,11 @@ export const editWinner=async(req:Request,res:Response)=>{
     status:0,
     error:""
   }
-    console.log(req.body,'body');
-    console.log(req.files,"files");
   
     const {id}=req.params
     const {firstName,secondName,thirdName}=req.body
     const eventData:any = await eventModel.findOne({_id:id})
+
     if(eventData){     
        if(req.files){
         interface Object{
@@ -1059,128 +1057,89 @@ export const editWinner=async(req:Request,res:Response)=>{
           name:"",
           image:""
         } 
-        const array:Data[]=[]
-        const names:string[]=["first","second","third"]
+        const data:Data[]=[]
+        const array:string[]=["first","second","third"]
         const values:string[]=[firstName,secondName,thirdName]
-        let i=0;
+        const imageArray:any=[]
         if(Object.keys(req.files).length > 0){
-          console.log(req.files,"filesss");
-          console.log(Array(req.files).length,"file length");
           const images = req.files as any
-          const folder = path.join(__dirname,"../public/eventIMage");
-          const thisImages :any[]=[]
-
-          console.log(images);
-          console.log(images[0],"iamgeegegdgswe");
-          
-          for(let i=0;i<3;i++){
-
-
+          const folder = path.join(__dirname,"../public/eventIMage"); 
+          for(const image in images){           
+            imageArray.push(images[image][0])
           }
-
-
-
-
-          // for (const image in images){
-          //   console.log(image,"name");
-          //   const imageUrl =images[image][0].filename
-          //   const imagePath = path.join(folder, imageUrl);
-          //   const ImgPath = images[image][0].path
-          //    const options={
-          //     folder:"winners",
-          //     format: "webp"
-          //   }
-          //   console.log(names[i],"name");
-            
-          //  if(names[i]===image){
-
-          //  }else{
-          //   object={
-          //     name:values[i],
-          //     image:''
-          //   }
-          //   array.push(object)
-          //  }
-          //  i++;
-          //   thisImages.push({image:{image:images[image][0]}})
-          //   // if(image==="first"){
-          //   //   console.log("first if");
-              
-          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-          //   //   //  console.log("success 1");
-               
-          //   //   //   object={
-          //   //   //     name:firstName,
-          //   //   //     image:data?.url
-          //   //   //   }
-          //   //   //   array.push(object)
-          //   //   // })
-          //   //   console.log("ok");
-          //   // }else{
-          //   // console.log("first else");
-            
-          //   //   object={
-          //   //     name:firstName,
-          //   //     image:eventData?.winners[0].first?.image
-          //   //   }
-          //   //  array.push(object)
-          //   // }
-          //   // if(image==="second"){
-          //   //   console.log("second if");
-              
-          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-          //   //   //   console.log("success 2");
-                
-          //   //   //    object={
-          //   //   //      name:secondName,
-          //   //   //      image:data?.url
-          //   //   //    }
-          //   //   //    array.push(object)
-          //   //   //  })
-              
-          //   // }else{
-          //   //   console.log("second else");
-          //   //   object={
-          //   //     name:secondName,
-          //   //     image:eventData?.winners[0].second?.image
-          //   //   }
-          //   //  array.push(object)
-              
-          //   // } 
-          //   // if(image==="third"){
-          //   //   console.log("Third if");              
-          //   //   // await cloudinary.v2.uploader.upload(ImgPath,options).then((data)=>{
-          //   //   //   console.log("success 3");
-                
-          //   //   //    object={
-          //   //   //      name:thirdName,
-          //   //   //      image:data?.url
-          //   //   //    }
-          //   //   //    array.push(object)
-          //   //   //  })
-
-          //   // } else{
-          //   //   console.log("Third else");
-          //   //   object={
-          //   //     name:thirdName,
-          //   //     image:eventData?.winners[0].third?.image
-          //   //   }
-          //   //  array.push(object)
-          //   // }        
-          // } 
-          // // console.log(thisImages,"new Images");
-          // console.log(array,"result array");
+          const options={
+            folder:"winners",
+            format: "webp"
+          }
+       let count=0;
+       let k=0;
+        for(let i=0;i<array.length;i++){
+          for(let j=0;j<imageArray.length;j++){
+            if(array[i]===imageArray[j].fieldname){
+              let imagesss:string|undefined
+              if(imageArray[j].fieldname==="first"){
+                console.log("first");
+                 imagesss = eventData.winners[0].first.image ??''
+              }
+              if(imageArray[j].fieldname==="second"){
+                imagesss = eventData.winners[0].second.image??''
+             }
+             if(imageArray[j].fieldname==="third"){
+              imagesss = eventData.winners[0].third.image??''
+            }
           
-          // // console.log(eventData,"please");       
-          // //   await eventModel.updateOne({_id:id},{$set:{winners:array}}).then(()=>{
-          // //   obj={
-          // //     message:"Event updated successfully",
-          // //     status:200,
-          // //     error:""
-          // //   }
-          // //   res.status(obj.status).send(obj)
-          // // })
+              await cloudinary.v2.uploader.upload(imageArray[j].path,options).then(async(response)=>{
+                  data.push({name:values[i],image:response?.url})
+                  const imagePath = path.join(folder,imageArray[j].filename);
+                  fs.unlink(imagePath,(err)=>{
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    console.log("Event image deleted successfully");
+                  }
+                })
+                if(imagesss!==undefined){
+                  const imagesUrl = imagesss.split("/")
+                  const imageData = imagesUrl[imagesUrl.length-1]
+                  const img = imageData.split(".")[0]
+                  const destroyResult = await cloudinary.v2.uploader.destroy( `winners/${img}`);
+                  if (destroyResult.result === 'ok') {
+                  } else {
+                    console.log('Cloudinary error:', destroyResult.result);
+                  }
+                }
+                })
+                count++;
+                
+                }
+            }
+            if(count===0){
+           
+              if(array[i]==="first"){
+                data.push({name:values[i],image:eventData?.winners[0].first?.image})
+                }
+                if(array[i]==="second"){
+                  data.push({name:values[i],image:eventData?.winners[0].second?.image})
+              }
+              if(array[i]==="third"){
+                data.push({name:values[i],image:eventData?.winners[0].third?.image})
+                }
+              }
+              count=0;
+              k++;
+        }
+        await eventModel.updateOne({_id:id},{$set:{winners:[{first:data[0],second:data[1],third:data[2]}]}}).then(()=>{
+          obj={
+            message:"Edit successful",
+            status:200,
+            error:""
+          }
+          res.status(obj.status).send(obj)
+        }).catch((error)=>{
+          console.log("error");
           
+        })
+
         }else{
           
           const array =[
@@ -1191,11 +1150,11 @@ export const editWinner=async(req:Request,res:Response)=>{
               },
               second:{
                 name:secondName,
-                image:eventData?.winners[1]?.second?.image
+                image:eventData?.winners[0]?.second?.image
               },
               third:{
                 name:thirdName,
-                image:eventData?.winners[2]?.third?.image
+                image:eventData?.winners[0]?.third?.image
               }
             },
           ]
