@@ -704,7 +704,7 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         event = stripes.webhooks.constructEvent(payload, sig, secret);
     }
     catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error(error);
     }
     if (event) {
         switch (event.type) {
@@ -757,7 +757,7 @@ const userLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userLicense = userLicense;
@@ -803,7 +803,7 @@ const addLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addLicense = addLicense;
@@ -862,7 +862,7 @@ const editLicense = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.editLicense = editLicense;
@@ -898,7 +898,7 @@ const create_checkout_session = (req, res) => __awaiter(void 0, void 0, void 0, 
         res.json({ url: session.url });
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.create_checkout_session = create_checkout_session;
@@ -940,7 +940,7 @@ const getUserEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getUserEvent = getUserEvent;
@@ -1001,7 +1001,7 @@ const addPrimeUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addPrimeUser = addPrimeUser;

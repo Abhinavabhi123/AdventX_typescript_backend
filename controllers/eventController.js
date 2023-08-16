@@ -96,7 +96,7 @@ const addEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addEvent = addEvent;
@@ -131,7 +131,7 @@ const getAllEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getAllEvent = getAllEvent;
@@ -173,7 +173,7 @@ const getEventDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getEventDetails = getEventDetails;
@@ -215,7 +215,7 @@ const getEventData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getEventData = getEventData;
@@ -250,7 +250,7 @@ const deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.deleteEvent = deleteEvent;
@@ -281,7 +281,7 @@ const getAllUpEvents = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getAllUpEvents = getAllUpEvents;
@@ -315,7 +315,7 @@ const getEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getEvent = getEvent;
@@ -346,7 +346,7 @@ const getAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getAllEvents = getAllEvents;
@@ -377,7 +377,7 @@ const getUserAllEvents = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getUserAllEvents = getUserAllEvents;
@@ -437,7 +437,7 @@ const editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.editEvent = editEvent;
@@ -498,7 +498,7 @@ const editEventImage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.editEventImage = editEventImage;
@@ -586,7 +586,7 @@ const addWinners = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addWinners = addWinners;
@@ -644,7 +644,7 @@ const eventImages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.eventImages = eventImages;
@@ -691,7 +691,7 @@ const changeEventStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.changeEventStatus = changeEventStatus;
@@ -722,7 +722,7 @@ const eventEarnings = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.eventEarnings = eventEarnings;
@@ -790,7 +790,7 @@ const eventPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.eventPayment = eventPayment;
@@ -835,7 +835,7 @@ const addParticipation = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addParticipation = addParticipation;
@@ -882,7 +882,7 @@ const userEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userEvents = userEvents;
@@ -938,7 +938,7 @@ const deleteEventImages = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.deleteEventImages = deleteEventImages;
@@ -1079,7 +1079,7 @@ const editWinner = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.editWinner = editWinner;

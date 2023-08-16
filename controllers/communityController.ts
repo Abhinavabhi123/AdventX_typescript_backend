@@ -20,7 +20,7 @@ export const getCommunityUsers = async (req: Request, res: Response) => {
       res.status(200).send(userData);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getComUser = async (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ export const getComUser = async (req: Request, res: Response) => {
       res.status(200).send(userData);
     }
   } catch (error) {
-    console.error();
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -136,7 +136,7 @@ export const createCommunity = async (req: Request, res: Response) => {
       console.log("no");
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const communities = async (req: Request, res: Response) => {
@@ -172,7 +172,7 @@ export const communities = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -223,7 +223,7 @@ export const getCommunityDetails = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const changeComStatus = async (req: Request, res: Response) => {
@@ -267,7 +267,7 @@ export const changeComStatus = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -319,7 +319,7 @@ export const addUserECommunity = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -390,7 +390,7 @@ export const changeCommunity = async (req: Request, res: Response) => {
       res.status(200).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const deleteCommunity = async (req: Request, res: Response) => {
@@ -439,7 +439,7 @@ export const deleteCommunity = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -497,7 +497,7 @@ export const userCommunities = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -506,7 +506,7 @@ export const communityData = async (req: Request, res: Response) => {
     console.log(req.params);
     console.log(req.query);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -569,7 +569,7 @@ export const changeCommunityWI = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -614,7 +614,7 @@ export const getUserCommunity =async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }   
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const communityUsers =async(req:Request,res:Response)=>{
@@ -664,15 +664,15 @@ export const communityUsers =async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
       }
     }else{
-obj={
-  message:"",
-  status:404,
-  error:`Community data not found`
-}
-res.status(obj.status).send(obj)
+      obj={
+        message:"",
+        status:404,
+        error:`Community data not found`
+      }
+      res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -721,6 +721,7 @@ export const postMessage=async(req:Request,res:Response)=>{
       }
     }
   } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
     console.error(error);
   }
 }
@@ -737,12 +738,6 @@ export const getMessages = async(req:Request,res:Response)=>{
       status:0,
       error:""
     }
-    // interface Data{
-    //   userName:string;
-    //   userId:string|ObjectId;
-    //   message:string;
-    //   createdAt:string;
-    // }
     const {commId}=req.body   
     if(commId){
       const communityData = await communityModel.findOne({_id:commId})
@@ -790,6 +785,6 @@ export const getMessages = async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }

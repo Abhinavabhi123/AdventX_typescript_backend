@@ -31,7 +31,7 @@ const getCommunityUsers = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getCommunityUsers = getCommunityUsers;
@@ -47,7 +47,7 @@ const getComUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error();
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getComUser = getComUser;
@@ -120,7 +120,7 @@ const createCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.createCommunity = createCommunity;
@@ -153,7 +153,7 @@ const communities = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.communities = communities;
@@ -198,7 +198,7 @@ const getCommunityDetails = (req, res) => __awaiter(void 0, void 0, void 0, func
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getCommunityDetails = getCommunityDetails;
@@ -240,7 +240,7 @@ const changeComStatus = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.changeComStatus = changeComStatus;
@@ -278,7 +278,7 @@ const addUserECommunity = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addUserECommunity = addUserECommunity;
@@ -331,7 +331,7 @@ const changeCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.changeCommunity = changeCommunity;
@@ -374,7 +374,7 @@ const deleteCommunity = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.deleteCommunity = deleteCommunity;
@@ -424,7 +424,7 @@ const userCommunities = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userCommunities = userCommunities;
@@ -434,7 +434,7 @@ const communityData = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         console.log(req.query);
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.communityData = communityData;
@@ -496,7 +496,7 @@ const changeCommunityWI = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.changeCommunityWI = changeCommunityWI;
@@ -538,7 +538,7 @@ const getUserCommunity = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getUserCommunity = getUserCommunity;
@@ -587,7 +587,7 @@ const communityUsers = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.communityUsers = communityUsers;
@@ -634,6 +634,7 @@ const postMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
         console.error(error);
     }
 });
@@ -645,12 +646,6 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             status: 0,
             error: ""
         };
-        // interface Data{
-        //   userName:string;
-        //   userId:string|ObjectId;
-        //   message:string;
-        //   createdAt:string;
-        // }
         const { commId } = req.body;
         if (commId) {
             const communityData = yield communityModel_1.default.findOne({ _id: commId });
@@ -697,7 +692,7 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getMessages = getMessages;

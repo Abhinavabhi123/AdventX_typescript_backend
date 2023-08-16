@@ -88,12 +88,6 @@ const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 status: 200,
                 token: token,
             };
-            // .cookie("AdminJwt", token, {
-            //   httpOnly: true,
-            //   domain: process.env.cookieDomain,
-            //   path: "/",
-            //   maxAge: 3600000,
-            // })
             res
                 .status(object.status)
                 .cookie("AdminJwt", token, {
@@ -106,7 +100,7 @@ const postAdminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.postAdminLogin = postAdminLogin;
@@ -118,7 +112,7 @@ const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(allUsers);
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getAllUser = getAllUser;
@@ -142,7 +136,7 @@ const blockUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.blockUser = blockUser;
@@ -153,7 +147,7 @@ const singleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.send(userData);
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.singleUser = singleUser;
@@ -194,7 +188,7 @@ const accounts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(obj.status).send(obj);
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.accounts = accounts;
@@ -235,7 +229,7 @@ const dashboardCardValues = (req, res) => __awaiter(void 0, void 0, void 0, func
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.dashboardCardValues = dashboardCardValues;
@@ -266,7 +260,7 @@ const primeMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.primeMembers = primeMembers;

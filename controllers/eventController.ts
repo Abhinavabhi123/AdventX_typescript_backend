@@ -81,7 +81,7 @@ export const addEvent = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getAllEvent = async (req: Request, res: Response) => {
@@ -119,7 +119,7 @@ export const getAllEvent = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getEventDetails = async (req: Request, res: Response) => {
@@ -164,7 +164,7 @@ export const getEventDetails = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getEventData = async (req: Request, res: Response) => {
@@ -208,7 +208,7 @@ export const getEventData = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const deleteEvent = async (req: Request, res: Response) => {
@@ -246,7 +246,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getAllUpEvents=async(req:Request,res:Response)=>{
@@ -280,7 +280,7 @@ export const getAllUpEvents=async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const getEvent=async(req:Request,res:Response)=>{
@@ -318,7 +318,7 @@ export const getEvent=async(req:Request,res:Response)=>{
     }
 
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const getAllEvents =async(req:Request,res:Response)=>{
@@ -353,7 +353,7 @@ export const getAllEvents =async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
       }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const getUserAllEvents =async(req:Request,res:Response)=>{
@@ -387,7 +387,7 @@ export const getUserAllEvents =async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -465,7 +465,7 @@ export const editEvent=async(req:Request,res:Response)=>{
       }
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -545,7 +545,7 @@ export const editEventImage=async(req:Request,res:Response)=>{
       }
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -637,12 +637,8 @@ export const addWinners=async(req:Request,res:Response)=>{
       }
       res.status(obj.status).send(obj)
     }
-
-
-    
-    
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -704,7 +700,7 @@ export const eventImages=async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }   
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -754,7 +750,7 @@ export const changeEventStatus=async(req:Request,res:Response)=>{
     }
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const eventEarnings=async(req:Request,res:Response)=>{
@@ -789,7 +785,7 @@ export const eventEarnings=async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
        }
     } catch (error) {
-      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
@@ -866,12 +862,13 @@ export const eventPayment=async(req:Request,res:Response)=>{
     
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
 export const addParticipation=async(req:Request,res:Response)=>{
-  try {interface Obj{
+  try {
+    interface Obj{
     message:string;
     status:number;
     error:string
@@ -915,7 +912,7 @@ export const addParticipation=async(req:Request,res:Response)=>{
 
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -965,7 +962,7 @@ export const userEvents=async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
       }  
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -1023,7 +1020,7 @@ export const deleteEventImages=async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
       }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const editWinner=async(req:Request,res:Response)=>{
@@ -1181,6 +1178,6 @@ export const editWinner=async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }

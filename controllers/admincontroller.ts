@@ -67,13 +67,7 @@ export const postAdminLogin = async (req: Request, res: Response) => {
         status: 200,
         token: token,
       };
-      
-      // .cookie("AdminJwt", token, {
-      //   httpOnly: true,
-      //   domain: process.env.cookieDomain,
-      //   path: "/",
-      //   maxAge: 3600000,
-      // })
+    
 
       res
         .status(object.status)
@@ -89,7 +83,7 @@ export const postAdminLogin = async (req: Request, res: Response) => {
         .send(object)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -101,17 +95,17 @@ export const getAllUser = async (req: Request, res: Response) => {
     console.log(allUsers);
     res.status(200).send(allUsers);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const blockUser = async (req: Request, res: Response) => {
+  try {
   interface UserDocument {
     _id: string;
     status: boolean;
     save: () => void;
   }
   type UserData = UserDocument | null;
-  try {
     const id = req.body;
     console.log(id);
     const userData: UserData = await userModel.findOne({ _id: id });
@@ -129,7 +123,7 @@ export const blockUser = async (req: Request, res: Response) => {
       console.log("User not Found");
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -139,7 +133,7 @@ export const singleUser = async (req: Request, res: Response) => {
     const userData = await userModel.findOne({ _id: id });
     res.send(userData);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const accounts=async(req:Request,res:Response)=>{
@@ -191,7 +185,7 @@ export const accounts=async(req:Request,res:Response)=>{
     
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const dashboardCardValues=async(req:Request,res:Response)=>{
@@ -242,7 +236,7 @@ export const dashboardCardValues=async(req:Request,res:Response)=>{
     }
 
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const primeMembers=async(req:Request,res:Response)=>{
@@ -276,6 +270,6 @@ export const primeMembers=async(req:Request,res:Response)=>{
       res.status(obj.status).send(obj)
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }

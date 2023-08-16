@@ -738,7 +738,7 @@ export const webhook = async (req: Request, res: Response) => {
     event = stripes.webhooks.constructEvent(payload, sig, secret);
 
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
+   console.error(error);
   }
   if (event) {
     switch (event.type) {
@@ -800,7 +800,7 @@ export const userLicense = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const addLicense = async (req: Request, res: Response) => {
@@ -852,7 +852,7 @@ export const addLicense = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const editLicense = async (req: Request, res: Response) => {
@@ -914,7 +914,7 @@ export const editLicense = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const create_checkout_session = async (req: Request, res: Response) => {
@@ -952,7 +952,7 @@ export const create_checkout_session = async (req: Request, res: Response) => {
 
     res.json({ url: session.url });
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getUserEvent = async (req: Request, res: Response) => {
@@ -996,7 +996,7 @@ export const getUserEvent = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -1068,6 +1068,6 @@ export const addPrimeUser = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

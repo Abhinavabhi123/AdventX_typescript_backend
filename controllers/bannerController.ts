@@ -44,7 +44,7 @@ export const AddBanner = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const banners = async (req: Request, res: Response) => {
@@ -78,7 +78,7 @@ export const banners = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -133,7 +133,7 @@ export const deleteBanner = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -179,7 +179,7 @@ export const getBanner = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const postBannerEdit = async (req: Request, res: Response) => {
@@ -256,7 +256,7 @@ export const postBannerEdit = async (req: Request, res: Response) => {
       };
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getUserBanner = async(req:Request,res:Response)=>{
@@ -290,7 +290,7 @@ export const getUserBanner = async(req:Request,res:Response)=>{
         res.status(obj.status).send(obj)
       }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 export const about=async(req:Request,res:Response)=>{
@@ -329,6 +329,6 @@ export const about=async(req:Request,res:Response)=>{
     }
     
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
