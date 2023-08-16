@@ -77,6 +77,7 @@ export const addVehicle = async (req: Request, res: Response) => {
       }
   
     } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
       console.error(error);
     }
   };
@@ -198,6 +199,7 @@ export const addVehicle = async (req: Request, res: Response) => {
     }
         
     } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
         console.error(error);
     }
   }

@@ -85,6 +85,7 @@ const addVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
         console.error(error);
     }
 });
@@ -198,6 +199,7 @@ const deleteVehicle = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
         console.error(error);
     }
 });

@@ -117,7 +117,7 @@ const sendOpt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.sendOpt = sendOpt;
@@ -164,7 +164,7 @@ const postUserSignup = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.postUserSignup = postUserSignup;
@@ -280,7 +280,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userLogin = userLogin;
@@ -329,7 +329,7 @@ const postForget = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.postForget = postForget;
@@ -362,7 +362,7 @@ const postOtp = (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 exports.postOtp = postOtp;
@@ -388,7 +388,7 @@ const changePass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.changePass = changePass;
@@ -413,7 +413,7 @@ const addPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             });
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.addPayment = addPayment;
@@ -455,7 +455,7 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.getUserProfile = getUserProfile;
@@ -511,7 +511,7 @@ const userImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userImage = userImage;
@@ -574,7 +574,7 @@ const postUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.postUserDetails = postUserDetails;
@@ -633,7 +633,7 @@ const postAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.postAddress = postAddress;
@@ -675,7 +675,7 @@ const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 exports.userDetails = userDetails;
@@ -702,12 +702,9 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(sig, "oppppppooo");
         console.log(payload, "itgkjgakjdsg");
         event = stripes.webhooks.constructEvent(payload, sig, secret);
-        console.log("evide nd");
-        console.log(event, "eventos");
     }
     catch (error) {
-        console.error(error);
-        console.log("potti");
+        res.status(500).json({ error: 'Internal Server Error' });
     }
     if (event) {
         switch (event.type) {

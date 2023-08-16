@@ -85,7 +85,7 @@ export const sendOpt = async (req: Request, res: Response) => {
       res.status(500).send({ message: "No email found" });
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -138,7 +138,7 @@ export const postUserSignup = async (req: Request, res: Response) => {
         });
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -273,7 +273,7 @@ export const userLogin = async (req: Request, res: Response) => {
     res.status(object.status).send(object)
   }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -330,7 +330,7 @@ export const postForget = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -368,7 +368,7 @@ export const postOtp = (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -400,7 +400,7 @@ export const changePass = async (req: Request, res: Response) => {
         res.status(obj.status).send(obj);
       });
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -426,7 +426,7 @@ export const addPayment = async (req: Request, res: Response) => {
         clientSecret: paymentIntent.client_secret,
       });
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const getUserProfile = async (req: Request, res: Response) => {
@@ -470,7 +470,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const userImage = async (req: Request, res: Response) => {
@@ -526,7 +526,7 @@ export const userImage = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const postUserDetails = async (req: Request, res: Response) => {
@@ -594,7 +594,7 @@ export const postUserDetails = async (req: Request, res: Response) => {
       }
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 export const postAddress = async (req: Request, res: Response) => {
@@ -657,7 +657,7 @@ export const postAddress = async (req: Request, res: Response) => {
       res.status(obj.status).send(obj);
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -702,7 +702,7 @@ export const userDetails = async (req: Request, res: Response) => {
       };
     }
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -736,12 +736,9 @@ export const webhook = async (req: Request, res: Response) => {
     console.log(payload, "itgkjgakjdsg");
 
     event = stripes.webhooks.constructEvent(payload, sig, secret);
-    console.log("evide nd");
 
-    console.log(event, "eventos");
   } catch (error) {
-    console.error(error);
-    console.log("potti");
+    res.status(500).json({ error: 'Internal Server Error' });
   }
   if (event) {
     switch (event.type) {
