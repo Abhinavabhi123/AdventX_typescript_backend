@@ -212,7 +212,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                             .status(object.status)
                             .cookie("user", jwtToken, {
                             expires: new Date(Date.now() + 3600 * 1000),
-                            httpOnly: true,
+                            httpOnly: false,
                             sameSite: "strict",
                         })
                             .send(object);
@@ -374,18 +374,29 @@ const changePass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             error: "",
         };
         const { checkEmail, password } = req.body;
-        const hashedPass = yield hashPassword(password);
-        console.log(hashedPass);
-        yield userModel_1.default
-            .updateOne({ email: checkEmail }, { $set: { password: hashedPass } })
-            .then((data) => {
+        const userData = yield userModel_1.default.findOne({ email: checkEmail });
+        if (userData) {
+            const hashedPass = yield hashPassword(password);
+            console.log(hashedPass);
+            yield userModel_1.default
+                .updateOne({ email: checkEmail }, { $set: { password: hashedPass } })
+                .then((data) => {
+                obj = {
+                    message: "Password Changed",
+                    status: 200,
+                    error: "",
+                };
+                res.status(obj.status).send(obj);
+            });
+        }
+        else {
             obj = {
-                message: "Password Changed",
-                status: 200,
+                message: "Something went wrong",
+                status: 404,
                 error: "",
             };
             res.status(obj.status).send(obj);
-        });
+        }
     }
     catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });

@@ -210,7 +210,7 @@ export const userLogin = async (req: Request, res: Response) => {
             .status(object.status)
             .cookie("user", jwtToken, {
               expires: new Date(Date.now() + 3600 * 1000),
-              httpOnly: true,
+              httpOnly: false,
               sameSite: "strict",
             })
             .send(object);
@@ -386,6 +386,10 @@ export const changePass = async (req: Request, res: Response) => {
     };
     const { checkEmail, password }: { checkEmail: string; password: string } =
       req.body;
+      const userData = await userModel.findOne({email:checkEmail})
+      if(userData){
+
+      
     const hashedPass = await hashPassword(password);
     console.log(hashedPass);
 
@@ -399,6 +403,14 @@ export const changePass = async (req: Request, res: Response) => {
         };
         res.status(obj.status).send(obj);
       });
+    }else{
+      obj = {
+        message: "Something went wrong",
+        status: 404,
+        error: "",
+      };
+      res.status(obj.status).send(obj);
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
