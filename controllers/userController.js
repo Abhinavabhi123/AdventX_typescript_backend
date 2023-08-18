@@ -113,7 +113,7 @@ const sendOpt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
         else {
-            res.status(500).send({ message: "No email found" });
+            res.status(404).send({ message: "No email found" });
         }
     }
     catch (error) {
@@ -138,7 +138,7 @@ const postUserSignup = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (UserData) {
             object = {
                 message: "",
-                status: 500,
+                status: 404,
                 error: "user Already exists",
             };
             res.send(object);

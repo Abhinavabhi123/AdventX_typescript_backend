@@ -165,7 +165,7 @@ export const communities = async (req: Request, res: Response) => {
     } else {
       obj = {
         message: "No Community founded",
-        status: 200,
+        status: 404,
         error: "",
         community: commData,
       };

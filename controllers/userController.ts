@@ -82,7 +82,7 @@ export const sendOpt = async (req: Request, res: Response) => {
         });
       }
     } else {
-      res.status(500).send({ message: "No email found" });
+      res.status(404).send({ message: "No email found" });
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
@@ -113,7 +113,7 @@ export const postUserSignup = async (req: Request, res: Response) => {
     if (UserData) {
       object = {
         message: "",
-        status: 500,
+        status: 404,
         error: "user Already exists",
       };
       res.send(object);

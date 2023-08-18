@@ -556,7 +556,7 @@ export const addWinners=async(req:Request,res:Response)=>{
       status:number;
       error:string;
     }
-    let obj={
+    let obj:Obj={
       message:"",
       status:0,
       error:''

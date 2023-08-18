@@ -78,7 +78,7 @@ const banners = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         else {
             obj = {
                 message: "",
-                status: 501,
+                status: 404,
                 error: "Banner data not found",
             };
             res.status(obj.status).send(obj);

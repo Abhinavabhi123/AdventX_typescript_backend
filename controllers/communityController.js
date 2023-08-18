@@ -145,7 +145,7 @@ const communities = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         else {
             obj = {
                 message: "No Community founded",
-                status: 200,
+                status: 404,
                 error: "",
                 community: commData,
             };
